@@ -8,17 +8,28 @@ import random
 import ee
 
 from pipeline.config import (
-    AOI_BBOX, CLASS_THRESHOLDS, DATASETS, EE_PROJECT, DEFAULT_WEIGHTS, DRY_SEASON_MONTHS, END, START,
+    AOI_BBOX, ASSET_ID, CLASS_THRESHOLDS, DATASETS, EE_PROJECT, DEFAULT_WEIGHTS, DRY_SEASON_MONTHS, END, START,
 )
 
+SCORE_BANDS = ["slope", "vegetation", "soil", "fire", "moisture", "rain"]
+RAW_BANDS = ["slope_deg", "ndvi", "texture_class", "sand_minus_clay", "burned", "sm", "rain_mm"]
+
 _initialized = False
+_asset = None  # precomputed ee.Image, or None to compute live
 
 
-def init():
-    global _initialized
+def init(use_asset=True):
+    global _initialized, _asset
     if not _initialized:
         ee.Initialize(project=EE_PROJECT)
         _initialized = True
+        if use_asset:
+            try:
+                ee.data.getAsset(ASSET_ID)
+                _asset = ee.Image(ASSET_ID)
+            except ee.EEException:
+                print(f"[layers] {ASSET_ID} not found; computing live (slow). "
+                      "Run: python -m pipeline.export")
 
 
 def landcover():
@@ -92,13 +103,31 @@ def annual_rain():
 
 
 def valid_mask():
-    lc = landcover()
+    lc = _asset.select("landcover") if _asset is not None else landcover()
     return lc.neq(50).And(lc.neq(80))  # drop built-up and permanent water
 
 
 # --- criterion scores ---------------------------------------------------------
 
 def scores():
+    return _asset.select(SCORE_BANDS) if _asset is not None else live_scores()
+
+
+def raw():
+    if _asset is not None:
+        return _asset.select(RAW_BANDS)
+    return ee.Image.cat([
+        slope_deg().rename("slope_deg"),
+        ndvi_dry(),
+        texture_class().rename("texture_class"),
+        sand_minus_clay(),
+        burned(),
+        soil_moisture(),
+        annual_rain(),
+    ])
+
+
+def live_scores():
     s = slope_deg()
     # Peak 8–25°: enough runoff to matter, still workable. Fades out by 45°.
     slope_score = _norm(s, 0, 8).min(ee.Image(45).subtract(s).divide(20).clamp(0, 1))
@@ -145,16 +174,7 @@ def robustness(n=40, hi=CLASS_THRESHOLDS[1], seed=7):
 # --- site sampling ------------------------------------------------------------
 
 def site_stats(geom, weights=None):
-    raw = ee.Image.cat([
-        slope_deg().rename("slope_deg"),
-        ndvi_dry(),
-        texture_class().rename("texture_class"),
-        sand_minus_clay(),
-        burned(),
-        soil_moisture(),
-        annual_rain(),
-    ])
-    img = raw.addBands(scores()).addBands(priority_index(weights))
+    img = raw().addBands(scores()).addBands(priority_index(weights))
     region = geom.buffer(250) if geom.type().getInfo() == "Point" else geom
     stats = img.reduceRegion(ee.Reducer.mean(), region, 30, maxPixels=1e9).getInfo()
     lc = landcover().reduceRegion(

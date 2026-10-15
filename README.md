@@ -11,12 +11,14 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 earthengine authenticate          # one-time, opens browser; your account needs access to the project
 # optional: cp .env.example .env to use a different EE project
+python -m pipeline.export          # one-time (~10–20 min): precompute layers as an EE asset
 uvicorn api.main:app --reload     # http://localhost:8000
 ```
 
 ## Layout
 - `pipeline/config.py` — AOI, dataset IDs, default weights
-- `pipeline/layers.py` — EE criterion scores (0–1), weighted index, site sampling
+- `pipeline/layers.py` — EE criterion scores (0–1), weighted index, site sampling; reads the precomputed asset when present
+- `pipeline/export.py` — exports raw layers + scores to `scores_v1` (re-run after changing layer logic/calibration)
 - `api/main.py` — `/api/tiles`, `/api/robustness`, `/api/site`, serves `web/`
 - `pipeline/obras.py` — rule engine: slope/soil/cover/fire → work type, spacing
 - `pipeline/ficha.py` — Markdown proposal sheet template (no LLM at runtime)

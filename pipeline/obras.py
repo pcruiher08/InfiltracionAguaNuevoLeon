@@ -23,7 +23,15 @@ def recommend(stats: dict) -> dict:
     coarse = stats.get("sand_minus_clay") or 0
     burned = stats.get("burned") or 0
     reasons = []
+    landcover = stats.get("landcover_mode")
 
+    if landcover in (50, 80):
+        what = "zona urbana" if landcover == 50 else "cuerpo de agua"
+        return {"obra": "Fuera de alcance", "razones": [
+            f"Cobertura dominante: {what}. El análisis cubre laderas y terrenos naturales."]}
+    if slope < 8 and (stats.get("priority") or 0) < 0.45:
+        return {"obra": "Fuera de alcance (terreno plano)", "razones": [
+            f"Pendiente {slope:.0f}° < 8°: poco escurrimiento que frenar; no es zona de obra en laderas."]}
     if slope > 35:
         work = "No intervenir con obras: exclusión y regeneración natural"
         reasons.append(f"Pendiente {slope:.0f}° > 35°: obras inestables y riesgo para brigadas")
