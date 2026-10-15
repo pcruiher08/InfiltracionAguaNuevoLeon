@@ -173,6 +173,74 @@ V.update({"fate_n": n(DE["n"]), "prior_rows": "\n".join(prior_rows), "neta_rows"
           "inegi_enc3": n(b3["Bosque de encino y encino-pino"]), "inegi_oya3": n(b3["Bosque de oyamel y ayarín"]),
           "inegi_des30": n(b30["Matorral desértico rosetófilo y micrófilo"])})
 
+# ---------------------------------------------------------------- erosion and dam sedimentation (sedimento.py)
+SE = json.loads((ROOT / "sedimento.json").read_text())
+lab_s = {"bruta": "Máximo de agua bruta", "sedimento": "Máximo suelo retenido en presas"}
+sed_rows = []
+for key in ("bruta_3000", "sedimento_3000", "bruta_30000", "sedimento_30000"):
+    r = SE["selections"][key]; kind, H = key.split("_")
+    k3 = lambda v: n(v / 1000)
+    z1 = lambda v: (lambda t: "0.0" if t == "-0.0" else t)(n(v / 1e6, 1))
+    sed_rows.append(f"{lab_s[kind]}, {n(int(H))} ha & {n(r['ha_dams'])} & {k3(r['m3_yr'][1])} ({k3(r['m3_yr'][0])} a {k3(r['m3_yr'][2])}) & "
+                    f"{n(r['m3_50yr'][1] / 1e6, 1)} & {z1(r['water_m3_yr'][1])} ({z1(r['water_m3_yr'][0])} a {z1(r['water_m3_yr'][2])}) \\\\")
+s30 = SE["selections"]["sedimento_30000"]
+V.update({"sed_n": n(SE["n"]), "sed3_50": n(SE["selections"]["sedimento_3000"]["m3_50yr"][1] / 1e6, 1), "sed_rows": "\n".join(sed_rows),
+          "er_cp": n(SE["erosion_t_ha_yr_lambda22"]["Presa Cerro Prieto"]), "er_lb": n(SE["erosion_t_ha_yr_lambda22"]["Presa La Boca"]),
+          "sed30_m3": n(s30["m3_yr"][1]), "sed30_lo": n(s30["m3_yr"][0]), "sed30_hi": n(s30["m3_yr"][2]),
+          "sed30_50": n(s30["m3_50yr"][1] / 1e6, 1), "sed30_pct": pct(100 * s30["m3_50yr"][1] / 300e6, 1),
+          "sed30_w": n(s30["water_m3_yr"][1] / 1e6, 1), "sed30_wabs": n(-s30["water_m3_yr"][1] / 1e6, 1)})
+
+# ---------------------------------------------------------------- cost (costo.py)
+CO = json.loads((ROOT / "costo.json").read_text())
+mill = lambda v: n(v / 1e6, 1)
+cost_rows = []
+for key in ("bruta_3000", "neta_3000", "bruta_30000", "neta_30000"):
+    r = CO["selections"][key]; kind, H = key.split("_")
+    per_net = mill(r["mxn_per_net_ls"]) if r["mxn_per_net_ls"] else "no definido"
+    cost_rows.append(f"{lab[kind]}, {n(int(H))} ha & {n(r['cost_mxn'][0] / 1e6)} a {n(r['cost_mxn'][1] / 1e6)} & "
+                     f"{mill(r['mxn_per_gross_ls'][0])} a {mill(r['mxn_per_gross_ls'][1])} & {per_net} & {pct(r['p_cheaper_than_cuchillo'], 1)} \\\\")
+c30 = CO["selections"]["neta_30000"]
+V.update({"cost_rows": "\n".join(cost_rows), "cb30_lo": mill(c30["mxn_per_gross_ls"][0]), "cb30_hi": mill(c30["mxn_per_gross_ls"][1]),
+          "cn30": n(c30["mxn_per_net_ls"] / 1e6), "cp30": pct(c30["p_cheaper_than_cuchillo"], 1)})
+
+# ---------------------------------------------------------------- calibration (calibracion.py)
+CA = json.loads((ROOT / "calibracion.json").read_text()); PO = CA["posterior"]
+cs = lambda k: (SEL[k], PO["selections"][k])
+b3, b3c = cs("bruta_3000"); b30, b30c = cs("bruta_30000"); n3, n3c = cs("neta_3000"); n30, n30c = cs("neta_30000")
+cal_rows = [
+    f"Agua bruta (máximo de agua bruta) & {n(b3['gross_ls'], 1)} & {n(b3c['gross_ls'], 1)} & {n(b30['gross_ls'])} & {n(b30c['gross_ls'])} \\\\",
+    f"Agua neta, media & {n(n3['net_mean'], 1)} & {n(n3c['net_mean'], 1)} & {n(n30['net_mean'], 1)} & {n(n30c['net_mean'], 1)} \\\\",
+    f"Agua neta, intervalo de 90\\% & {n(n3['net_ls'][0], 1)} a {n(n3['net_ls'][2], 1)} & {n(n3c['net_ls'][0], 1)} a {n(n3c['net_ls'][2], 1)} & "
+    f"{n(n30['net_ls'][0])} a {n(n30['net_ls'][2])} & {n(n30c['net_ls'][0])} a {n(n30c['net_ls'][2])} \\\\",
+    f"$\\Pr[W_{{\\text{{neta}}}}>0]$ & {pct(n3['p_pos'])} & {pct(n3c['p_pos'])} & {pct(n30['p_pos'])} & {pct(n30c['p_pos'])} \\\\"]
+V.update({"cal_rows": "\n".join(cal_rows), "cal_qobs": n(CA["q_obs_mm"], 1), "cal_ce": f"{CA['ce_obs']:.2f}", "cal_p": n(CA["rain_mm"]),
+          "cal_qmod": n(CA["q_model_mm"], 1), "cal_f": f"{CA['f_hat']:.2f}", "cal_fpost": f"{PO['f_post_mean']:.2f}", "cal_ess": n(PO["ess"]),
+          "cal_drop": pct(100 * (1 - PO["f_post_mean"] / PO["f_prior_mean"])), "cal_rest": n(CA["rain_mm"] - CA["q_obs_mm"])})
+
+# ---------------------------------------------------------------- protected areas and future climate (clima.py)
+CL = json.loads((ROOT / "clima.json").read_text()); PR = CL["protegidas"]
+a3, a30 = PR["neta_3000"], PR["neta_30000"]
+anp_rows = [f"{k} & {n(a3.get(k, 0))} & {n(a30.get(k, 0))} \\\\" for k in sorted(set(a3) | set(a30), key=lambda k: -a30.get(k, 0))]
+cum = "Cumbres de Monterrey (Parque Nacional)"
+sit = PR["sitios_en_cumbres"]
+sit_txt = ("De los 8 sitios sugeridos, " + (" y ".join(str(x) for x in sit) if sit else "ninguno")
+           + (" están" if len(sit) > 1 else " está") + " dentro del parque.") if sit else "Ninguno de los 8 sitios sugeridos está dentro del parque."
+fq = lambda v: pct(100 * v)
+def crow(lbl, f):
+    return f"{lbl} & {f('ssp245')} & {f('ssp585')} \\\\"
+clima_rows = [
+    crow("Cambio de la lluvia media de julio a junio", lambda sc: f"{CL[sc]['change_median']:+.1f}\\% ({CL[sc]['change_range'][0]:+.1f} a {CL[sc]['change_range'][1]:+.1f})"),
+    crow(f"Frecuencia de un año como 2021 a 2022 (histórica: {fq(CL['q_star'])})", lambda sc: f"{fq(CL[sc]['freq_median'])} ({fq(CL[sc]['freq_range'][0])} a {fq(CL[sc]['freq_range'][1])})"),
+    crow("Modelos con sequías más frecuentes", lambda sc: f"{CL[sc]['models_more_droughts']} de {CL['n_models']}"),
+    crow("Cambio del agua bruta con 3,000 ha", lambda sc: f"{CL[sc]['gross_change_pct']:+.1f}\\%")]
+V.update({"anp_rows": "\n".join(anp_rows), "anp_cumbres3": n(a3.get(cum, 0)), "anp_cumbres30": n(a30.get(cum, 0)), "anp_sitios": sit_txt,
+          "anp_resp": f"La superficie más valiosa para el abasto está dentro del Parque Nacional Cumbres de Monterrey: {n(a3.get(cum, 0))} de las 3,000 ha y {n(a30.get(cum, 0))} de las 30,000 ha seleccionadas por ganancia neta. La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.",
+          "clima_nmod": str(CL["n_models"]), "clima_rows": "\n".join(clima_rows), "clima_p21": n(CL["chirps"]["p_2021_22"]),
+          "clima_pm": n(CL["chirps"]["mean"]), "clima_q": fq(CL["q_star"]), "clima_T": n(1 / CL["q_star"]),
+          "clima_more245": str(CL["ssp245"]["models_more_droughts"]), "clima_more585": str(CL["ssp585"]["models_more_droughts"]),
+          "clima_f245": fq(CL["ssp245"]["freq_median"]), "clima_f585": fq(CL["ssp585"]["freq_median"]),
+          "clima_g245": f"{CL['ssp245']['gross_change_pct']:+.1f}\\%", "clima_g585": f"{CL['ssp585']['gross_change_pct']:+.1f}\\%"})
+
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():
     BODY = BODY.replace(f"«{k}»", v)

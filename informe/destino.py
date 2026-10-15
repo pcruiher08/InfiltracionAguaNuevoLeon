@@ -125,9 +125,10 @@ def main():
             "p_deficit_10": round(100 * float((td >= 0.10 * DEFICIT_LS).mean()), 1),
             "ha_by_supply": {names[s]: round(float((x * A)[sup == s].sum())) for s in sids},
             "by_supply": {names[s]: q(by_sup[(kind, H)][s]) for s in sids},
-            "samples": [round(v, 1) for v in t[:2000]]}
+            "samples": [round(v, 1) for v in t[:2000]], "samples_drought": [round(v, 1) for v in td[:2000]]}
         print(kind, H, out["selections"][f"{kind}_{H}"]["gross_ls"], q(t), out["selections"][f"{kind}_{H}"]["p_pos"], flush=True)
 
+    out["f_C_samples"] = [round(float(v), 4) for v in np.array(params)[:2000, 0]]
     # Spearman rank correlation of the 30,000 ha (gross selection) net total with each parameter
     Pm = np.array(params); y = np.array(tot[("bruta", 30_000)])
     labels = ["f_C", "kappa", "b", "k_EC"] + [f"{p}_{names[s]}" for s in sids for p in ("e", "phi", "tau")]

@@ -14,7 +14,7 @@ En lo más crítico de 2022 (junio y julio), Cerro Prieto y La Boca bajaron a me
 
 **Demo en línea (versión estática):** https://pcruiher08.github.io/InflitracionAguaNuevoLeon/ : prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
 
-**Informe técnico en PDF (36 páginas, diez preguntas de investigación):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Las figuras de este README salen de ese informe.
+**Informe técnico en PDF (36 páginas, diez preguntas de investigación):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Orden para regenerar los análisis: `matematicas.py`, `abasto.py`, `destino.py`, `vegetacion.py`, `calibracion.py` (y `--posterior`), `costo.py`, `sedimento.py`, `clima.py`, `figuras.py`, `mapas.py`, `generar.py` y `tectonic informe.tex`. Las figuras de este README salen de ese informe.
 
 ---
 
@@ -241,6 +241,29 @@ Cada ladera se restaura **sólo con especies de su propio tipo de vegetación**,
 | Pastizal inducido o agricultura | Las del tipo de vegetación natural contiguo | La obra que corresponda a la pendiente |
 
 Fuentes y discusión completa en el informe (sección P10).
+
+### 11. Calibración con el balance hídrico oficial
+
+El escurrimiento natural de la cuenca de Cerro Prieto según CONAGUA (cuencas Río Pablillo 1, Río Camacho y Río Pablillo 2) es de **166.5 mm/año** (coeficiente 0.25); el modelo da 223.9 mm. Con una actualización bayesiana por muestreo de importancia (`informe/calibracion.py`), el factor de escurrimiento baja a 0.82: el agua bruta y la neta bajan ~18 %, y la probabilidad de ganancia neta positiva no cambia (30,000 ha en el Santa Catarina: 20.8 L/s netos en promedio, P > 0 = 67 %).
+
+### 12. Azolve evitado en las presas (RUSLE)
+
+Con la ecuación universal de pérdida de suelo revisada (`informe/sedimento.py`), 30,000 ha en la cuenca de Cerro Prieto evitarían que lleguen ~448 mil m³/año de sedimento a la presa (**~22.4 hm³ en 50 años**, ~7.5 % de su capacidad), pero reducirían el agua que le llega en ~4.1 hm³/año. En las presas, el azolve evitado no compensa el agua retenida.
+
+### 13. Costo
+
+Con 25,000 a 50,000 pesos por hectárea (tope de CONAFOR para restauración forestal, Reglas de Operación 2026), cada **L/s neto cuesta ~43 millones de pesos**, más de diez veces el costo de capital por L/s del acueducto El Cuchillo II (~2.9 millones). Como fuente de agua la restauración es cara; su valor está en el suelo, la vida útil de los embalses, las avenidas y la biodiversidad.
+
+### 14. Áreas protegidas y clima futuro
+
+- **Parque Nacional Cumbres de Monterrey:** 2,933 de las 3,000 ha seleccionadas por ganancia neta están dentro del parque (WDPA). La restauración es compatible con un parque nacional (LGEEPA, art. 50), pero requiere autorización de la CONANP.
+- **Clima (NEX-GDDP-CMIP6, 8 modelos, 2041 a 2070):** un año tan seco como 2021 a 2022 (percentil 11 histórico) tendría una frecuencia mediana de 8 % en SSP2-4.5 y 10 % en SSP5-8.5, con mucha dispersión entre modelos (3 a 23 %). El agua bruta cambiaría entre -1.4 % y +1.8 %.
+
+### 15. Validación en campo
+
+El informe propone un diseño antes y después con control e impacto en los 8 sitios: microcuencas pareadas con vertedores (τ), perfiles de humedad del suelo y balance de cloruro (e) y piezómetros en el Santa Catarina (φ). Con CV = 0.5, α = 0.05 y potencia de 80 %, se necesitan ~16 pares para detectar una diferencia de 50 % y ~63 para una de 25 %.
+
+El informe incluye además un **resumen ejecutivo de una página** y un **abstract en inglés**.
 
 ## ¿Por qué estos sitios?
 
