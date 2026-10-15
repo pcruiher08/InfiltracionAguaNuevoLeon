@@ -58,7 +58,8 @@ def _run(filled, recv, cap, inf, inside):
     leaves = inside & ((recv < 0) | ~inside[np.maximum(recv, 0)])  # window cells draining outward
     water = np.zeros(n)        # water arriving at each cell this step (mm)
     stored = np.zeros(n)       # ponded behind works (mm)
-    frames, out_series = [], []
+    frames, ponded, out_series = [], [], []
+    flux = np.zeros(n)  # total water that passed through each cell (mm)
     tot = {"rain": 0.0, "infiltrated_hill": 0.0, "infiltrated_works": 0.0, "outflow": 0.0}
     rain_step = RAIN_MM / RAIN_STEPS
     is_work = cap > 0
@@ -85,18 +86,21 @@ def _run(filled, recv, cap, inf, inside):
         np.add.at(nxt, recv[recv >= 0], water[recv >= 0])
         tot["outflow"] += out
         out_series.append(out * CELL_M2 / 1000)  # m³ leaving this step
+        flux += water
         if t % FRAME_EVERY == 0:
             frames.append(water.copy())
+            ponded.append(stored.copy())
         water = nxt
     tot["still_moving"] = water[inside].sum()
     tot["still_ponded"] = stored[inside].sum()
-    return frames, out_series, {k: round(v * CELL_M2 / 1000) for k, v in tot.items()}
+    totals = {k: round(v * CELL_M2 / 1000) for k, v in tot.items()}
+    return frames, ponded, flux, out_series, totals
 
 
 def _encode(frames, vmax):
-    """Frames → base64 uint8 (sqrt scale) for a light payload."""
-    arr = np.stack(frames)
-    q = np.clip(np.sqrt(arr / vmax) * 255, 0, 255).astype(np.uint8)
+    """Frames → base64 uint8 (linear scale, clipped at vmax) for a light payload."""
+    arr = np.stack(frames) if isinstance(frames, list) else frames[None]
+    q = np.clip(arr / vmax * 255, 0, 255).astype(np.uint8)
     return base64.b64encode(q.tobytes()).decode()
 
 
@@ -115,9 +119,12 @@ def simulate(lon, lat, budget_m=1500, window_m=1200):
     inside = np.zeros(z.shape, bool)
     inside[r0:r1, c0:c1] = True
     inside = inside.ravel()
-    f0, s0, t0 = _run(filled, recv, np.zeros(n), np.full(n, INF_HILL), inside)
-    f1, s1, t1 = _run(filled, recv, cap, inf, inside)
-    vmax = max(float(np.percentile(np.stack(f0), 99.5)), 1.0)
+    f0, _, flux0, s0, t0 = _run(filled, recv, np.zeros(n), np.full(n, INF_HILL), inside)
+    f1, p1, flux1, s1, t1 = _run(filled, recv, cap, inf, inside)
+    moving = np.stack(f0)
+    vmax = max(float(np.percentile(moving[moving > 1], 90)), 1.0)  # linear; channels saturate gently
+    # share of each cell's storm flux removed by the works (0..1), only where water flowed
+    reduction = np.where(flux0 > 5, np.clip(1 - flux1 / np.maximum(flux0, 1e-9), 0, 1), 0)
 
     nr, nc = z.shape
     lo, la = to_ll(np.array([-0.5, nc - 0.5]), np.array([-0.5, nr - 0.5]))
@@ -127,7 +134,10 @@ def simulate(lon, lat, budget_m=1500, window_m=1200):
                  "bounds": [[float(min(la)), float(min(lo))], [float(max(la)), float(max(lo))]]},
         "window": B.window_polygon(to_ll, win) if hasattr(B, "window_polygon") else None,
         "without": {"frames": _encode(f0, vmax), "outflow": [round(float(v), 1) for v in s0], "totals": t0},
-        "with": {"frames": _encode(f1, vmax), "outflow": [round(float(v), 1) for v in s1], "totals": t1},
+        "with": {"frames": _encode(f1, vmax), "ponded": _encode(p1, CAP_BARRIER),
+                 "outflow": [round(float(v), 1) for v in s1], "totals": t1},
+        "difference": {"reduction": _encode(reduction, 1.0),
+                       "flux_without": _encode(flux0, float(np.percentile(flux0[flux0 > 5], 95)))},
         "summary": {
             "rain_m3": t0["rain"],
             "outflow_reduction_pct": round(100 * (1 - t1["outflow"] / max(t0["outflow"], 1)), 1),

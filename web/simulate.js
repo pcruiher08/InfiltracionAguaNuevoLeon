@@ -43,11 +43,13 @@
     const budget = +(document.getElementById("bp-budget") || { value: 1500 }).value;
     try {
       sim = await post("/api/simulate", { lon: site.lon, lat: site.lat, budget_m: budget });
-      for (const k of ["without", "with"]) {
-        const bin = atob(sim[k].frames), u = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
-        sim[k].u8 = u;
-      }
+      const dec = b64 => { const bin = atob(b64), u = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; };
+      sim.without.u8 = dec(sim.without.frames);
+      sim.with.u8 = dec(sim.with.frames);
+      sim.with.pond = dec(sim.with.ponded);
+      sim.difference.red = dec(sim.difference.reduction);
+      sim.difference.flux = dec(sim.difference.flux_without);
       canvas.width = sim.grid.cols; canvas.height = sim.grid.rows;
       // hide the blue priority layer so the water reads clearly
       const op = document.getElementById("opacity");
@@ -65,7 +67,9 @@
       <div class="seg" style="margin-top:8px">
         <label><input type="radio" name="sim-s" value="without" checked><span>Sin barreras</span></label>
         <label><input type="radio" name="sim-s" value="with"><span>Con barreras</span></label>
+        <label><input type="radio" name="sim-s" value="diff"><span>Diferencia</span></label>
       </div>
+      <div id="sim-key" class="muted"></div>
       <div class="row" style="gap:6px;margin:6px 0">
         <button id="sim-play" style="margin:0">⏸</button>
         <input type="range" id="sim-t" min="0" max="${sim.grid.frames - 1}" value="0" style="flex:1">
@@ -97,15 +101,31 @@
       <line id="sim-cur" x1="2" y1="4" x2="2" y2="86" stroke="var(--fg)" stroke-width="1" stroke-dasharray="3 3"/>`;
   }
 
+  const KEYS = {
+    without: `<span style="color:#1c5cab">■</span> agua escurriendo (más oscuro = más agua)`,
+    with: `<span style="color:#1c5cab">■</span> agua escurriendo &nbsp; <span style="color:#00b3a4">■</span> agua retenida por barreras y presas`,
+    diff: `<span style="color:#d95926">■</span> cuánto bajó el flujo total de la tormenta con barreras (más intenso = más reducción); <span style="color:#9c9890">■</span> sin cambio`,
+  };
+  function px(d, i, r, g, b, a) { d[i * 4] = r; d[i * 4 + 1] = g; d[i * 4 + 2] = b; d[i * 4 + 3] = a; }
+
   function draw() {
-    const { rows, cols, frames } = sim.grid, u = sim[scen].u8, off = frame * rows * cols;
-    const ctx = canvas.getContext("2d"), img = ctx.createImageData(cols, rows);
-    for (let i = 0; i < rows * cols; i++) {
-      const v = u[off + i];
-      if (v < 6) { img.data[i * 4 + 3] = 0; continue; }
+    const { rows, cols } = sim.grid, N = rows * cols, off = frame * N;
+    const ctx = canvas.getContext("2d"), img = ctx.createImageData(cols, rows), d = img.data;
+    panel.querySelector("#sim-key").innerHTML = KEYS[scen];
+    for (let i = 0; i < N; i++) {
+      if (scen === "diff") {
+        const f = sim.difference.flux[i], red = sim.difference.red[i] / 255;
+        if (f < 10) { d[i * 4 + 3] = 0; continue; }
+        if (red < 0.05) px(d, i, 156, 152, 144, 110);                      // flowed, no change
+        else px(d, i, 240 - 70 * red, 150 - 90 * red, 106 - 90 * red, 120 + 135 * red); // orange: reduced
+        continue;
+      }
+      const v = sim[scen].u8[off + i];
+      const pond = scen === "with" ? sim.with.pond[off + i] : 0;
+      if (pond > 10) { px(d, i, 0, 179, 164, 140 + pond * 0.45); continue; } // ponded behind works
+      if (v < 6) { d[i * 4 + 3] = 0; continue; }
       const t = v / 255;  // light → deep blue
-      img.data[i * 4] = Math.round(170 - 160 * t); img.data[i * 4 + 1] = Math.round(215 - 150 * t);
-      img.data[i * 4 + 2] = Math.round(255 - 80 * t); img.data[i * 4 + 3] = Math.round(90 + 165 * t);
+      px(d, i, Math.round(170 - 160 * t), Math.round(215 - 150 * t), Math.round(255 - 80 * t), Math.round(90 + 165 * t));
     }
     ctx.putImageData(img, 0, 0);
     const url = canvas.toDataURL();
