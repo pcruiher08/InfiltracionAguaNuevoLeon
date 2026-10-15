@@ -10,6 +10,7 @@ import math
 # uniformly "clay loam" there, so it can't discriminate on its own)
 COARSE_MIN = 8   # coarser / likely stonier soils
 CLAYEY_MAX = 3   # finest soils in the AOI
+DENSE_NDVI = 0.55  # dry-season NDVI above this = dense cover; conserve it
 VERTICAL_INTERVAL_M = 1.0      # vertical drop between barrier lines
 
 
@@ -49,6 +50,12 @@ def recommend(stats: dict) -> dict:
     elif ndvi < 0.35:
         work = "Reforestación con nativas + barreras de material vegetal"
         reasons.append(f"Cobertura baja (NDVI {ndvi:.2f})")
+    elif ndvi < DENSE_NDVI and slope >= 8:
+        # Median dry-season NDVI in the AOI is ~0.39, so 0.35–0.55 is ordinary
+        # scrub/open forest: still worth slowing runoff on slopes.
+        work = "Barreras de material vegetal muerto en curvas de nivel"
+        reasons.append(f"Cobertura media (NDVI {ndvi:.2f}) en ladera de {slope:.0f}°: "
+                       "frenar escurrimiento con material vegetal del sitio")
     else:
         work = "Conservación de cobertura existente (prioridad baja de obra)"
         reasons.append(f"Cobertura aceptable (NDVI {ndvi:.2f})")
