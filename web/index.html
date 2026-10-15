@@ -83,6 +83,9 @@
     <button id="apply">Recalcular</button>
   </details>
 
+  <section id="fires-panel"></section>
+  <section id="portfolio-panel"></section>
+
   <h2>Sitio</h2>
   <div id="site" class="muted">Haz clic en el mapa para generar la ficha de obra de un sitio.</div>
   <div id="ficha"></div>
@@ -244,7 +247,13 @@ map.on("click", async ev => {
   } catch (e) { el.textContent = "Error: " + e.message.slice(0, 200); }
 });
 
+// Shared handle for feature panels (web/fires.js, web/portfolio.js)
+window.app = { map, post, state, css, fmt, setStatus, showFicha: (md) => {
+  document.getElementById("ficha").innerHTML = marked.parse(md); } };
+
 init().catch(e => setStatus("Error: " + e.message.slice(0, 120)));
 </script>
+<script src="fires.js"></script>
+<script src="portfolio.js"></script>
 </body>
 </html>

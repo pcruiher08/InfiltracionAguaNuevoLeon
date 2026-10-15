@@ -10,10 +10,13 @@ from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
 
+from api import fires_api, portfolio_api  # noqa: E402
 from pipeline import ficha, layers, obras  # noqa: E402
 from pipeline.config import AOI_BBOX, DEFAULT_WEIGHTS  # noqa: E402
 
 app = FastAPI(title="Infiltración ZMM")
+app.include_router(fires_api.router, prefix="/api")
+app.include_router(portfolio_api.router, prefix="/api")
 
 # Single-hue ramps, validated for CVD/contrast (dataviz validate_palette.js)
 BLUE_SEQ = ["#cde2fb", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"]  # continuous index
