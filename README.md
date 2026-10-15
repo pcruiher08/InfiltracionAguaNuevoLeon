@@ -10,6 +10,8 @@ En 2022, Cerro Prieto y La Boca bajaron a menos del 5 % de su capacidad, y la ZM
 
 > El índice compara **potencial relativo**. **No** mide volumen de agua infiltrada.
 
+**Ver el flujo de agua:** en la app local, el botón **▶ Ver flujo de agua (demo)** carga un sitio y anima una tormenta sin y con barreras.
+
 **Demo en línea (versión estática):** https://pcruiher08.github.io/InflitracionAguaNuevoLeon/ — prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
 
 **Documento en PDF:** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf).
@@ -69,6 +71,26 @@ Se calculan siete criterios en Google Earth Engine. Cada uno se normaliza a 0–
 ### 3. Robustez
 
 Se recalcula el índice con **40 combinaciones aleatorias de pesos**. Para cada píxel se cuenta en qué porcentaje de esas combinaciones queda como prioridad alta. Los sitios con ≥ 50 % son prioritarios **sin importar cómo ponderen los criterios los expertos**: convierte el desacuerdo entre expertos en un resultado, en lugar de una debilidad.
+
+### ¿Qué significa cada prioridad?
+
+Las tres cifras de resultados describen **lo mismo**: cuánto ganaría un terreno con restauración de suelo que favorezca la infiltración. Cambia solo qué tan estricto es el corte. Todas se cuentan en hectáreas de laderas de 8° o más dentro de las cuencas de abasto.
+
+**Qué se mide.** Para cada píxel de 30 m, el índice (0 a 1) combina los siete criterios de la tabla anterior. Un píxel sale alto cuando su **suelo está degradado**, **genera escurrimiento**, **se puede trabajar** y **su agua llegaría a una fuente de abasto**: ahí es donde restaurar el suelo más ayuda a la infiltración.
+
+| Clase | Regla | Superficie | Qué significa |
+|---|---|---|---|
+| **Prioridad alta** | Índice > 0.55 (~20 % superior de las laderas) | ~141,200 ha | Las mejores candidatas a restaurar |
+| **Prioridad media** | Índice entre 0.45 y 0.55 | ~175,500 ha | Vale la pena restaurarlas, pero van en segundo lugar |
+| **Alta y robusta** | Alta en ≥ 50 % de 40 ponderaciones aleatorias | ~90,600 ha (64 % de la alta) | Prioritarias **sin importar cómo se ponderen los criterios** |
+
+**Por qué importa la robustez:** los pesos de los criterios son una decisión de criterio experto; alguien podría darle más peso a los incendios o menos a la pendiente. Lo robusto se mantiene alto con casi cualquier ponderación, así que es **el lugar más seguro para empezar**.
+
+**Qué no miden:**
+
+- **No miden volumen de agua.** El índice compara sitios entre sí: "alta" quiere decir "mejor que la mayoría", no "infiltra X m³". Las estimaciones en m³/año salen de la optimización de captación (sección 5).
+- **No conocen las condiciones en campo:** tenencia de la tierra, acceso o restricciones de ANP. Todo sitio requiere verificación en campo.
+- **La prioridad baja (índice < 0.45) no se muestra** en el mapa por defecto.
 
 ### 4. Ficha de obra (motor de reglas)
 

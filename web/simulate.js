@@ -2,7 +2,7 @@
 (() => {
   const { map, post } = window.app;
   const panel = document.getElementById("sim-panel");
-  const WORK = /barrera|zanja/i, SKIP = /^(fuera de alcance|no intervenir|conservaci)/i;
+  const SKIP = /^fuera de alcance/i;  // urban, water or flat: nothing to simulate
   const fmt = n => Math.round(n).toLocaleString("es-MX");
   let site = null, sim = null, overlay = null, frame = 0, timer = null, scen = "without";
   const canvas = document.createElement("canvas");
@@ -11,21 +11,35 @@
     stop(); site = s; sim = null;
     if (overlay) { map.removeLayer(overlay); overlay = null; }
     const obra = (s.recommendation && s.recommendation.obra) || "";
-    panel.innerHTML = WORK.test(obra) && !SKIP.test(obra) ? `
+    panel.innerHTML = !SKIP.test(obra) ? `
       <div style="border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:10px">
         <b>Simulación de tormenta</b>
         <div class="muted">Tormenta de 40 mm: el agua baja por la ladera sin barreras y con las barreras optimizadas.</div>
         <button id="sim-run">Simular escurrimiento</button>
         <div id="sim-out"></div></div>` : "";
     const b = panel.querySelector("#sim-run");
-    if (b) b.onclick = run;
+    if (b) {
+      b.onclick = run;
+      setTimeout(() => panel.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+      if (autoRun) { autoRun = false; b.click(); }
+    }
   });
+
+  // One-click demo: known Pilón slope site, runs the simulation automatically
+  let autoRun = false;
+  const demo = document.getElementById("sim-demo");
+  if (demo) demo.onclick = () => {
+    autoRun = true;
+    map.setView([25.0, -100.05], 14);
+    map.fire("click", { latlng: L.latLng(25.0, -100.05) });
+  };
 
   async function run(ev) {
     const btn = ev.target; btn.disabled = true; btn.textContent = "Simulando…";
     // make sure the barriers are drawn for the same budget
     const bp = document.getElementById("bp-run");
     if (bp && !document.querySelector("#bp-out .bp-dl")) bp.click();
+    if (!bp) app.setStatus("Simulando con barreras optimizadas para este sitio…");
     const budget = +(document.getElementById("bp-budget") || { value: 1500 }).value;
     try {
       sim = await post("/api/simulate", { lon: site.lon, lat: site.lat, budget_m: budget });
