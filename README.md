@@ -8,6 +8,8 @@ En 2022, Cerro Prieto y La Boca bajaron a menos del 5 % de su capacidad, y la ZM
 
 > El índice compara **potencial relativo**. **No** mide volumen de agua infiltrada.
 
+**Demo en línea (versión estática):** https://pcruiher08.github.io/InflitracionAguaNuevoLeon/ — prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
+
 ---
 
 ## La solución en 4 piezas
