@@ -1,4 +1,8 @@
 """Shared configuration: area of interest, dataset IDs, default weights."""
+import os
+
+# Google Cloud project registered for Earth Engine (override with EE_PROJECT)
+EE_PROJECT = os.environ.get("EE_PROJECT", "infiltracionaguanuevoleon")
 
 # Upper basins that feed the ZMM supply: Santa Catarina (Cumbres),
 # Ramos/San Juan (La Boca) and Pilón (Cerro Prieto). Rough bbox for the demo;

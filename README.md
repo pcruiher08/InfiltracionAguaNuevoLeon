@@ -9,8 +9,8 @@ restoration that favors infiltration, and recommends a work type with transparen
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-earthengine authenticate          # one-time, opens browser
-cp .env.example .env              # fill EE_PROJECT
+earthengine authenticate          # one-time, opens browser; your account needs access to the project
+# optional: cp .env.example .env to use a different EE project
 uvicorn api.main:app --reload     # http://localhost:8000
 ```
 

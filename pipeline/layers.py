@@ -3,13 +3,12 @@
 Every criterion returns a 0–1 score where 1 = higher restoration priority.
 The index is relative potential, NOT infiltrated volume.
 """
-import os
 import random
 
 import ee
 
 from pipeline.config import (
-    AOI_BBOX, CLASS_THRESHOLDS, DATASETS, DEFAULT_WEIGHTS, DRY_SEASON_MONTHS, END, START,
+    AOI_BBOX, CLASS_THRESHOLDS, DATASETS, EE_PROJECT, DEFAULT_WEIGHTS, DRY_SEASON_MONTHS, END, START,
 )
 
 _initialized = False
@@ -18,7 +17,7 @@ _initialized = False
 def init():
     global _initialized
     if not _initialized:
-        ee.Initialize(project=os.environ.get("EE_PROJECT"))
+        ee.Initialize(project=EE_PROJECT)
         _initialized = True
 
 
