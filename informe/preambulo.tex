@@ -1,0 +1,175 @@
+% Dónde y cómo restaurar suelo para que infiltre más agua en las cuencas que abastecen a Monterrey
+% Compilar:  python informe/generar.py && cd informe && tectonic informe.tex   (informe.tex se genera)
+% Figuras:   .venv/bin/python informe/figuras.py <capturas>   (gráficas desde web/stats.json)
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\unaccentedoperators
+\usepackage{amsmath,amssymb}
+\usepackage[no-math]{fontspec}
+\setmainfont{Figtree}[
+  Path = fonts/ ,
+  Extension = .ttf ,
+  UprightFont = *-400 ,
+  BoldFont = *-700 ,
+  ItalicFont = *-400 , ItalicFeatures = {FakeSlant = 0.18} ,
+  BoldItalicFont = *-700 , BoldItalicFeatures = {FakeSlant = 0.18} ,
+  SmallCapsFont = *-400 ]
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{authblk}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[fit]{truncate}
+\usepackage{xurl}
+\usepackage[colorlinks=true, citecolor=naranja, linkcolor=naranja, urlcolor=verde]{hyperref}
+\urlstyle{same}
+
+% ---------------------------------------------------------------- citas con autor, año y número
+% \citap{clave} → (Autor, año) [n]      \citar{clave} → Autor (año) [n]
+\makeatletter
+\newcommand{\defcita}[3]{\@namedef{cautor@#1}{#2}\@namedef{canio@#1}{#3}}
+\newcommand{\citap}[1]{(\@nameuse{cautor@#1}, \@nameuse{canio@#1})~\cite{#1}}
+\newcommand{\citar}[1]{\@nameuse{cautor@#1} (\@nameuse{canio@#1})~\cite{#1}}
+\makeatother
+\defcita{ahuja1993}{Ahuja et al.}{1993}
+\defcita{barnes2014}{Barnes et al.}{2014}
+\defcita{butler1997}{Butler et al.}{1997}
+\defcita{chow1988}{Chow et al.}{1988}
+\defcita{conafor2007}{CONAFOR}{2007}
+\defcita{dantzig1957}{Dantzig}{1957}
+\defcita{ford1956}{Ford y Fulkerson}{1956}
+\defcita{funk2015}{Funk et al.}{2015}
+\defcita{gorelick2017}{Gorelick et al.}{2017}
+\defcita{horton1933}{Horton}{1933}
+\defcita{khuller1999}{Khuller et al.}{1999}
+\defcita{lehner2013}{Lehner y Grill}{2013}
+\defcita{leskovec2007}{Leskovec et al.}{2007}
+\defcita{malczewski2006}{Malczewski}{2006}
+\defcita{nemhauser1978}{Nemhauser et al.}{1978}
+\defcita{ocallaghan1984}{O'Callaghan y Mark}{1984}
+\defcita{rouse1974}{Rouse et al.}{1974}
+\defcita{scs1986}{USDA-SCS}{1986}
+\defcita{kim1999}{Kim y Pardalos}{1999}
+\defcita{gumbel1958}{Gumbel}{1958}
+\defcita{jain1984}{Jain et al.}{1984}
+\defcita{gonzalez2023}{González Garza}{2023}
+\defcita{martinez2022}{Martínez Chacón}{2022}
+\defcita{alanis2015a}{Alanís-Rodríguez et al.}{2015a}
+\defcita{alanis2015b}{Alanís-Rodríguez et al.}{2015b}
+\defcita{alanis2015c}{Alanís-Rodríguez et al.}{2015c}
+\defcita{bosch1982}{Bosch y Hewlett}{1982}
+\defcita{bouma2011}{Bouma et al.}{2011}
+\defcita{glendenning2012}{Glendenning et al.}{2012}
+\defcita{ilstedt2016}{Ilstedt et al.}{2016}
+\defcita{jimenez2013}{Jiménez Pérez et al.}{2013}
+\defcita{lgdfs2018}{LGDFS}{2018}
+\defcita{nom059}{SEMARNAT}{2010}
+\defcita{ramirez2013}{Ramírez-Lozano et al.}{2013}
+\defcita{scanlon2006}{Scanlon et al.}{2006}
+\defcita{ser2004}{SER}{2004}
+\defcita{shanafield2014}{Shanafield y Cook}{2014}
+
+\definecolor{naranja}{HTML}{EE8204}
+\definecolor{crema}{HTML}{FFF7EC}
+\definecolor{verde}{HTML}{0A9055}
+\definecolor{gris}{HTML}{777777}
+\titleformat{\section}{\Large\bfseries\color{naranja}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+\captionsetup{font=small, labelfont={bf,color=naranja}, textfont=bf, justification=raggedright, singlelinecheck=false,
+  skip=4pt}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.2em, topsep=0.3em}
+
+% ---------------------------------------------------------------- figuras, lecturas y respuestas
+\graphicspath{{figuras/}}
+% \grafica{archivo}{título}{subtítulo: qué muestra y fuente}
+\newcommand{\grafica}[3]{%
+  \begin{figure}[H]\centering
+  \includegraphics[width=\linewidth,height=0.4\textheight,keepaspectratio]{#1}
+  \caption{#2}\label{fig:#1}
+  \vspace{0.1em}{\small\color{gris}\raggedright #3\par}
+  \end{figure}}
+\newcommand{\lectura}[1]{\par\noindent\textcolor{naranja}{\textbf{Lectura.}} #1\par}
+\newtcolorbox{cajarespuesta}{colback=crema, colframe=naranja, boxrule=0pt, leftrule=3pt, arc=0pt, left=8pt, right=8pt,
+  top=6pt, bottom=6pt, breakable}
+\newcommand{\respuesta}[1]{\begin{cajarespuesta}\textbf{\color{naranja}Respuesta.} #1\end{cajarespuesta}}
+
+% ---------------------------------------------------------------- autores
+\title{Dónde y cómo restaurar suelo para que infiltre más agua en las cuencas que abastecen a Monterrey}
+\author[1,*]{M.Sc. Pablo César Ruíz Hernández}
+\author[1]{B.Sc. David Martin Oliva Zavala}
+\author[1]{Jesus Zaddkiel Martinez Alor}
+\affil[1]{Monterrey, Nuevo León, México}
+\affil[*]{Autor de correspondencia: \href{mailto:pablo@urora.mx}{pablo@urora.mx}}
+\date{15 de octubre de 2026}
+\renewcommand\Authfont{\Large\bfseries}
+\renewcommand\Affilfont{\normalsize\mdseries\color{gris}}
+\renewcommand\Authsep{, }
+\renewcommand\Authand{ y }
+\renewcommand\Authands{ y }
+\setlength{\affilsep}{0.8em}
+\hypersetup{pdftitle={Dónde y cómo restaurar suelo para que infiltre más agua en las cuencas que abastecen a Monterrey},
+  pdfauthor={M.Sc. Pablo César Ruíz Hernández, B.Sc. David Martin Oliva Zavala, Jesus Zaddkiel Martinez Alor}, pdflang={es-MX},
+  pdfsubject={Reto 1 · Infiltración. Grok Monterrey Build Day, Pronatura Noreste}}
+
+% ---------------------------------------------------------------- encabezado y pie
+\renewcommand{\sectionmark}[1]{\markboth{\thesection.\ #1}{\thesection.\ #1}}
+\renewcommand{\subsectionmark}[1]{}
+\fancypagestyle{cuerpo}{\fancyhf{}
+  \fancyhead[L]{\small\color{gris}\truncate{0.44\headwidth}{Infiltración en las cuencas de abasto de la ZMM}}
+  \fancyhead[R]{\small\color{gris}\truncate{0.53\headwidth}{\nouppercase{\rightmark}}}
+  \fancyfoot[L]{\small\color{gris}Reto 1 · Grok Monterrey Build Day}
+  \fancyfoot[R]{\small\color{gris}Página \thepage\ de \pageref*{LastPage}}}
+\fancypagestyle{frente}{\fancyhf{}\fancyhead[L]{\small\color{gris}\truncate{0.44\headwidth}{Infiltración en las cuencas de abasto de la ZMM}}
+  \fancyfoot[R]{\small\color{gris}\thepage}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[R]{\small\color{gris}\thepage}\renewcommand{\headrulewidth}{0pt}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{naranja}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{gris}\leaders\hrule height \footrulewidth\hfill}}
+\setlength{\headheight}{22pt}
+\makeatletter\@beginparpenalty=10000\makeatother
+\setlength{\emergencystretch}{2em}
+
+\begin{document}
+\makeatletter
+\pagenumbering{Alph}
+% ---------------------------------------------------------------- portada
+\begin{titlepage}
+\centering
+{\color{naranja}\rule{\linewidth}{1.2pt}}\par\vspace{0.6em}
+{\large\color{gris}INFORME TÉCNICO · AGUA Y RESTAURACIÓN DE CUENCAS}\par\vspace{0.4em}
+{\color{naranja}\rule{\linewidth}{0.4pt}}\par
+\vspace{4cm}
+{\fontsize{22}{28}\selectfont\bfseries\color{naranja} \@title\par}
+\vspace{1em}
+{\Large Reto 1 · Infiltración, planteado por Pronatura Noreste en el Grok Monterrey Build Day\par}
+\vspace{1.2em}
+{\color{verde}\rule{3cm}{3pt}}\par
+\vspace{3cm}
+{\@author\par}
+\vfill
+{\large Monterrey, Nuevo León, México\par}
+\vspace{0.3em}
+{\large \@date\par}
+\vspace{1.5em}
+{\small\color{gris} Fuentes: NASA NASADEM y SMAP · Copernicus Sentinel-2 · ESA WorldCover · OpenLandMap · MODIS MCD64A1 ·
+CHIRPS · WWF HydroSHEDS · JRC Global Surface Water · procesados en Google Earth Engine\par}
+\end{titlepage}
+
+\pagenumbering{roman}
+\setcounter{page}{2}
+\pagestyle{frente}
+\vspace*{2cm}
+\makeatother
+

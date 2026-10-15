@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estadísticas · Infiltración ZMM</title>
+<style>
+  :root {
+    --bg:#fcfcfb; --panel:#ffffff; --fg:#1d1b18; --muted:#6b675f; --line:#e6e2da; --grid:#efece6; --accent:#1c5cab;
+    --alta:#0d366b; --media:#2a78d6; --baja:#86b6ef;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#1b1a18; --panel:#22211f; --fg:#ecebe7; --muted:#a29e95; --line:#3a3834; --grid:#2e2d2a; --accent:#3987e5;
+      --alta:#86b6ef; --media:#3987e5; --baja:#1c5cab; --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; }
+  }
+  :root[data-theme="dark"] { --bg:#1b1a18; --panel:#22211f; --fg:#ecebe7; --muted:#a29e95; --line:#3a3834; --grid:#2e2d2a; --accent:#3987e5;
+      --alta:#86b6ef; --media:#3987e5; --baja:#1c5cab; --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 system-ui, -apple-system, sans-serif; background:var(--bg); color:var(--fg); }
+  header { padding:20px 24px 8px; max-width:1200px; margin:0 auto; }
+  header h1 { font-size:22px; margin:0 0 4px; }
+  header a { color:var(--accent); }
+  .muted { color:var(--muted); font-size:13px; }
+  main { max-width:1200px; margin:0 auto; padding:8px 24px 40px; display:grid; grid-template-columns:repeat(auto-fit, minmax(520px, 1fr)); gap:16px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .card.wide { grid-column:1 / -1; }
+  .card h2 { font-size:15px; margin:0 0 2px; }
+  .card .take { font-size:13px; color:var(--muted); margin:0 0 10px; }
+  .legend { display:flex; flex-wrap:wrap; gap:12px; font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .legend i { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:-2px; }
+  .legend i.ln { height:0; border-top:2px solid; border-radius:0; vertical-align:middle; }
+  svg { width:100%; height:auto; display:block; overflow:visible; }
+  svg text { fill:var(--muted); font-size:11px; }
+  svg .lbl { fill:var(--fg); }
+  svg .grid { stroke:var(--grid); }
+  svg .axis { stroke:var(--line); }
+  .multi { display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; }
+  #tip { position:fixed; pointer-events:none; background:var(--panel); color:var(--fg); border:1px solid var(--line);
+         border-radius:6px; padding:6px 8px; font-size:12px; box-shadow:0 2px 8px rgba(0,0,0,.15); display:none; z-index:10; }
+  details { margin-top:8px; font-size:12px; color:var(--muted); }
+  table { border-collapse:collapse; width:100%; font-size:12px; margin-top:6px; }
+  td, th { border-bottom:1px solid var(--line); padding:3px 6px; text-align:right; } td:first-child, th:first-child { text-align:left; }
+  @media (max-width:600px) { main { grid-template-columns:1fr; padding:8px 16px 32px; } header { padding:16px 16px 8px; } .multi { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Estadísticas</h1>
+  <div class="muted">Cuencas de abasto de la ZMM · laderas ≥ 8° · <a href="/">volver al mapa</a></div>
+</header>
+<main id="main"></main>
+<div id="tip"></div>
+<script>
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt = n => Math.round(n).toLocaleString("es-MX");
+const SUP = ["Presa La Boca", "Acuífero Santa Catarina (pozos SADM)", "Presa Cerro Prieto", "Presa El Cuchillo"];
+const SHORT = { "Presa La Boca":"La Boca", "Acuífero Santa Catarina (pozos SADM)":"Santa Catarina", "Presa Cerro Prieto":"Cerro Prieto", "Presa El Cuchillo":"El Cuchillo" };
+const SCOL = { "Presa La Boca":"--s1", "Acuífero Santa Catarina (pozos SADM)":"--s2", "Presa Cerro Prieto":"--s3", "Presa El Cuchillo":"--s4" };
+const CRIT = { slope:"Pendiente", vegetation:"Vegetación degradada", soil:"Suelo permeable", fire:"Incendios",
+               moisture:"Suelo seco", rain:"Lluvia", connectivity:"Conexión con abasto" };
+const NS = "http://www.w3.org/2000/svg";
+const tip = document.getElementById("tip");
+
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; }
+function hover(node, html) {
+  node.addEventListener("mousemove", e => { tip.innerHTML = html; tip.style.display = "block";
+    tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (e.clientY + 12) + "px"; });
+  node.addEventListener("mouseleave", () => tip.style.display = "none");
+}
+function card(title, take, wide) {
+  const c = document.createElement("section"); c.className = "card" + (wide ? " wide" : "");
+  c.innerHTML = `<h2>${title}</h2><p class="take">${take}</p>`;
+  document.getElementById("main").appendChild(c); return c;
+}
+function legend(c, items) {
+  const d = document.createElement("div"); d.className = "legend";
+  d.innerHTML = items.map(([label, color, line]) => `<span><i class="${line ? "ln" : ""}" style="${line ? "border-color" : "background"}:${color}"></i>${label}</span>`).join("");
+  c.appendChild(d);
+}
+function table(c, head, rows) {
+  const d = document.createElement("details");
+  d.innerHTML = `<summary>Ver tabla</summary><table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${rows.map(r => `<tr>${r.map(x => `<td>${x}</td>`).join("")}</tr>`).join("")}</table>`;
+  c.appendChild(d);
+}
+function niceMax(v) { const p = 10 ** Math.floor(Math.log10(v)); return Math.ceil(v / p) * p; }
+// bar with 4px rounded data-end anchored to the baseline (horizontal)
+function hbar(svg, x, y, w, h, fill, roundEnd) {
+  if (w <= 0) return null;
+  const r = roundEnd ? Math.min(4, w, h / 2) : 0;
+  const d = `M${x},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + h - r} Q${x + w},${y + h} ${x + w - r},${y + h} H${x} Z`;
+  return el("path", { d, fill }, svg);
+}
+function vbar(svg, x, y0, w, h, fill) {
+  if (h <= 0) return null;
+  const r = Math.min(4, h, w / 2), top = y0 - h;
+  const d = `M${x},${y0} V${top + r} Q${x},${top} ${x + r},${top} H${x + w - r} Q${x + w},${top} ${x + w},${top + r} V${y0} Z`;
+  return el("path", { d, fill }, svg);
+}
+
+function lineChart(c, series, { xMax, yMax, xLabel, yLabel, xFmt = fmt, yFmt = fmt, marks = [], W = 560, H = 260 }) {
+  const m = { l: 52, r: 16, t: 10, b: 36 }, svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, c);
+  const X = v => m.l + v / xMax * (W - m.l - m.r), Y = v => H - m.b - v / yMax * (H - m.t - m.b);
+  for (let i = 0; i <= 4; i++) {
+    const v = yMax * i / 4; el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: i ? "grid" : "axis" }, svg);
+    el("text", { x: m.l - 6, y: Y(v) + 4, "text-anchor": "end" }, svg).textContent = yFmt(v);
+  }
+  for (let i = 0; i <= 5; i++) { const v = xMax * i / 5; el("text", { x: X(v), y: H - m.b + 16, "text-anchor": "middle" }, svg).textContent = xFmt(v); }
+  el("text", { x: (W + m.l) / 2, y: H - 4, "text-anchor": "middle" }, svg).textContent = xLabel;
+  el("text", { x: 12, y: (H - m.b) / 2, transform: `rotate(-90 12 ${(H - m.b) / 2})`, "text-anchor": "middle" }, svg).textContent = yLabel;
+  for (const mk of marks) {
+    el("line", { x1: X(mk.x), x2: X(mk.x), y1: m.t, y2: H - m.b, stroke: css("--muted"), "stroke-dasharray": "3 4" }, svg);
+    el("text", { x: X(mk.x) + 4, y: m.t + 10, class: "lbl" }, svg).textContent = mk.label;
+  }
+  for (const s of series)
+    el("path", { d: s.pts.map((p, i) => `${i ? "L" : "M"}${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join(""),
+                 fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round" }, svg);
+  // crosshair + tooltip
+  const cross = el("line", { y1: m.t, y2: H - m.b, stroke: css("--fg"), "stroke-width": 1, opacity: 0 }, svg);
+  const dots = series.map(s => el("circle", { r: 4, fill: s.color, stroke: css("--panel"), "stroke-width": 2, opacity: 0 }, svg));
+  const hit = el("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" }, svg);
+  hit.addEventListener("mousemove", e => {
+    const b = svg.getBoundingClientRect(), xv = ((e.clientX - b.left) / b.width * W - m.l) / (W - m.l - m.r) * xMax;
+    cross.setAttribute("x1", X(xv)); cross.setAttribute("x2", X(xv)); cross.setAttribute("opacity", .4);
+    const rows = series.map((s, i) => {
+      const p = s.pts.reduce((a, q) => Math.abs(q[0] - xv) < Math.abs(a[0] - xv) ? q : a);
+      dots[i].setAttribute("cx", X(p[0])); dots[i].setAttribute("cy", Y(p[1])); dots[i].setAttribute("opacity", 1);
+      return `<span style="color:${s.color}">●</span> ${s.name}: <b>${yFmt(p[1])}</b>`;
+    });
+    tip.innerHTML = `<b>${xFmt(xv)}</b><br>${rows.join("<br>")}`; tip.style.display = "block";
+    tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (e.clientY + 12) + "px";
+  });
+  hit.addEventListener("mouseleave", () => { tip.style.display = "none"; cross.setAttribute("opacity", 0); dots.forEach(d => d.setAttribute("opacity", 0)); });
+}
+
+(async () => {
+  const S = await (await fetch("stats.json")).json();
+
+  // 1 · hectares by catchment, stacked alta + media
+  {
+    const c = card("Hectáreas prioritarias por cuenca de abasto",
+      "Santa Catarina concentra la mayor superficie de prioridad alta; El Cuchillo es grande pero con más prioridad media y baja.");
+    legend(c, [["Alta", css("--alta")], ["Media", css("--media")]]);
+    const W = 560, rowH = 26, gap = 14, m = { l: 112, r: 70, t: 4 }, H = m.t + SUP.length * (rowH + gap);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, c);
+    const max = niceMax(Math.max(...SUP.map(k => S.ha_by_catchment[k].alta + S.ha_by_catchment[k].media)));
+    const X = v => v / max * (W - m.l - m.r);
+    SUP.forEach((k, i) => {
+      const y = m.t + i * (rowH + gap), d = S.ha_by_catchment[k];
+      el("text", { x: m.l - 8, y: y + rowH / 2 + 4, "text-anchor": "end", class: "lbl" }, svg).textContent = SHORT[k];
+      const a = hbar(svg, m.l, y, X(d.alta) - 1, rowH, css("--alta"), false);
+      const b = hbar(svg, m.l + X(d.alta) + 1, y, X(d.media) - 1, rowH, css("--media"), true);
+      a && hover(a, `<b>${SHORT[k]}</b><br>Alta: ${fmt(d.alta)} ha`); b && hover(b, `<b>${SHORT[k]}</b><br>Media: ${fmt(d.media)} ha`);
+      el("text", { x: m.l + X(d.alta + d.media) + 6, y: y + rowH / 2 + 4 }, svg).textContent = `${fmt(d.alta)} alta`;
+    });
+    table(c, ["Cuenca", "Alta (ha)", "Media (ha)", "Baja (ha)"], SUP.map(k => [SHORT[k], fmt(S.ha_by_catchment[k].alta), fmt(S.ha_by_catchment[k].media), fmt(S.ha_by_catchment[k].baja)]));
+  }
+
+  // 2 · criteria by class
+  {
+    const c = card("¿Qué hace que un sitio sea prioridad alta?",
+      "Puntaje promedio (0–1) de cada criterio por clase. Lo que más separa alta de baja es la vegetación degradada y el suelo seco.");
+    legend(c, [["Alta", css("--alta")], ["Media", css("--media")], ["Baja", css("--baja")]]);
+    const keys = Object.keys(CRIT), cls = ["alta", "media", "baja"], cols = ["--alta", "--media", "--baja"];
+    const W = 560, bh = 7, inner = 2, grp = 3 * bh + 2 * inner, gap = 12, m = { l: 140, r: 40, t: 4 }, H = m.t + keys.length * (grp + gap);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, c), X = v => v * (W - m.l - m.r);
+    for (const v of [0, .25, .5, .75, 1]) el("line", { x1: m.l + X(v), x2: m.l + X(v), y1: 0, y2: H - gap, class: v ? "grid" : "axis" }, svg);
+    keys.forEach((k, i) => {
+      const y = m.t + i * (grp + gap);
+      el("text", { x: m.l - 8, y: y + grp / 2 + 4, "text-anchor": "end", class: "lbl" }, svg).textContent = CRIT[k];
+      cls.forEach((cl, j) => {
+        const v = S.criteria_by_class[cl][k], b = hbar(svg, m.l, y + j * (bh + inner), X(v), bh, css(cols[j]), true);
+        b && hover(b, `<b>${CRIT[k]}</b><br>${cl}: ${v.toFixed(2)}`);
+      });
+      el("text", { x: m.l + X(S.criteria_by_class.alta[k]) + 6, y: y + bh - 0 }, svg).textContent = S.criteria_by_class.alta[k].toFixed(2);
+    });
+    table(c, ["Criterio", "Alta", "Media", "Baja"], keys.map(k => [CRIT[k], ...cls.map(cl => S.criteria_by_class[cl][k].toFixed(2))]));
+  }
+
+  // 3 · robustness histogram
+  {
+    const total = S.robustness_hist.reduce((a, b) => a + b.ha, 0), robust = S.robustness_hist.filter(b => b.from >= .5).reduce((a, b) => a + b.ha, 0);
+    const c = card("Robustez de la prioridad alta",
+      `Hectáreas de prioridad alta según en qué % de 40 ponderaciones aleatorias siguen siendo alta. ${Math.round(100 * robust / total)} % (≥ 50 %) es robusta.`);
+    legend(c, [["Robusta (≥ 50 %)", css("--s2")], ["Sensible a los pesos", "#f0b79b"]]);
+    const W = 560, H = 230, m = { l: 52, r: 10, t: 10, b: 34 }, n = S.robustness_hist.length;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, c), max = niceMax(Math.max(...S.robustness_hist.map(b => b.ha)));
+    const bw = (W - m.l - m.r) / n, Y = v => (H - m.t - m.b) * v / max;
+    for (let i = 0; i <= 4; i++) { const v = max * i / 4, y = H - m.b - Y(v); el("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, class: i ? "grid" : "axis" }, svg);
+      el("text", { x: m.l - 6, y: y + 4, "text-anchor": "end" }, svg).textContent = fmt(v); }
+    S.robustness_hist.forEach((b, i) => {
+      const r = vbar(svg, m.l + i * bw + 1, H - m.b, bw - 2, Y(b.ha), b.from >= .5 ? css("--s2") : "#f0b79b");
+      r && hover(r, `<b>${b.from * 100}–${b.to * 100} %</b> de escenarios<br>${fmt(b.ha)} ha`);
+      el("text", { x: m.l + i * bw + bw / 2, y: H - m.b + 14, "text-anchor": "middle" }, svg).textContent = `${b.from * 100}`;
+    });
+    el("text", { x: (W + m.l) / 2, y: H - 4, "text-anchor": "middle" }, svg).textContent = "% de escenarios en que es prioridad alta";
+  }
+
+  // 4 · water vs hectares
+  {
+    const wc = S.water_curves, at = (arr, ha) => arr.reduce((a, q) => Math.abs(q.ha - ha) < Math.abs(a.ha - ha) ? q : a).ls;
+    const c = card("Agua para la ZMM según hectáreas restauradas",
+      `Restaurando primero las mejores celdas: 3,000 ha ≈ ${fmt(at(wc.normal, 3000))} L/s en un año normal y ${fmt(at(wc.sequia, 3000))} L/s con la lluvia previa a la crisis de 2022. La curva casi es recta: cada 1,000 ha extra rinden un poco menos (de ~51 a ~43 L/s), pero hay mucha superficie aprovechable.`, true);
+    legend(c, [["Año normal", css("--s1"), true], ["Sequía (jul 2021–jun 2022)", css("--s2"), true]]);
+    const xMax = 60000, yMax = niceMax(Math.max(...wc.normal.filter(p => p.ha <= xMax).map(p => p.ls)));
+    lineChart(c, [
+      { name: "Año normal", color: css("--s1"), pts: wc.normal.filter(p => p.ha <= xMax).map(p => [p.ha, p.ls]) },
+      { name: "Sequía", color: css("--s2"), pts: wc.sequia.filter(p => p.ha <= xMax).map(p => [p.ha, p.ls]) },
+    ], { xMax, yMax, xLabel: "hectáreas restauradas", yLabel: "L/s retenidos", yFmt: v => `${fmt(v)}`, xFmt: v => fmt(v), W: 1100, H: 280,
+         marks: [{ x: 3000, label: "3,000 ha" }, { x: 11000, label: "+500 L/s" }] });
+  }
+
+  // 5 · productivity by supply (small multiples)
+  {
+    const c = card("¿Cuánta agua rinde cada hectárea, por fuente de abasto?",
+      "Distribución de m³/ha/año que llegarían al abasto, por hectárea elegible. La Boca rinde más por hectárea; El Cuchillo menos, por su conexión lejana.", true);
+    const wrap = document.createElement("div"); wrap.className = "multi"; c.appendChild(wrap);
+    const P = S.productivity_by_supply, max = niceMax(Math.max(...SUP.flatMap(k => P[k].bins.map(b => b.ha / P[k].ha))));
+    SUP.forEach(k => {
+      const box = document.createElement("div"); wrap.appendChild(box);
+      box.innerHTML = `<div class="muted"><b style="color:var(--fg)">${SHORT[k]}</b> · mediana ${fmt(P[k].median)} m³/ha/año · ${fmt(P[k].ha)} ha elegibles</div>`;
+      const W = 520, H = 130, m = { l: 34, r: 8, t: 6, b: 22 }, n = P[k].bins.length, bw = (W - m.l - m.r) / n;
+      const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, box), Y = v => (H - m.t - m.b) * v / max;
+      el("line", { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, class: "axis" }, svg);
+      P[k].bins.forEach((b, i) => {
+        const r = vbar(svg, m.l + i * bw + 1, H - m.b, bw - 2, Y(b.ha / P[k].ha), css(SCOL[k]));
+        r && hover(r, `<b>${SHORT[k]}</b><br>${fmt(b.from)}–${fmt(b.to)} m³/ha/año<br>${fmt(b.ha)} ha (${(100 * b.ha / P[k].ha).toFixed(1)} %)`);
+        if (i % 4 === 0) el("text", { x: m.l + i * bw, y: H - 6, "text-anchor": "middle" }, svg).textContent = fmt(b.from);
+      });
+      const mx = m.l + P[k].median / P[k].bins[n - 1].to * (W - m.l - m.r);
+      el("line", { x1: mx, x2: mx, y1: m.t, y2: H - m.b, stroke: css("--fg"), "stroke-dasharray": "3 3" }, svg);
+    });
+  }
+
+  // 6 · barrier budget curves
+  {
+    const B = S.barrier_budget_curves, names = Object.keys(B), cols = ["--s1", "--s2", "--s3"];
+    const c = card("Barreras: escurrimiento interceptado según metros construidos",
+      "En tres sitios de prueba, los primeros 500 m interceptan ~30–35 % y los 1,500 m ~60 %; duplicar a 3,000 m solo llega a ~80 %. Conviene repartir el presupuesto entre sitios.");
+    legend(c, names.map((n, i) => [n, css(cols[i]), true]));
+    lineChart(c, names.map((n, i) => ({ name: n, color: css(cols[i]), pts: [[0, 0], ...B[n].map(p => [p.budget_m, p.intercepted_pct])] })),
+      { xMax: 4000, yMax: 100, xLabel: "metros lineales de barrera", yLabel: "% interceptado", yFmt: v => `${Math.round(v)} %`, xFmt: v => `${fmt(v)} m` });
+  }
+
+  // 7 · storm simulation per site
+  {
+    const R = S.storm_sites;
+    const c = card("Tormenta de 40 mm: efecto de las barreras en los 8 sitios sugeridos",
+      `Reducción del escurrimiento que sale de la ventana y del pico. En promedio: −${(R.reduce((a, r) => a + r.outflow_reduction_pct, 0) / R.length).toFixed(0)} % escurrimiento, −${(R.reduce((a, r) => a + r.peak_reduction_pct, 0) / R.length).toFixed(0)} % pico.`);
+    legend(c, [["Escurrimiento total", css("--s1")], ["Pico", css("--s2")]]);
+    const W = 560, bh = 9, inner = 2, grp = 2 * bh + inner, gap = 10, m = { l: 128, r: 40, t: 4 }, H = m.t + R.length * (grp + gap);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, c), X = v => v / 50 * (W - m.l - m.r);
+    for (const v of [0, 10, 20, 30, 40, 50]) { el("line", { x1: m.l + X(v), x2: m.l + X(v), y1: 0, y2: H - gap, class: v ? "grid" : "axis" }, svg);
+      el("text", { x: m.l + X(v), y: H + 8, "text-anchor": "middle" }, svg).textContent = `${v} %`; }
+    R.forEach((r, i) => {
+      const y = m.t + i * (grp + gap);
+      el("text", { x: m.l - 8, y: y + grp / 2 + 4, "text-anchor": "end", class: "lbl" }, svg).textContent = `${r.site}. ${SHORT[r.supply] || ""}`;
+      const a = hbar(svg, m.l, y, X(r.outflow_reduction_pct), bh, css("--s1"), true), b = hbar(svg, m.l, y + bh + inner, X(r.peak_reduction_pct), bh, css("--s2"), true);
+      const h = `<b>Sitio ${r.site} · ${SHORT[r.supply]}</b><br>Escurrimiento −${r.outflow_reduction_pct} %<br>Pico −${r.peak_reduction_pct} %<br>+${fmt(r.extra_infiltration_m3)} m³ infiltrados`;
+      a && hover(a, h); b && hover(b, h);
+      el("text", { x: m.l + X(r.outflow_reduction_pct) + 5, y: y + bh - 1 }, svg).textContent = `−${Math.round(r.outflow_reduction_pct)} %`;
+    });
+    svg.setAttribute("viewBox", `0 0 ${W} ${H + 12}`);
+    table(c, ["Sitio", "Fuente", "Escurrimiento", "Pico", "m³ infiltrados extra"], R.map(r => [r.site, SHORT[r.supply], `−${r.outflow_reduction_pct} %`, `−${r.peak_reduction_pct} %`, fmt(r.extra_infiltration_m3)]));
+  }
+})();
+</script>
+</body>
+</html>

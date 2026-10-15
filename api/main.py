@@ -40,6 +40,9 @@ class SiteIn(WeightsIn):
 @app.on_event("startup")
 def startup():
     layers.init()
+    # Warm the 1 km cell table (~40 s) in the background so /api/optimize is instant
+    import threading
+    threading.Thread(target=optimize.cell_table, daemon=True).start()
 
 
 @app.get("/api/config")
@@ -109,13 +112,14 @@ def robustness(body: WeightsIn):
 class OptimizeIn(BaseModel):
     budget_ha: float = 3000
     mode: str = "max"  # "max" | "balanced"
+    target_ls: float | None = None  # inverse question: hectares needed for this many L/s
 
 
 @app.post("/api/optimize")
 def optimize_supply(body: OptimizeIn):
     """Where to restore to maximize water delivered to the supply sources."""
     try:
-        return optimize.optimize(body.budget_ha, body.mode)
+        return optimize.optimize(body.budget_ha, body.mode, body.target_ls)
     except ee.EEException as e:
         raise HTTPException(502, str(e))
 

@@ -113,11 +113,11 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 1. **Candidatas:** todo el territorio de las cuencas de abasto se divide en **celdas de 1 km**: 3,902 celdas con área elegible.
 2. **Área elegible:** dentro de cada celda solo cuentan las hectáreas donde se pueden hacer obras: pendiente de 8° a 35°, sin zona urbana ni agua y sin cobertura densa (NDVI < 0.55). En total son 192,040 ha.
 3. **Agua retenida por celda:**
-    - Fórmula: *lluvia media × coeficiente de escurrimiento × hectáreas elegibles × 40 % retenido*.
+    - Fórmula: *lluvia media × coeficiente de escurrimiento × hectáreas elegibles × ρ*, donde ρ es la fracción del escurrimiento anual que retienen las barreras.
     - El coeficiente sube con la pendiente y con el suelo desnudo: más agua escurre y hay más que frenar.
-    - El 40 % sale del propio optimizador de barreras, que retiene 41–43 % en los sitios de prueba.
+    - ρ sale del modelo de flujo de costo mínimo de las barreras con capacidad, ponderado por la lluvia diaria de CHIRPS: 16 % donde llueven 420 mm, 13 % con 640 mm y 7.8 % con 1,190 mm (en sitios lluviosos más agua cae en tormentas grandes que desbordan las barreras).
 4. **Agua que llega al abasto:** el agua retenida se multiplica por la conexión con la fuente (1.0 si drena directo a La Boca, Cerro Prieto o Santa Catarina; 0.6 en el resto de El Cuchillo). Cada celda se asigna a su fuente de abasto.
-5. **Optimización:** dado un presupuesto de hectáreas, se eligen las celdas con más **m³ entregados por hectárea**. Es un algoritmo voraz de mochila fraccional, que es **óptimo** cuando las celdas se pueden tratar parcialmente. Hay dos modos:
+5. **Optimización:** dado un presupuesto de hectáreas, se eligen las celdas con más **m³ entregados por hectárea**. Es un programa lineal con una sola restricción de presupuesto; ordenar por rendimiento por hectárea es **óptimo** cuando las celdas se pueden tratar parcialmente. Hay dos modos:
     - **Máxima agua total:** el óptimo puro.
     - **Repartir entre presas:** el presupuesto se divide en partes iguales entre las 4 fuentes y se optimiza dentro de cada una.
 
@@ -125,19 +125,19 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 
 | Fuente | Máxima agua total | | Repartir entre presas | |
 |---|---|---|---|---|
-| Presa La Boca | 936 ha | 1.73 M m³ | 750 ha | 1.45 M m³ |
-| Acuífero Santa Catarina (pozos SADM) | 1,720 ha | 2.56 M m³ | 750 ha | 1.15 M m³ |
-| Presa Cerro Prieto | 344 ha | 0.50 M m³ | 750 ha | 1.07 M m³ |
-| Presa El Cuchillo | 0 ha | 0.00 M m³ | 750 ha | 0.78 M m³ |
-| **Total** | 3,000 ha | **4.8 M m³/año** | 3,000 ha | **4.5 M m³/año** |
+| Presa La Boca | 137 ha | 0.06 M m³ | 750 ha | 0.32 M m³ |
+| Acuífero Santa Catarina (pozos SADM) | 2,659 ha | 1.25 M m³ | 750 ha | 0.37 M m³ |
+| Presa Cerro Prieto | 204 ha | 0.09 M m³ | 750 ha | 0.34 M m³ |
+| Presa El Cuchillo | 0 ha | 0.00 M m³ | 750 ha | 0.24 M m³ |
+| **Total** | 3,000 ha | **1.41 M m³/año (44.6 L/s)** | 3,000 ha | **1.27 M m³/año (40.1 L/s)** |
 
-**Rendimientos decrecientes** (modo de máxima agua): 500 ha → 1.0 M m³ · 1,000 ha → 1.9 M m³ · 2,000 ha → 3.4 M m³ · 3,000 ha → 4.8 M m³ · 5,000 ha → 7.6 M m³ · 10,000 ha → 14.5 M m³ · 20,000 ha → 27.4 M m³ · 50,000 ha → 63.1 M m³.
+**Rendimientos decrecientes** (modo de máxima agua): 1,000 ha → 15 L/s · 3,000 ha → 45 L/s · 10,000 ha → 141 L/s · 20,000 ha → 273 L/s · 50,000 ha → 645 L/s.
 
-- **La Boca rinde más por hectárea:** su cuenca recibe más lluvia que las demás.
+- **Santa Catarina rinde más por hectárea:** La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las barreras.
 - **El Cuchillo rinde menos:** su conexión con el abasto vale 0.6.
-- **Repartir cuesta poco:** cubrir las 4 fuentes da ~7 % menos agua total que el óptimo puro.
+- **Repartir cuesta poco:** cubrir las 4 fuentes da ~10 % menos agua total que el óptimo puro.
 
-> Los m³ son una **estimación de orden de magnitud** para comparar opciones, no un balance hídrico. El coeficiente de escurrimiento es una regla simple y la retención de 40 % es un supuesto.
+> Los m³ son **agua retenida bruta**, una cota superior: suponen que toda el agua retenida llega a la fuente. El informe en PDF incluye un análisis probabilístico de su destino (evapotranspiración y escurrimiento que ya llegaba a las presas): la ganancia neta es probablemente positiva sólo en el acuífero del Santa Catarina (~67 %), y en las cuencas de las presas la retención probablemente reduce el volumen que llega al embalse.
 
 ### 6. Optimizador de ubicación de barreras
 
@@ -174,11 +174,7 @@ Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terr
 
     Además hay un hidrograma del agua que sale de la ventana (sin y con barreras) y un balance en m³. En la app local, el botón **▶ Ver flujo de agua (demo)** lo muestra en un clic.
 
-| Sitio | Escurrimiento que sale | Pico | Infiltración adicional por tormenta |
-|---|---|---|---|
-| Pilón (-100.05, 25.00) | −31 % | −22 % | +17,900 m³ |
-| Santa Catarina (-100.45, 25.45) | −31 % | −24 % | +20,300 m³ |
-| La Boca (-100.12, 25.43) | −30 % | −14 % | +19,600 m³ |
+En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~10 %** el escurrimiento que sale de la ventana y **~7 %** el pico, y suman de 4,300 a 5,500 m³ infiltrados por tormenta.
 
 > Es un **modelo didáctico** para comparar escenarios sobre el mismo terreno y la misma tormenta. No modela humedad previa del suelo ni velocidades reales: no es un modelo hidrológico calibrado.
 
@@ -193,14 +189,14 @@ Los 8 sitios sugeridos **no se eligen a mano**. Salen directamente de la **optim
 
 | # | Fuente de abasto | Lugar en la optimización | m³/ha/año al abasto | Lluvia · coef. escurrimiento | Prioridad · robustez | Obra recomendada | Barreras · m · % interceptado |
 |---|---|---|---|---|---|---|---|
-| 1 | Presa La Boca | #1 | 2,407 | 1181 mm · 0.51 | 0.53 · 40% | Barreras de material vegetal muerto en curvas de nivel | 35 · 1,492 m · 63% |
-| 2 | Presa La Boca | #12 | 1,908 | 1181 mm · 0.404 | 0.58 · 52% | Barreras de material vegetal muerto en curvas de nivel | 37 · 1,500 m · 61% |
-| 3 | Acuífero Santa Catarina (pozos SADM) | #31 | 1,540 | 642 mm · 0.6 | 0.57 · 38% | Reforestación con nativas + barreras de material vegetal | 35 · 1,482 m · 70% |
-| 4 | Acuífero Santa Catarina (pozos SADM) | #34 | 1,536 | 642 mm · 0.598 | 0.55 · 35% | Reforestación con nativas + barreras de material vegetal | 38 · 1,498 m · 65% |
-| 5 | Presa Cerro Prieto | #45 | 1,479 | 708 mm · 0.522 | 0.63 · 60% | Barreras de piedra acomodada | 36 · 1,499 m · 65% |
-| 6 | Presa Cerro Prieto | #46 | 1,455 | 658 mm · 0.554 | 0.62 · 45% | Reforestación con nativas + barreras de material vegetal | 38 · 1,489 m · 69% |
-| 7 | Presa El Cuchillo | #59 | 1,182 | 665 mm · 0.573 | 0.67 · 88% | Barreras de piedra acomodada | 39 · 1,499 m · 78% |
-| 8 | Presa El Cuchillo | #63 | 1,040 | 870 mm · 0.498 | 0.50 · 29% | Barreras de material vegetal muerto en curvas de nivel | 38 · 1,488 m · 53% |
+| 1 | Acuífero Santa Catarina (pozos SADM) | #3 | 500 | 642 mm · 0.6 | 0.57 · 38% | Reforestación con nativas + barreras de material vegetal | 35 · 1,482 m · 70% |
+| 2 | Acuífero Santa Catarina (pozos SADM) | #4 | 499 | 642 mm · 0.598 | 0.55 · 35% | Reforestación con nativas + barreras de material vegetal | 38 · 1,498 m · 65% |
+| 3 | Presa La Boca | #19 | 475 | 1181 mm · 0.51 | 0.53 · 40% | Barreras de material vegetal muerto en curvas de nivel | 35 · 1,492 m · 63% |
+| 4 | Presa Cerro Prieto | #21 | 467 | 658 mm · 0.554 | 0.62 · 45% | Reforestación con nativas + barreras de material vegetal | 38 · 1,489 m · 69% |
+| 5 | Presa Cerro Prieto | #22 | 459 | 674 mm · 0.538 | 0.49 · 34% | Barreras de material vegetal muerto en curvas de nivel | 38 · 1,486 m · 66% |
+| 6 | Presa La Boca | #23 | 459 | 980 mm · 0.479 | 0.60 · 65% | Barreras de material vegetal muerto en curvas de nivel | 37 · 1,481 m · 62% |
+| 7 | Presa El Cuchillo | #60 | 377 | 665 mm · 0.573 | 0.67 · 88% | Barreras de piedra acomodada | 39 · 1,499 m · 78% |
+| 8 | Presa El Cuchillo | #62 | 326 | 673 mm · 0.605 | 0.51 · 28% | Reforestación con nativas + barreras de material vegetal | 36 · 1,497 m · 68% |
 
 **Cómo leer la tabla:**
 
@@ -246,10 +242,10 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 2. **Más de dos tercios de la prioridad alta drenan directo a una fuente de abasto.** ~**99,600 ha (71 %)** están en las cuencas de La Boca, Cerro Prieto o Santa Catarina. Restaurar ahí beneficia directamente a la ZMM.
 3. **La prioridad es robusta.** ~**90,600 ha (64 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
 4. **Los incendios abren una ventana de acción.** ~**17,100 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
-5. **Con 3,000 ha bien elegidas se retienen del orden de 4.8 millones de m³/año** que llegan al abasto. Es una estimación de orden de magnitud. Para dimensionarla: equivale a ~152 L/s continuos, frente al déficit de ~3,000 L/s de 2022. **La restauración no sustituye otras fuentes, pero suma y es barata por hectárea.**
+5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈400 L/s brutos) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero del Santa Catarina**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
-    - Para maximizar agua: **La Boca y Santa Catarina**.
-    - Para cubrir todas las fuentes: repartir cuesta solo ~7 % del agua total.
+    - Para maximizar agua: **Santa Catarina**, que además es donde la ganancia neta es más probable.
+    - Para cubrir todas las fuentes: repartir cuesta ~10 % del agua total.
 7. **Las laderas muy empinadas no son para obras.** Por encima de ~35–45° conviene la exclusión y la regeneración natural.
 8. **El trazo importa tanto como el sitio.** Con 1,500 m de barreras bien ubicadas se intercepta el escurrimiento de ~45–75 % de una ventana de 1.2 km, y los rendimientos decrecen. Conviene repartir el presupuesto entre varios sitios en lugar de saturar uno.
 
@@ -260,7 +256,7 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 - **El índice es relativo.** No estima metros cúbicos infiltrados.
 - **El DEM de 30 m no resuelve el intervalo vertical de 1 m.** El trazo de barreras es **preliminar** y debe validarse en campo con levantamiento topográfico o dron.
 - **La textura del suelo de OpenLandMap casi no varía en la zona** (todo es franco arcilloso). Un mapa edafológico de INEGI o de Pronatura mejoraría este criterio.
-- **Hay supuestos sin calibrar:** el coeficiente de escurrimiento y la retención de 40 % de la optimización de captación, los niveles de conectividad, los umbrales de cárcava (5 ha) y cauce (100 ha), y la retención por barrera (60 %). Son parámetros explícitos en el código.
+- **Hay supuestos sin calibrar:** el coeficiente de escurrimiento, la capacidad de las barreras (1.44 m³/m), las fracciones del destino del agua retenida, los niveles de conectividad, los umbrales de cárcava (5 ha) y cauce (100 ha), y la retención por barrera (60 %). Son parámetros explícitos en el código.
 - **SMAP** tiene resolución gruesa (~9 km) y **MODIS** detecta área quemada a 500 m.
 - **El optimizador no excluye** caminos, construcciones ni cobertura dentro de la ventana, y no considera el acceso.
 - **No se verifican las restricciones de ANP** (Parque Nacional Cumbres de Monterrey). La ficha lo señala como riesgo a revisar.

@@ -21,10 +21,13 @@ RAIN_MM = 40          # storm depth
 RAIN_STEPS = 8        # steps with rain
 STEPS = 150           # total steps (≈ 30 m of travel each)
 FRAME_EVERY = 2
-INF_HILL = 1.0        # mm/step on degraded hillslope
-INF_BARRIER = 6.0     # mm/step behind a barrier (ponded, loosened soil)
-CAP_BARRIER = 45.0    # mm over a 30 m cell ≈ 40 m³ ponded per barrier cell
-CAP_DAM = 120.0       # check dams store more (gully, deeper pond)
+# One step ≈ 2.4 min (150 steps ≈ 6 h event). Depths are over a 30 × 30 m cell.
+INF_HILL = 1.0        # mm/step on degraded hillslope (~25 mm/h)
+# A barrier ponds a ~3 m strip upslope (10 % of the cell), ~0.3 m deep:
+CAP_BARRIER = 30.0    # mm over the cell ≈ 27 m³ per barrier cell (0.9 m³ per meter)
+INF_BARRIER = 0.12    # mm/step over the cell = 30 mm/h through the ponded strip
+CAP_DAM = 67.0        # check dam ≈ 60 m³
+INF_DAM = 0.3
 CELL_M2 = B.RES * B.RES
 
 
@@ -67,12 +70,12 @@ def _run(filled, recv, cap, inf, inside):
         if t < RAIN_STEPS:
             water += rain_step
             tot["rain"] += rain_step * inside.sum()
-        # ponded water infiltrates first
+        # ponded water infiltrates through the strip
         f_store = np.minimum(stored, inf * is_work)
         stored -= f_store
         tot["infiltrated_works"] += f_store[inside].sum()
         # infiltration of arriving water on every cell
-        f = np.minimum(water, np.where(is_work, 0, inf))
+        f = np.minimum(water, INF_HILL)
         water -= f
         tot["infiltrated_hill"] += f[inside].sum()
         # works pond incoming water up to capacity
@@ -114,7 +117,7 @@ def simulate(lon, lat, budget_m=1500, window_m=1200):
         inf[cd["cells"]] = INF_BARRIER
     for cd in dams:
         cap[cd["cells"]] = CAP_DAM
-        inf[cd["cells"]] = INF_BARRIER
+        inf[cd["cells"]] = INF_DAM
     r0, r1, c0, c1 = win
     inside = np.zeros(z.shape, bool)
     inside[r0:r1, c0:c1] = True
@@ -152,8 +155,8 @@ def simulate(lon, lat, budget_m=1500, window_m=1200):
                    "cap_barrier_mm": CAP_BARRIER, "cap_dam_mm": CAP_DAM, "cell_m": B.RES},
         "notes": [
             f"Tormenta de {RAIN_MM} mm sobre toda la ventana; cada paso el agua avanza ~30 m ladera abajo.",
-            "Sin barreras: solo infiltra la ladera degradada. Con barreras: cada obra encharca lo que le llega "
-            "hasta su capacidad y lo infiltra más rápido; el excedente sigue escurriendo.",
+            "Sin barreras: solo infiltra la ladera degradada. Con barreras: cada obra encharca una franja de ~3 m "
+            "hasta su capacidad (~0.9 m³ por metro) y la infiltra a ~30 mm/h; el excedente sigue escurriendo.",
             "Modelo didáctico para comparar escenarios sobre el mismo terreno y la misma tormenta, "
             "no un modelo hidrológico calibrado.",
         ],
