@@ -2,6 +2,8 @@
 
 **Reto 1 · Infiltración**, Grok Monterrey Build Day (14 oct 2026). Planteado por Antonio Hernández Ramírez (Pronatura Noreste).
 
+**Equipo:** Pablo César Ruíz Hernández · David Martin Oliva Zavala · Jesus Zaddkiel
+
 > *¿Dónde restaurar suelos en partes altas para favorecer la infiltración?*
 
 En 2022, Cerro Prieto y La Boca bajaron a menos del 5 % de su capacidad, y la ZMM tuvo ~13,500 L/s disponibles contra ~16,500 L/s de consumo. La recuperación posterior ayuda, pero no elimina la vulnerabilidad ante sequías prolongadas. Esta herramienta prioriza **dónde** intervenir en las cuencas altas que abastecen a Monterrey, recomienda **qué obra** hacer en cada sitio y optimiza **exactamente dónde** trazar las barreras.
@@ -242,3 +244,11 @@ web/
 - **Monitor post-incendio:** detectar incendios nuevos (FIRMS + severidad dNBR) y generar fichas automáticamente.
 - **Portafolio de inversión:** dado un presupuesto, elegir el mejor conjunto de sitios con costos reales de Pronatura y CONAFOR.
 - **Mejores datos:** DEM más fino (LiDAR de INEGI o dron) para el trazo, y edafología de INEGI para el suelo.
+
+---
+
+## Equipo
+
+- Pablo César Ruíz Hernández
+- David Martin Oliva Zavala
+- Jesus Zaddkiel
