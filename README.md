@@ -16,14 +16,15 @@ En 2022, Cerro Prieto y La Boca bajaron a menos del 5 % de su capacidad, y la ZM
 
 ---
 
-## La solución en 4 piezas
+## La solución en 5 piezas
 
 | # | Pieza | Pregunta que responde |
 |---|---|---|
 | 1 | **Mapa de prioridad** con pesos ajustables | ¿Dónde conviene restaurar? |
 | 2 | **Mapa de robustez** | ¿Qué sitios son prioritarios sin importar cómo se ponderen los criterios? |
 | 3 | **Ficha de obra** por sitio (motor de reglas) | ¿Qué obra hacer aquí y por qué? |
-| 4 | **Optimizador de ubicación de barreras** | ¿Exactamente dónde trazar las barreras para interceptar más escurrimiento? |
+| 4 | **Optimización de captación para las presas** | Con *N* hectáreas, ¿dónde restaurar para retener más agua que llegue a cada fuente de abasto? |
+| 5 | **Optimizador de ubicación de barreras** | ¿Exactamente dónde trazar las barreras para interceptar más escurrimiento? |
 
 Todo es **determinista y auditable**: no hay modelos de lenguaje en la aplicación. Cada recomendación muestra las razones que la produjeron.
 
@@ -82,7 +83,40 @@ Al hacer clic en un sitio se muestrean las métricas en un radio de 250 m y se a
 
 Para las barreras, el espaciamiento se calcula como intervalo vertical (1 m) / tan(pendiente), de donde salen los metros lineales por hectárea. La ficha se descarga en Markdown e incluye diagnóstico, datos, obra recomendada, dimensionamiento, riesgos y nivel de confianza.
 
-### 5. Optimizador de ubicación de barreras
+### 5. Optimización de captación para las presas
+
+Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a las fuentes de abasto?** (`pipeline/optimize.py`, `POST /api/optimize`).
+
+1. **Candidatas:** todo el territorio de las cuencas de abasto se divide en **celdas de 1 km**: 3,902 celdas con área elegible.
+2. **Área elegible:** dentro de cada celda solo cuentan las hectáreas donde se pueden hacer obras: pendiente de 8° a 35°, sin zona urbana ni agua y sin cobertura densa (NDVI < 0.55). En total son 192,040 ha.
+3. **Agua retenida por celda:**
+    - Fórmula: *lluvia media × coeficiente de escurrimiento × hectáreas elegibles × 40 % retenido*.
+    - El coeficiente sube con la pendiente y con el suelo desnudo: más agua escurre y hay más que frenar.
+    - El 40 % sale del propio optimizador de barreras, que retiene 41–43 % en los sitios de prueba.
+4. **Agua que llega al abasto:** el agua retenida se multiplica por la conexión con la fuente (1.0 si drena directo a La Boca, Cerro Prieto o Santa Catarina; 0.6 en el resto de El Cuchillo). Cada celda se asigna a su fuente de abasto.
+5. **Optimización:** dado un presupuesto de hectáreas, se eligen las celdas con más **m³ entregados por hectárea**. Es un algoritmo voraz de mochila fraccional, que es **óptimo** cuando las celdas se pueden tratar parcialmente. Hay dos modos:
+    - **Máxima agua total:** el óptimo puro.
+    - **Repartir entre presas:** el presupuesto se divide en partes iguales entre las 4 fuentes y se optimiza dentro de cada una.
+
+**Resultado con 3,000 ha:**
+
+| Fuente | Máxima agua total | | Repartir entre presas | |
+|---|---|---|---|---|
+| Presa La Boca | 936 ha | 1.73 M m³ | 750 ha | 1.45 M m³ |
+| Acuífero Santa Catarina (pozos SADM) | 1,720 ha | 2.56 M m³ | 750 ha | 1.15 M m³ |
+| Presa Cerro Prieto | 344 ha | 0.50 M m³ | 750 ha | 1.07 M m³ |
+| Presa El Cuchillo | 0 ha | 0.00 M m³ | 750 ha | 0.78 M m³ |
+| **Total** | 3,000 ha | **4.8 M m³/año** | 3,000 ha | **4.5 M m³/año** |
+
+**Rendimientos decrecientes** (modo de máxima agua): 500 ha → 1.0 M m³ · 1,000 ha → 1.9 M m³ · 2,000 ha → 3.4 M m³ · 3,000 ha → 4.8 M m³ · 5,000 ha → 7.6 M m³ · 10,000 ha → 14.5 M m³ · 20,000 ha → 27.4 M m³ · 50,000 ha → 63.1 M m³.
+
+- **La Boca rinde más por hectárea:** su cuenca recibe más lluvia que las demás.
+- **El Cuchillo rinde menos:** su conexión con el abasto vale 0.6.
+- **Repartir cuesta poco:** cubrir las 4 fuentes da ~7 % menos agua total que el óptimo puro.
+
+> Los m³ son una **estimación de orden de magnitud** para comparar opciones, no un balance hídrico. El coeficiente de escurrimiento es una regla simple y la retención de 40 % es un supuesto.
+
+### 6. Optimizador de ubicación de barreras
 
 Dentro de una ventana de ~1.2 km alrededor del sitio (`pipeline/barriers.py`):
 
@@ -105,35 +139,30 @@ Duplicar el presupuesto rinde cada vez menos (61 % → 77 %), que es el comporta
 
 ## ¿Por qué estos sitios?
 
-La demo en línea muestra 8 sitios de ejemplo. **No son una selección manual.** Salen de un procedimiento reproducible (`pipeline/build_static.py`):
+Los 8 sitios sugeridos **no se eligen a mano**. Salen directamente de la **optimización de captación**:
 
-1. **Barrido:** se recorre una malla de puntos cada 0.06° (~6 km) sobre las cuencas de abasto.
-2. **Filtro de prioridad:** se queda con los puntos de **prioridad alta** (índice > 0.55) en laderas **trabajables** (8°–35°).
-3. **Orden:** se ordenan por índice de prioridad, de mayor a menor.
-4. **Dispersión:** se descartan los puntos a menos de ~12 km de uno ya elegido, para cubrir distintas zonas de la Sierra.
-5. **Obra:** solo se conservan los sitios donde el motor de reglas recomienda una **obra de barreras o zanjas**. Así se excluyen los sitios a conservar o a no intervenir.
-6. **Barreras:** en cada sitio se optimizan barreras con un presupuesto de 1,500 m lineales.
+1. Se corre la optimización en modo **repartir entre presas** con 3,000 ha.
+2. De cada fuente de abasto se toman sus **2 mejores celdas**, las que más agua retenida entregan por hectárea, y se analiza el punto central de cada una.
+3. Solo se conservan los sitios donde el motor de reglas recomienda una **obra de barreras, zanjas o reforestación con barreras**. Si una celda no califica, se pasa a la siguiente de la misma fuente.
+4. En cada sitio se optimizan las barreras con 1,500 m lineales.
 
-| # | Sitio (lat, lon) | Cuenca | Prioridad | Robustez* | Pendiente · NDVI | Qué la hace prioritaria | Obra recomendada | Barreras · m · % interceptado |
-|---|---|---|---|---|---|---|---|---|
-| 1 | 25.69, -100.58 | Santa Catarina | 0.72 | 85% | 12° · NDVI 0.32 | conexión con abasto, pendiente trabajable, suelo permeable | Barreras de piedra acomodada | 36 · 1,497 m · 56% |
-| 2 | 25.51, -100.58 | Santa Catarina | 0.57 | 61% | 26° · NDVI 0.51 | conexión con abasto, suelo seco, pendiente trabajable | Barreras de material vegetal muerto en curvas de nivel | 39 · 1,492 m · 57% |
-| 3 | 25.33, -100.40 | Santa Catarina | 0.64 | 95% | 31° · NDVI 0.42 | suelo permeable, conexión con abasto, suelo seco | Barreras de piedra acomodada | 36 · 1,488 m · 67% |
-| 4 | 25.21, -100.22 | El Cuchillo | 0.58 | 38% | 11° · NDVI 0.25 | pendiente trabajable, vegetación degradada, conexión con abasto | Zanja-bordo + reforestación con nativas | 37 · 1,488 m · 50% |
-| 5 | 25.45, -100.40 | Santa Catarina | 0.56 | 48% | 26° · NDVI 0.43 | conexión con abasto, pendiente trabajable, suelo permeable | Barreras de material vegetal muerto en curvas de nivel | 38 · 1,493 m · 44% |
-| 6 | 24.97, -100.10 | El Cuchillo | 0.56 | 36% | 22° · NDVI 0.26 | pendiente trabajable, suelo permeable, vegetación degradada | Barreras de piedra acomodada | 35 · 1,486 m · 52% |
-| 7 | 25.21, -100.40 | El Cuchillo | 0.55 | 66% | 31° · NDVI 0.41 | suelo permeable, suelo seco, pendiente trabajable | Barreras de piedra acomodada | 38 · 1,496 m · 77% |
-| 8 | 25.69, -100.40 | Santa Catarina | 0.56 | 59% | 33° · NDVI 0.42 | conexión con abasto, suelo seco, suelo permeable | Barreras de piedra acomodada | 40 · 1,499 m · 70% |
-
-\* **Robustez:** porcentaje de 40 ponderaciones aleatorias de los criterios en que el sitio queda como prioridad alta.
+| # | Fuente de abasto | Lugar en la optimización | m³/ha/año al abasto | Lluvia · coef. escurrimiento | Prioridad · robustez | Obra recomendada | Barreras · m · % interceptado |
+|---|---|---|---|---|---|---|---|
+| 1 | Presa La Boca | #1 | 2,407 | 1181 mm · 0.51 | 0.53 · 40% | Barreras de material vegetal muerto en curvas de nivel | 35 · 1,492 m · 63% |
+| 2 | Presa La Boca | #12 | 1,908 | 1181 mm · 0.404 | 0.58 · 52% | Barreras de material vegetal muerto en curvas de nivel | 37 · 1,500 m · 61% |
+| 3 | Acuífero Santa Catarina (pozos SADM) | #31 | 1,540 | 642 mm · 0.6 | 0.57 · 38% | Reforestación con nativas + barreras de material vegetal | 35 · 1,482 m · 70% |
+| 4 | Acuífero Santa Catarina (pozos SADM) | #34 | 1,536 | 642 mm · 0.598 | 0.55 · 35% | Reforestación con nativas + barreras de material vegetal | 38 · 1,498 m · 65% |
+| 5 | Presa Cerro Prieto | #45 | 1,479 | 708 mm · 0.522 | 0.63 · 60% | Barreras de piedra acomodada | 36 · 1,499 m · 65% |
+| 6 | Presa Cerro Prieto | #46 | 1,455 | 658 mm · 0.554 | 0.62 · 45% | Reforestación con nativas + barreras de material vegetal | 38 · 1,489 m · 69% |
+| 7 | Presa El Cuchillo | #59 | 1,182 | 665 mm · 0.573 | 0.67 · 88% | Barreras de piedra acomodada | 39 · 1,499 m · 78% |
+| 8 | Presa El Cuchillo | #63 | 1,040 | 870 mm · 0.498 | 0.50 · 29% | Barreras de material vegetal muerto en curvas de nivel | 38 · 1,488 m · 53% |
 
 **Cómo leer la tabla:**
 
-- **El sitio 1 es el de mayor prioridad (0.72) y muy robusto (85 %).** Drena directo a la cuenca del Santa Catarina, que recarga pozos y galerías de SADM; tiene pendiente trabajable (12°), suelo de los más gruesos de la zona y cobertura baja (NDVI 0.32). **Pero queda junto a la autopista Monterrey–Saltillo:** el optimizador aún no excluye caminos, así que hay que verificarlo en campo.
-- **El sitio 3 es el más robusto (95 %).** Es prioritario casi con cualquier ponderación: suelo grueso, buena conexión con el abasto, suelo seco y una quema anterior a 2023.
-- **Los sitios 4 y 6 tienen robustez menor al 40 %.** Son prioritarios con los pesos por defecto, sobre todo por pendiente y vegetación degradada, pero drenan a El Cuchillo (conexión 0.6). Si un experto le da menos peso a la vegetación o más a la conexión, bajan. Son buenos candidatos, pero **no los primeros**.
-- **Cinco de los ocho están en la cuenca del Santa Catarina.** Ahí coinciden la conexión directa con el abasto (recarga de pozos de SADM), las laderas trabajables y los suelos más gruesos.
-- **Ninguno está en La Boca ni en Cerro Prieto.** La cuenca de La Boca es pequeña (347 km²) y la malla de ~6 km con 12 km de separación casi no la muestrea. Del sur de Cerro Prieto faltan datos en la versión actual del asset (`scores_v1`); entran con `scores_v2`. **No significa que ahí no haya prioridad.**
+- **Un sitio entra porque entrega mucha agua por hectárea a su fuente de abasto.** Eso pasa cuando coinciden **mucha lluvia**, **mucho escurrimiento que frenar** (pendiente y poca cobertura) y **conexión directa**.
+- **La Boca encabeza la optimización.** Su cuenca es la más lluviosa (~1,000 mm o más en las mejores celdas), así que cada hectárea restaurada ahí entrega más agua.
+- **El índice de prioridad mide otra cosa.** Algunos sitios óptimos para captar agua tienen prioridad media (~0.5) o robustez baja: el índice pesa también degradación, incendios y suelo, mientras que la optimización mira solo el agua que llega al abasto. **Las dos vistas se complementan**: la prioridad dice dónde el suelo más lo necesita y la optimización dice dónde rinde más el agua.
+- **Ningún sitio cae en cauces ni en zonas urbanas.** El cálculo solo cuenta área elegible, y el motor de reglas descarta lo que no admite obra.
 
 ### ¿Por qué las barreras quedan donde quedan?
 
@@ -166,14 +195,18 @@ En cada sitio, el optimizador elige las barreras así:
 
 ## Qué podemos concluir
 
-Las cifras corresponden a laderas de 8° o más y a la cobertura analizada hasta ahora. El sur de la cuenca de Cerro Prieto se incorpora con la exportación `scores_v2`.
+Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en laderas de 8° o más.
 
-1. **La prioridad se concentra en las laderas de la Sierra Madre.** Hay ~**110,900 ha de prioridad alta** y ~136,700 ha de prioridad media, sobre todo en las cuencas del Santa Catarina y del Pilón/Ramos.
-2. **Dos tercios de la prioridad alta drenan directo a una fuente de abasto.** ~**70,700 ha (64 %)** están en las cuencas de La Boca, Cerro Prieto o Santa Catarina, y ~40,200 ha en el resto de la cuenca de El Cuchillo. Restaurar ahí beneficia directamente a la ZMM.
-3. **La prioridad es robusta.** ~**77,500 ha (70 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias. Hay un núcleo de sitios donde los expertos coincidirían sin importar sus pesos.
-4. **Los incendios abren una ventana de acción.** ~**16,100 ha** de prioridad alta tuvieron incendios entre 2019 y 2026. Ahí el suelo repele el agua y el material quemado sirve para barreras, así que la urgencia es mayor y el costo menor.
-5. **Las laderas muy empinadas no son para obras.** Por encima de ~35–45° conviene la exclusión y la regeneración natural. La cresta central de la Sierra aparece vacía a propósito.
-6. **El trazo importa tanto como el sitio.** Con 1,500 m de barreras bien ubicadas se intercepta el escurrimiento de ~60 % de una ventana de 1.2 km. Los rendimientos decrecen después, así que conviene repartir el presupuesto entre varios sitios en lugar de saturar uno.
+1. **La prioridad se concentra en las laderas de la Sierra Madre.** Hay ~**141,200 ha de prioridad alta** y ~175,500 ha de prioridad media.
+2. **Más de dos tercios de la prioridad alta drenan directo a una fuente de abasto.** ~**99,600 ha (71 %)** están en las cuencas de La Boca, Cerro Prieto o Santa Catarina. Restaurar ahí beneficia directamente a la ZMM.
+3. **La prioridad es robusta.** ~**90,600 ha (64 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
+4. **Los incendios abren una ventana de acción.** ~**17,100 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
+5. **Con 3,000 ha bien elegidas se retienen del orden de 4.8 millones de m³/año** que llegan al abasto. Es una estimación de orden de magnitud. Para dimensionarla: equivale a ~152 L/s continuos, frente al déficit de ~3,000 L/s de 2022. **La restauración no sustituye otras fuentes, pero suma y es barata por hectárea.**
+6. **Dónde restaurar depende del objetivo:**
+    - Para maximizar agua: **La Boca y Santa Catarina**.
+    - Para cubrir todas las fuentes: repartir cuesta solo ~7 % del agua total.
+7. **Las laderas muy empinadas no son para obras.** Por encima de ~35–45° conviene la exclusión y la regeneración natural.
+8. **El trazo importa tanto como el sitio.** Con 1,500 m de barreras bien ubicadas se intercepta el escurrimiento de ~45–75 % de una ventana de 1.2 km, y los rendimientos decrecen. Conviene repartir el presupuesto entre varios sitios en lugar de saturar uno.
 
 ---
 
@@ -182,7 +215,7 @@ Las cifras corresponden a laderas de 8° o más y a la cobertura analizada hasta
 - **El índice es relativo.** No estima metros cúbicos infiltrados.
 - **El DEM de 30 m no resuelve el intervalo vertical de 1 m.** El trazo de barreras es **preliminar** y debe validarse en campo con levantamiento topográfico o dron.
 - **La textura del suelo de OpenLandMap casi no varía en la zona** (todo es franco arcilloso). Un mapa edafológico de INEGI o de Pronatura mejoraría este criterio.
-- **Hay supuestos sin calibrar:** los niveles de conectividad, los umbrales de cárcava (5 ha) y cauce (100 ha), y la retención por barrera (60 %). Son parámetros explícitos en el código.
+- **Hay supuestos sin calibrar:** el coeficiente de escurrimiento y la retención de 40 % de la optimización de captación, los niveles de conectividad, los umbrales de cárcava (5 ha) y cauce (100 ha), y la retención por barrera (60 %). Son parámetros explícitos en el código.
 - **SMAP** tiene resolución gruesa (~9 km) y **MODIS** detecta área quemada a 500 m.
 - **El optimizador no excluye** caminos, construcciones ni cobertura dentro de la ventana, y no considera el acceso.
 - **No se verifican las restricciones de ANP** (Parque Nacional Cumbres de Monterrey). La ficha lo señala como riesgo a revisar.
@@ -230,12 +263,16 @@ pipeline/
   obras.py        Motor de reglas: sitio → tipo de obra, razones, espaciamiento
   ficha.py        Ficha de obra en Markdown
   barriers.py     Optimizador de ubicación de barreras (DEM → flujo → curvas → selección)
+  optimize.py     Optimización de captación: celdas de 1 km → m³ al abasto → selección por presupuesto
+  build_static.py Genera la versión estática de GitHub Pages
 api/
   main.py         /api/config, /api/tiles, /api/summary, /api/basins, /api/robustness, /api/site
   barriers_api.py /api/barriers
+  (main.py)       /api/optimize
 web/
   index.html      Mapa, controles, leyenda, ficha
   barriers.js     Panel del optimizador de barreras
+  optimize.js     Panel de optimización de captación
 ```
 
 ## Próximos pasos

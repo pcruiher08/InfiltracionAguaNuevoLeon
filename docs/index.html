@@ -41,6 +41,9 @@
   .supply-label { font-weight:600; font-size:11px; color:#1d1b18; background:rgba(255,255,255,.9); border:0; box-shadow:0 1px 3px rgba(0,0,0,.25); }
   .rank { font-weight:700; font-size:10px; color:#fff; background:#1d1b18; border:0; border-radius:3px; padding:0 3px; box-shadow:none; }
   .leaflet-labels-pane { pointer-events:none; }
+  .seg { display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin:6px 0; }
+  .seg button { flex:1; border:0; background:transparent; color:var(--fg); padding:6px; cursor:pointer; font:inherit; font-size:12px; }
+  .seg button.on { color:var(--accent); font-weight:600; background:color-mix(in srgb, var(--accent) 10%, transparent); }
   @media (max-width:760px) {
     body { grid-template-columns:1fr; grid-template-rows:60vh auto; height:auto; }
     #map { height:60vh; grid-row:1; } aside { grid-row:2; border-right:0; border-top:1px solid var(--line); }
@@ -59,9 +62,14 @@
   <label class="row"><input type="checkbox" id="l-pri" checked> Prioridad (alta y media, laderas ≥ 8°)</label>
   <label class="row"><input type="checkbox" id="l-rob"> Robustez (alta en ≥ 50% de 40 ponderaciones)</label>
   <label class="row"><input type="checkbox" id="l-cat" checked> Cuencas de abasto y presas</label>
+  <label class="row"><input type="checkbox" id="l-opt" checked> Celdas óptimas para captar agua (3,000 ha)</label>
 
-  <h2>Sitios de ejemplo</h2>
-  <div class="muted">Sitios de prioridad alta con barreras ya optimizadas (1,500 m lineales). Haz clic en uno.</div>
+  <h2>Optimización de captación</h2>
+  <div class="muted">Con 3,000 ha a restaurar, ¿dónde se retiene más agua que llega a las fuentes de abasto? Celdas de 1 km; estimación de orden de magnitud.</div>
+  <div id="opt"></div>
+
+  <h2>Sitios sugeridos</h2>
+  <div class="muted">Las 2 mejores celdas de cada fuente de abasto según la optimización (modo repartido), con barreras ya optimizadas (1,500 m lineales). Haz clic en uno.</div>
   <div id="sites"></div>
   <div id="bar"></div>
   <div id="ficha"></div>
@@ -88,7 +96,12 @@ legend.onAdd = () => {
   d.innerHTML = `<b>Prioridad de restauración</b>
     <div><span class="sw" style="background:#0d366b"></span>Alta</div>
     <div><span class="sw" style="background:#2a78d6"></span>Media</div>
-    <div><span class="sw" style="background:#d95926"></span>Robusta (≥ 50%)</div>
+    <div><span class="sw" style="background:#a8401a"></span>Robusta (≥ 50%)</div>
+    <b style="margin-top:6px">Celdas óptimas por fuente</b>
+    <div><span class="sw" style="background:#2a78d6"></span>La Boca</div>
+    <div><span class="sw" style="background:#eb6834"></span>Santa Catarina (pozos SADM)</div>
+    <div><span class="sw" style="background:#1baf7a"></span>Cerro Prieto</div>
+    <div><span class="sw" style="background:#eda100"></span>El Cuchillo</div>
     <b style="margin-top:6px">Barreras</b>
     <div><span class="ln" style="border-color:#1d1b18"></span>Barrera en curva de nivel</div>
     <div><span class="sw" style="background:#8f3510;border-radius:50%"></span>Presa en cárcava</div>
@@ -97,10 +110,13 @@ legend.onAdd = () => {
 };
 legend.addTo(map);
 
-let pri, rob, cat, barGroup;
+let pri, rob, cat, opt, barGroup;
+const COLORS = { "Presa La Boca":"#2a78d6", "Acuífero Santa Catarina (pozos SADM)":"#eb6834",
+                 "Presa Cerro Prieto":"#1baf7a", "Presa El Cuchillo":"#eda100" };
 const toggle = (id, layer) => document.getElementById(id).onchange = e =>
   e.target.checked ? layer().addTo(map) : map.removeLayer(layer());
 
+let o;
 (async () => {
   const meta = await (await fetch("data/meta.json")).json();
   const [w, s, e, n] = meta.bbox, bounds = [[s, w], [n, e]];
@@ -124,14 +140,35 @@ const toggle = (id, layer) => document.getElementById(id).onchange = e =>
   }).addTo(map);
   toggle("l-cat", () => cat);
 
+  const cells = await (await fetch("data/cells.geojson")).json();
+  opt = L.geoJSON(cells, {
+    style: f => ({ color:"#ffffff", weight:1, fillColor:COLORS[f.properties.supply_name], fillOpacity:.75 }),
+    onEachFeature: (f, l) => l.bindTooltip(`#${f.properties.rank} · ${f.properties.supply_name}<br>${fmt(f.properties.treated_ha)} ha · ~${fmt(f.properties.delivered_m3)} m³/año`),
+  }).addTo(map);
+  toggle("l-opt", () => opt);
+  o = meta.optimization;
+  const optBox = document.getElementById("opt");
+  const renderOpt = mode => {
+    const r = o[mode];
+    const rows = Object.entries(r.by_supply).sort((a, b) => b[1].m3 - a[1].m3).map(([k, v]) =>
+      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]};width:12px;height:12px"></span>${k}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³</b></div>`).join("");
+    optBox.innerHTML = `<div class="seg"><button data-m="max" class="${mode === "max" ? "on" : ""}">Máxima agua total</button>
+      <button data-m="balanced" class="${mode === "balanced" ? "on" : ""}">Repartir entre presas</button></div>
+      <div class="stat"><span>Agua retenida estimada</span><b>~${(r.totals.m3_per_year / 1e6).toFixed(1)} M m³/año</b></div>${rows}
+      <div class="note">Rendimientos decrecientes: ${r.curve.slice(0, 6).map(c => `${fmt(c.ha)} ha → ${(c.m3 / 1e6).toFixed(1)} M m³`).join(" · ")}.
+      El mapa muestra el modo repartido.</div>`;
+    optBox.querySelectorAll("button").forEach(b => b.onclick = () => renderOpt(b.dataset.m));
+  };
+  renderOpt("balanced");
+
   const sites = await (await fetch("data/sites.json")).json();
   const list = document.getElementById("sites");
   sites.forEach((st, i) => {
     const el = document.createElement("div");
     el.className = "site";
     const t = st.barriers.totals;
-    el.innerHTML = `<b>${i + 1}.</b> ${st.recommendation.obra}<br>
-      <span class="muted">prioridad ${st.stats.priority.toFixed(2)} · ${t.n_barriers} barreras · intercepta ~${Math.round(t.intercepted_pct)}%</span>`;
+    el.innerHTML = `<b>${i + 1}.</b> <span class="sw" style="background:${COLORS[st.why.supply]};width:10px;height:10px"></span>${st.why.supply}<br>
+      <span class="muted">${st.recommendation.obra} · ${fmt(st.why.m3_per_ha)} m³/ha/año · ${t.n_barriers} barreras</span>`;
     el.onclick = () => show(st, el);
     list.appendChild(el);
     L.marker([st.lat, st.lon]).addTo(map).bindTooltip(`Sitio ${i + 1}`).on("click", () => show(st, el));
@@ -158,18 +195,18 @@ function show(st, el) {
     L.tooltip({ permanent:true, direction:"center", className:"rank" }).setLatLng([c[1], c[0]]).setContent(String(f.properties.rank)).addTo(barGroup);
   });
   pri.setOpacity(.3);
+  if (opt && map.hasLayer(opt)) { map.removeLayer(opt); document.getElementById("l-opt").checked = false; }
   map.fitBounds(barGroup.getBounds(), { padding:[20, 20] });
   const t = b.totals, p = b.params, w = st.why || {};
   const rob = Math.round(100 * (w.robustness || 0));
-  const robTxt = rob >= 50 ? "prioritario con casi cualquier ponderación de criterios"
-                           : "prioritario con los pesos por defecto, sensible a cómo se ponderen";
   document.getElementById("bar").innerHTML = `
     <h2>¿Por qué este sitio?</h2>
-    <div class="stat"><span>Cuenca</span><b>${w.catchment || "—"}</b></div>
-    <div class="stat"><span>Prioridad</span><b>${st.stats.priority.toFixed(2)} (alta)</b></div>
-    <div class="stat"><span>Robustez</span><b>${rob}%</b></div>
-    <div class="note">Lo que más pesa: ${(w.drivers || []).map(d => d[0]).join(", ")}. ${robTxt}.
-      Elegido por un barrido reproducible: prioridad alta, ladera de 8–35°, obra de barreras y al menos ~12 km de otros sitios.</div>`
+    <div class="stat"><span>Fuente de abasto</span><b>${w.supply}</b></div>
+    <div class="stat"><span>Lugar en la optimización</span><b>#${w.opt_rank} de ${fmt(o.balanced.totals.candidates)} celdas</b></div>
+    <div class="stat"><span>Agua retenida que llega al abasto</span><b>~${fmt(w.m3_per_ha)} m³/ha/año</b></div>
+    <div class="stat"><span>Lluvia · coef. de escurrimiento</span><b>${w.rain_mm} mm · ${w.c}</b></div>
+    <div class="stat"><span>Prioridad · robustez</span><b>${st.stats.priority.toFixed(2)} · ${rob}%</b></div>
+    <div class="note">Elegido por la optimización: entre las celdas de su cuenca, es de las que más agua retenida entregan a la fuente de abasto por hectárea restaurada (más lluvia, más escurrimiento que frenar y conexión directa).</div>`
     + `
     <h2>Barreras optimizadas</h2>
     <div class="stat"><span>Barreras en curva de nivel</span><b>${t.n_barriers} · ${fmt(t.length_m)} m</b></div>

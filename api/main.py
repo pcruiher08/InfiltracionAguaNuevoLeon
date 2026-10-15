@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
 
 from api import barriers_api, fires_api, portfolio_api  # noqa: E402
-from pipeline import ficha, layers, obras  # noqa: E402
+from pipeline import ficha, layers, obras, optimize  # noqa: E402
 from pipeline.config import AOI_BBOX, CONNECTIVITY_TIERS, DEFAULT_WEIGHTS, SUPPLY_POINTS  # noqa: E402
 
 app = FastAPI(title="Infiltración ZMM")
@@ -104,6 +104,20 @@ def robustness(body: WeightsIn):
     rob = layers.robustness().updateMask(_display_mask(body))
     rob = rob.updateMask(rob.gte(0.5))
     return {"url": _url(rob, {"min": 0.5, "max": 1, "palette": ORANGE_ROB})}
+
+
+class OptimizeIn(BaseModel):
+    budget_ha: float = 3000
+    mode: str = "max"  # "max" | "balanced"
+
+
+@app.post("/api/optimize")
+def optimize_supply(body: OptimizeIn):
+    """Where to restore to maximize water delivered to the supply sources."""
+    try:
+        return optimize.optimize(body.budget_ha, body.mode)
+    except ee.EEException as e:
+        raise HTTPException(502, str(e))
 
 
 @app.post("/api/site")

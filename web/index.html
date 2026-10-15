@@ -53,6 +53,9 @@
   .ends { display:flex; justify-content:space-between; color:#6b675f; }
   .status:empty { display:none; }
   .leaflet-labels-pane { pointer-events:none; }
+  .stat { display:flex; justify-content:space-between; gap:8px; border-bottom:1px solid var(--line); padding:3px 0; font-size:12px; }
+  .stat .sw { width:12px; height:12px; }
+  .sw { display:inline-block; border-radius:3px; vertical-align:-2px; margin-right:6px; }
   .supply-label { font-weight:600; font-size:11px; color:#1d1b18; background:rgba(255,255,255,.9); border:0; box-shadow:0 1px 3px rgba(0,0,0,.25); }
   @media (max-width:760px) {
     body { grid-template-columns:1fr; grid-template-rows:60vh auto; height:auto; }
@@ -84,6 +87,7 @@
     <button id="apply">Recalcular</button>
   </details>
 
+  <section id="optimize-panel"></section>
   <section id="fires-panel"></section>
   <section id="portfolio-panel"></section>
 
@@ -267,5 +271,6 @@ init().catch(e => setStatus("Error: " + e.message.slice(0, 120)));
 <script src="fires.js"></script>
 <script src="portfolio.js"></script>
 <script src="barriers.js"></script>
+<script src="optimize.js"></script>
 </body>
 </html>
