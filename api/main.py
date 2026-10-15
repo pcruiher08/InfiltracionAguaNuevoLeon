@@ -12,7 +12,7 @@ from pydantic import BaseModel  # noqa: E402
 
 from api import fires_api, portfolio_api  # noqa: E402
 from pipeline import ficha, layers, obras  # noqa: E402
-from pipeline.config import AOI_BBOX, DEFAULT_WEIGHTS  # noqa: E402
+from pipeline.config import AOI_BBOX, CONNECTIVITY_TIERS, DEFAULT_WEIGHTS, SUPPLY_POINTS  # noqa: E402
 
 app = FastAPI(title="Infiltración ZMM")
 app.include_router(fires_api.router, prefix="/api")
@@ -80,10 +80,22 @@ def summary(body: WeightsIn):
     return {names[g["clase"]]: round(g["sum"]) for g in groups if g["clase"] in names}
 
 
+CATCHMENT_LABELS = {
+    "la_boca": "Cuenca de La Boca", "cerro_prieto": "Cuenca de Cerro Prieto",
+    "santa_catarina": "Río Santa Catarina (recarga de pozos SADM)", "el_cuchillo": "Cuenca de El Cuchillo",
+}
+
+
 @app.get("/api/basins")
 def basins():
-    fc = ee.FeatureCollection("WWF/HydroSHEDS/v1/Basins/hybas_7").filterBounds(layers.aoi())
-    return {"url": _url(fc.style(color="3d3a35", width=1.5, fillColor="00000000"), {})}
+    """Supply catchment outlines (one dissolved polygon each) + supply points."""
+    feats = [ee.Feature(fc.geometry().dissolve(100), {"name": k}) for k, fc in layers.catchments().items()]
+    outlines = ee.FeatureCollection(feats).style(color="3d3a35", width=2, fillColor="00000000")
+    return {
+        "url": _url(outlines, {}),
+        "catchments": [{"key": k, "label": CATCHMENT_LABELS[k], "tier": t} for k, t in CONNECTIVITY_TIERS.items()],
+        "points": [{"name": n, "lon": lon, "lat": lat} for n, (lon, lat) in SUPPLY_POINTS.items()],
+    }
 
 
 @app.post("/api/robustness")

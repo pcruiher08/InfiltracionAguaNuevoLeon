@@ -53,6 +53,7 @@
   .ends { display:flex; justify-content:space-between; color:#6b675f; }
   .status:empty { display:none; }
   .leaflet-labels-pane { pointer-events:none; }
+  .supply-label { font-weight:600; font-size:11px; color:#1d1b18; background:rgba(255,255,255,.9); border:0; box-shadow:0 1px 3px rgba(0,0,0,.25); }
   @media (max-width:760px) {
     body { grid-template-columns:1fr; grid-template-rows:60vh auto; height:auto; }
     #map { height:60vh; grid-row:1; } aside { grid-row:2; border-right:0; border-top:1px solid var(--line); }
@@ -72,7 +73,7 @@
   <label class="row"><input type="checkbox" id="uplands" checked> Solo laderas (pendiente ≥ 8°)</label>
   <label class="row"><input type="checkbox" id="showLow"> Mostrar prioridad baja</label>
   <label class="row"><input type="checkbox" id="robust"> Robustez (prioridad alta en ≥ 50% de escenarios)</label>
-  <label class="row"><input type="checkbox" id="basins" checked> Límites de subcuencas</label>
+  <label class="row"><input type="checkbox" id="basins" checked> Cuencas de abasto y presas</label>
   <label class="w">Opacidad <span id="opv">80%</span></label>
   <input type="range" id="opacity" min="0.2" max="1" step="0.05" value="0.8">
 
@@ -93,7 +94,7 @@
 <div id="map"></div>
 <script>
 const LABELS = { slope:"Pendiente", vegetation:"Vegetación degradada", soil:"Suelo permeable",
-                 fire:"Incendios", moisture:"Suelo seco", rain:"Lluvia" };
+                 fire:"Incendios", moisture:"Suelo seco", rain:"Lluvia", connectivity:"Conexión con abasto" };
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const fmt = n => n.toLocaleString("es-MX");
 
@@ -155,11 +156,11 @@ function swap(name, url) {
 }
 function applyVisibility() {
   for (const [name, on] of [["classes", state.view === "classes"], ["index", state.view === "index"],
-                            ["robust", state.robust], ["basins", state.basins]]) {
+                            ["robust", state.robust], ["basins", state.basins], ["points", state.basins]]) {
     const l = layers[name]; if (!l) continue;
     on ? l.addTo(map) : map.removeLayer(l);
   }
-  layers.basins && layers.basins.setOpacity(1);
+  layers.basins && layers.basins.setOpacity && layers.basins.setOpacity(1);
   renderLegend();
 }
 
@@ -203,7 +204,13 @@ async function init() {
     document.getElementById("v-" + k).textContent = state.weights[k].toFixed(2);
   });
   const [w, s, e, n] = cfg.bbox; map.fitBounds([[s, w], [n, e]]);
-  fetch("/api/basins").then(r => r.json()).then(b => { swap("basins", b.url); applyVisibility(); });
+  fetch("/api/basins").then(r => r.json()).then(b => {
+    swap("basins", b.url);
+    layers.points = L.layerGroup(b.points.map(p => L.circleMarker([p.lat, p.lon],
+      { radius:6, color:"#ffffff", weight:2, fillColor:"#1d1b18", fillOpacity:1 })
+      .bindTooltip(p.name, { permanent:true, direction:"right", className:"supply-label" })));
+    applyVisibility();
+  });
   await refresh();
 }
 

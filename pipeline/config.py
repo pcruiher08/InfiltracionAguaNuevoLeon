@@ -7,10 +7,24 @@ EE_PROJECT = os.environ.get("EE_PROJECT", "infiltracionaguanuevoleon")
 # Precomputed layers (pipeline/export.py). Used automatically when it exists.
 ASSET_ID = f"projects/{EE_PROJECT}/assets/scores_v1"
 
-# Upper basins that feed the ZMM supply: Santa Catarina (Cumbres),
-# Ramos/San Juan (La Boca) and Pilón (Cerro Prieto). Rough bbox for the demo;
-# refine with HydroSHEDS level-8/9 basins once the pipeline works.
-AOI_BBOX = [-100.65, 24.75, -99.55, 25.75]  # [west, south, east, north]
+# Supply catchments, traced upstream through HydroBASINS level 12
+# (HYBAS_ID / NEXT_DOWN) from each supply point; IDs in catchments.json.
+# The AOI is their union. Connectivity tiers are a stated assumption:
+#   1.0  drains directly to a supply source (La Boca, Cerro Prieto reservoirs;
+#        Santa Catarina upstream of Monterrey, which recharges SADM wells/galleries)
+#   0.6  rest of the El Cuchillo catchment (major supply, but distant)
+CATCHMENTS_FILE = os.path.join(os.path.dirname(__file__), "catchments.json")
+HYBAS_LEVEL12 = "WWF/HydroSHEDS/v1/Basins/hybas_12"
+CONNECTIVITY_TIERS = {
+    "la_boca": 1.0, "cerro_prieto": 1.0, "santa_catarina": 1.0, "el_cuchillo": 0.6,
+}
+SUPPLY_POINTS = {  # reservoir centroids (JRC surface water) / river outlet
+    "Presa La Boca": (-100.1381, 25.4243),
+    "Presa Cerro Prieto": (-99.4228, 24.9187),
+    "Presa El Cuchillo": (-99.3018, 25.6933),
+    "Río Santa Catarina (Monterrey)": (-100.32, 25.665),
+}
+AOI_BBOX = [-100.70, 24.37, -99.20, 25.77]  # bounds of the catchment union
 
 # Analysis window
 START = "2019-01-01"
@@ -31,12 +45,13 @@ DATASETS = {
 
 # Criterion -> default weight. Weights are renormalized to sum to 1.
 DEFAULT_WEIGHTS = {
-    "slope": 0.25,       # workable slopes that generate runoff
-    "vegetation": 0.30,  # degraded cover = more to gain
-    "soil": 0.10,        # permeable texture; low weight: OpenLandMap barely varies here
-    "fire": 0.15,        # recently burned = urgent, hydrophobic soils
-    "moisture": 0.10,    # dry soils = storage capacity / degradation
-    "rain": 0.10,        # more rain = more water to capture
+    "slope": 0.20,         # workable slopes that generate runoff
+    "vegetation": 0.25,    # degraded cover = more to gain
+    "soil": 0.05,          # permeable texture; low weight: OpenLandMap barely varies here
+    "fire": 0.10,          # recently burned = urgent, hydrophobic soils
+    "moisture": 0.10,      # dry soils = storage capacity / degradation
+    "rain": 0.10,          # more rain = more water to capture
+    "connectivity": 0.20,  # drains to a ZMM supply source (see CONNECTIVITY_TIERS)
 }
 
 # Class cut points (baja | media | alta), calibrated 2026-10-14 on the index

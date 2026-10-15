@@ -3,15 +3,17 @@
 Every criterion returns a 0–1 score where 1 = higher restoration priority.
 The index is relative potential, NOT infiltrated volume.
 """
+import json
 import random
 
 import ee
 
 from pipeline.config import (
-    AOI_BBOX, ASSET_ID, CLASS_THRESHOLDS, DATASETS, EE_PROJECT, DEFAULT_WEIGHTS, DRY_SEASON_MONTHS, END, START,
+    AOI_BBOX, ASSET_ID, CATCHMENTS_FILE, CLASS_THRESHOLDS, CONNECTIVITY_TIERS, DATASETS, EE_PROJECT,
+    HYBAS_LEVEL12, DEFAULT_WEIGHTS, DRY_SEASON_MONTHS, END, START,
 )
 
-SCORE_BANDS = ["slope", "vegetation", "soil", "fire", "moisture", "rain"]
+SCORE_BANDS = ["slope", "vegetation", "soil", "fire", "moisture", "rain"]  # stored in the asset
 RAW_BANDS = ["slope_deg", "ndvi", "texture_class", "sand_minus_clay", "burned", "sm", "rain_mm"]
 
 _initialized = False
@@ -36,7 +38,33 @@ def landcover():
     return ee.ImageCollection(DATASETS["landcover"]).first().select("Map")
 
 
+def catchments():
+    """{name: ee.FeatureCollection of level-12 basins} for each supply catchment."""
+    with open(CATCHMENTS_FILE) as f:
+        ids = json.load(f)
+    fc = ee.FeatureCollection(HYBAS_LEVEL12)
+    return {k: fc.filter(ee.Filter.inList("HYBAS_ID", v)) for k, v in ids.items()}
+
+
+def connectivity():
+    """Tiered supply connectivity (0–1); painted lowest tier first so nested
+    catchments (La Boca, Santa Catarina inside El Cuchillo) keep the higher tier."""
+    img = ee.Image(0).float()
+    for name, tier in sorted(CONNECTIVITY_TIERS.items(), key=lambda kv: kv[1]):
+        img = img.paint(catchments()[name], tier)
+    return img.rename("connectivity")
+
+
+def aoi_mask():
+    return connectivity().gt(0)
+
+
 def aoi():
+    """Union of the supply catchments."""
+    return ee.FeatureCollection(list(catchments().values())).flatten().geometry().dissolve(100)
+
+
+def bbox():
     return ee.Geometry.Rectangle(AOI_BBOX)
 
 
@@ -57,7 +85,7 @@ def ndvi_dry():
 
     m0, m1 = DRY_SEASON_MONTHS
     col = (ee.ImageCollection(DATASETS["s2"])
-           .filterBounds(aoi())
+           .filterBounds(bbox())
            .filterDate(ee.Date(END).advance(-2, "year"), END)
            .filter(ee.Filter.calendarRange(m0, m1, "month"))
            .filter(ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE", 40))
@@ -110,7 +138,9 @@ def valid_mask():
 # --- criterion scores ---------------------------------------------------------
 
 def scores():
-    return _asset.select(SCORE_BANDS) if _asset is not None else live_scores()
+    # Connectivity is cheap to paint, so it is always computed live
+    base = _asset.select(SCORE_BANDS) if _asset is not None else live_scores()
+    return base.addBands(connectivity())
 
 
 def raw():
@@ -149,7 +179,7 @@ def priority_index(weights=None, sc=None):
     idx = ee.Image(0)
     for k, v in w.items():
         idx = idx.add(sc.select(k).unmask(0).multiply(v / total))
-    return idx.rename("priority").updateMask(valid_mask()).clip(aoi())
+    return idx.rename("priority").updateMask(valid_mask()).updateMask(aoi_mask())
 
 
 def priority_classes(index, lo=CLASS_THRESHOLDS[0], hi=CLASS_THRESHOLDS[1]):

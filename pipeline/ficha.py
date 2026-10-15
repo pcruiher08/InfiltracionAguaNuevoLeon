@@ -14,7 +14,10 @@ LANDCOVER = {
 CRITERIA = {
     "slope": "Pendiente", "vegetation": "Vegetación degradada", "soil": "Suelo permeable",
     "fire": "Incendios", "moisture": "Suelo seco", "rain": "Lluvia",
+    "connectivity": "Conexión con fuentes de abasto",
 }
+CONNECTIVITY_TXT = {1.0: "drena directo a una fuente de abasto de la ZMM",
+                    0.6: "cuenca de El Cuchillo (abasto lejano)", 0.0: "fuera de cuencas de abasto"}
 
 
 def _level(p):
@@ -54,6 +57,7 @@ def render(lat, lon, stats, rec):
         f"| Cobertura dominante | {LANDCOVER.get(stats.get('landcover_mode'), 's/d')} |",
         f"| Incendios | {fire_txt} |",
         f"| Lluvia media anual | {stats.get('rain_mm') or 0:.0f} mm |",
+        f"| Conexión con abasto | {CONNECTIVITY_TXT.get(round(stats.get('connectivity') or 0, 1), 'parcial')} |",
         "",
         "### Obra recomendada",
         f"**{rec['obra']}**",
