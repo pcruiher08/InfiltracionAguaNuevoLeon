@@ -276,3 +276,13 @@ if missing:
     raise SystemExit(f"placeholders without value: {missing}")
 (ROOT / "informe.tex").write_text((ROOT / "preambulo.tex").read_text() + BODY)
 print("wrote informe.tex")
+
+# ---------------------------------------------------------------- slide deck (same numbers)
+SLIDES = (ROOT / "presentacion_plantilla.tex").read_text()
+for k, v in V.items():
+    SLIDES = SLIDES.replace(f"«{k}»", v)
+missing = __import__("re").findall(r"«(\w+)»", SLIDES)
+if missing:
+    raise SystemExit(f"slide placeholders without value: {missing}")
+(ROOT / "presentacion.tex").write_text(SLIDES)
+print("wrote presentacion.tex")

@@ -16,6 +16,8 @@ En lo más crítico de 2022 (junio y julio), Cerro Prieto y La Boca bajaron a me
 
 **Informe técnico en PDF (52 páginas con apéndices, trece preguntas de investigación):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Para regenerar todo desde los datos: `bash informe/regenerar.sh` (Earth Engine, 1 a 2 horas); sólo figuras y PDF desde los JSON guardados: `bash informe/regenerar.sh --pdf`.
 
+**Presentación para Pronatura (14 diapositivas, Beamer):** [`docs/presentacion-zmm.pdf`](docs/presentacion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/presentacion-zmm.pdf). Fuente: [`informe/presentacion_plantilla.tex`](informe/presentacion_plantilla.tex); las cifras se llenan con `informe/generar.py`, igual que el informe.
+
 ---
 
 ## La solución en 6 piezas

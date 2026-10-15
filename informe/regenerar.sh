@@ -27,6 +27,7 @@ fi
 $PY informe/figuras.py
 $PY informe/mapas.py
 $PY informe/generar.py
-(cd informe && tectonic informe.tex)
+(cd informe && tectonic informe.tex && tectonic presentacion.tex)
 cp informe/informe.pdf docs/infiltracion-zmm.pdf
-echo "listo: informe/informe.pdf y docs/infiltracion-zmm.pdf"
+cp informe/presentacion.pdf docs/presentacion-zmm.pdf
+echo "listo: informe, presentación y copias en docs/"
