@@ -1,5 +1,6 @@
 """FastAPI backend: EE tile URLs for the index, site sampling, rule-based proposal sheets."""
 from pathlib import Path
+from typing import Dict, Optional
 
 import ee
 from dotenv import load_dotenv
@@ -19,7 +20,7 @@ PALETTE = ["#f7fcb9", "#addd8e", "#41ab5d", "#006837"]
 
 
 class WeightsIn(BaseModel):
-    weights: dict[str, float] | None = None
+    weights: Optional[Dict[str, float]] = None
 
 
 class SiteIn(WeightsIn):

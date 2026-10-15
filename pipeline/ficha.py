@@ -51,7 +51,7 @@ def render(lat, lon, stats, rec):
         f"| NDVI temporada seca | {stats.get('ndvi') or 0:.2f} |",
         f"| Textura de suelo | {TEXTURES.get(round(stats.get('texture_class') or 0), 's/d')} "
         f"(arena−arcilla {stats.get('sand_minus_clay') or 0:.0f}%) |",
-        f"| Cobertura dominante | {LANDCOVER.get(stats.get('landcover_mode'), 's/d')} |",
+        f"| Cobertura dominante | {LANDCOVER.get(round(stats.get('landcover_mode') or 0), 's/d')} |",
         f"| Incendios | {fire_txt} |",
         f"| Lluvia media anual | {stats.get('rain_mm') or 0:.0f} mm |",
         "",
