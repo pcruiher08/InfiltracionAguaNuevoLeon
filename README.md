@@ -167,7 +167,12 @@ Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terr
 1. **Tormenta:** 40 mm de lluvia uniforme sobre la ventana de ~1.2 km.
 2. **Ruteo por celdas:** se usa la misma red de flujo D8 del optimizador. En cada paso el agua avanza una celda (~30 m) ladera abajo y la ladera degradada infiltra 1 mm por paso.
 3. **Obras:** las barreras encharcan hasta ~45 mm por celda (≈ 40 m³) y las presas en cárcava hasta ~120 mm. Lo encharcado infiltra a 6 mm por paso y el excedente sigue escurriendo.
-4. **Resultado:** animación en el mapa, hidrograma del agua que sale de la ventana (sin y con barreras) y balance en m³.
+4. **Resultado en tres vistas:**
+    - **Sin barreras:** el agua escurriendo ladera abajo (azul).
+    - **Con barreras:** el mismo escurrimiento más el **agua retenida** por barreras y presas (aqua).
+    - **Diferencia:** cuánto **bajó el flujo total** de la tormenta en cada celda (naranja). La reducción empieza en cada barrera y sigue cauce abajo.
+
+    Además hay un hidrograma del agua que sale de la ventana (sin y con barreras) y un balance en m³. En la app local, el botón **▶ Ver flujo de agua (demo)** lo muestra en un clic.
 
 | Sitio | Escurrimiento que sale | Pico | Infiltración adicional por tormenta |
 |---|---|---|---|
