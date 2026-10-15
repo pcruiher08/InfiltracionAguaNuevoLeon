@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
 
 from api import barriers_api, fires_api, portfolio_api  # noqa: E402
-from pipeline import ficha, layers, obras, optimize  # noqa: E402
+from pipeline import ficha, layers, obras, optimize, simulate  # noqa: E402
 from pipeline.config import AOI_BBOX, CONNECTIVITY_TIERS, DEFAULT_WEIGHTS, SUPPLY_POINTS  # noqa: E402
 
 app = FastAPI(title="Infiltración ZMM")
@@ -116,6 +116,21 @@ def optimize_supply(body: OptimizeIn):
     """Where to restore to maximize water delivered to the supply sources."""
     try:
         return optimize.optimize(body.budget_ha, body.mode)
+    except ee.EEException as e:
+        raise HTTPException(502, str(e))
+
+
+class SimulateIn(BaseModel):
+    lon: float
+    lat: float
+    budget_m: float = 1500
+
+
+@app.post("/api/simulate")
+def simulate_storm(body: SimulateIn):
+    """Storm runoff without vs with the optimized barriers (animated frames)."""
+    try:
+        return simulate.simulate(body.lon, body.lat, body.budget_m)
     except ee.EEException as e:
         raise HTTPException(502, str(e))
 

@@ -53,6 +53,7 @@
   .ends { display:flex; justify-content:space-between; color:#6b675f; }
   .status:empty { display:none; }
   .leaflet-labels-pane { pointer-events:none; }
+  .sim-pix { image-rendering:pixelated; }
   .stat { display:flex; justify-content:space-between; gap:8px; border-bottom:1px solid var(--line); padding:3px 0; font-size:12px; }
   .stat .sw { width:12px; height:12px; }
   .sw { display:inline-block; border-radius:3px; vertical-align:-2px; margin-right:6px; }
@@ -94,6 +95,7 @@
   <h2>Sitio</h2>
   <div id="site" class="muted">Haz clic en el mapa para generar la ficha de obra de un sitio.</div>
   <section id="barriers-panel"></section>
+  <section id="sim-panel"></section>
   <div id="ficha"></div>
 </aside>
 <div id="map"></div>
@@ -272,5 +274,6 @@ init().catch(e => setStatus("Error: " + e.message.slice(0, 120)));
 <script src="portfolio.js"></script>
 <script src="barriers.js"></script>
 <script src="optimize.js"></script>
+<script src="simulate.js"></script>
 </body>
 </html>

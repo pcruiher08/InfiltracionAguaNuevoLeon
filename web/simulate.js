@@ -1,0 +1,115 @@
+// Storm runoff simulation: animates water flowing downslope without vs with the barriers.
+(() => {
+  const { map, post } = window.app;
+  const panel = document.getElementById("sim-panel");
+  const WORK = /barrera|zanja/i, SKIP = /^(fuera de alcance|no intervenir|conservaci)/i;
+  const fmt = n => Math.round(n).toLocaleString("es-MX");
+  let site = null, sim = null, overlay = null, frame = 0, timer = null, scen = "without";
+  const canvas = document.createElement("canvas");
+
+  app.onSite(s => {
+    stop(); site = s; sim = null;
+    if (overlay) { map.removeLayer(overlay); overlay = null; }
+    const obra = (s.recommendation && s.recommendation.obra) || "";
+    panel.innerHTML = WORK.test(obra) && !SKIP.test(obra) ? `
+      <div style="border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:10px">
+        <b>Simulación de tormenta</b>
+        <div class="muted">Tormenta de 40 mm: el agua baja por la ladera sin barreras y con las barreras optimizadas.</div>
+        <button id="sim-run">Simular escurrimiento</button>
+        <div id="sim-out"></div></div>` : "";
+    const b = panel.querySelector("#sim-run");
+    if (b) b.onclick = run;
+  });
+
+  async function run(ev) {
+    const btn = ev.target; btn.disabled = true; btn.textContent = "Simulando…";
+    // make sure the barriers are drawn for the same budget
+    const bp = document.getElementById("bp-run");
+    if (bp && !document.querySelector("#bp-out .bp-dl")) bp.click();
+    const budget = +(document.getElementById("bp-budget") || { value: 1500 }).value;
+    try {
+      sim = await post("/api/simulate", { lon: site.lon, lat: site.lat, budget_m: budget });
+      for (const k of ["without", "with"]) {
+        const bin = atob(sim[k].frames), u = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+        sim[k].u8 = u;
+      }
+      canvas.width = sim.grid.cols; canvas.height = sim.grid.rows;
+      // hide the blue priority layer so the water reads clearly
+      const op = document.getElementById("opacity");
+      if (op && +op.value > 0.05) { op.value = 0.05; op.dispatchEvent(new Event("input")); }
+      renderPanel(); scen = "without"; frame = 0; draw(); play();
+    } catch (e) {
+      panel.querySelector("#sim-out").innerHTML = `<div class="muted">Error: ${String(e.message).slice(0, 160)}</div>`;
+    } finally { btn.disabled = false; btn.textContent = "Simular de nuevo"; }
+  }
+
+  function renderPanel() {
+    const s = sim.summary, a = sim.without.totals, b = sim.with.totals;
+    const kv = (k, x, y) => `<div class="stat"><span>${k}</span><b>${x}</b><b>${y}</b></div>`;
+    panel.querySelector("#sim-out").innerHTML = `
+      <div class="seg" style="margin-top:8px">
+        <label><input type="radio" name="sim-s" value="without" checked><span>Sin barreras</span></label>
+        <label><input type="radio" name="sim-s" value="with"><span>Con barreras</span></label>
+      </div>
+      <div class="row" style="gap:6px;margin:6px 0">
+        <button id="sim-play" style="margin:0">⏸</button>
+        <input type="range" id="sim-t" min="0" max="${sim.grid.frames - 1}" value="0" style="flex:1">
+        <span id="sim-tl" class="muted" style="width:44px;text-align:right"></span>
+      </div>
+      <svg id="sim-chart" viewBox="0 0 300 90" style="width:100%;height:90px"></svg>
+      <div class="muted"><span style="color:#9c9890">━</span> sin barreras &nbsp; <span style="color:#1c5cab">━</span> con barreras · agua que sale de la ventana</div>
+      <div style="font-size:15px;font-weight:600;margin-top:8px">−${s.outflow_reduction_pct}% escurrimiento · −${s.peak_reduction_pct}% pico</div>
+      <div class="muted">+${fmt(s.extra_infiltration_m3)} m³ infiltrados en esta tormenta (${s.n_barriers} barreras, ${s.n_dams} presas en cárcavas)</div>
+      <div class="stat" style="margin-top:6px"><span></span><b>Sin</b><b>Con</b></div>
+      ${kv("Sale de la ventana", fmt(a.outflow) + " m³", fmt(b.outflow) + " m³")}
+      ${kv("Infiltra en ladera", fmt(a.infiltrated_hill) + " m³", fmt(b.infiltrated_hill) + " m³")}
+      ${kv("Infiltra tras obras", "—", fmt(b.infiltrated_works) + " m³")}
+      <details><summary>Cómo funciona</summary><ul class="muted">${sim.notes.map(n => `<li>${n}</li>`).join("")}
+        <li>El agua que sale puede superar la lluvia sobre la ventana porque también entra escurrimiento desde ladera arriba.</li></ul></details>`;
+    panel.querySelectorAll("input[name=sim-s]").forEach(r => r.onchange = () => { scen = r.value; draw(); });
+    panel.querySelector("#sim-play").onclick = () => timer ? stop() : play();
+    panel.querySelector("#sim-t").oninput = e => { stop(); frame = +e.target.value; draw(); };
+    chart();
+  }
+
+  function chart() {
+    const svg = panel.querySelector("#sim-chart");
+    const a = sim.without.outflow, b = sim.with.outflow, n = a.length, mx = Math.max(...a, ...b);
+    const path = s => s.map((v, i) => `${i ? "L" : "M"}${(i / (n - 1) * 296 + 2).toFixed(1)},${(86 - v / mx * 80).toFixed(1)}`).join("");
+    svg.innerHTML = `<line x1="2" y1="86" x2="298" y2="86" stroke="var(--line)"/>
+      <path d="${path(a)}" fill="none" stroke="#9c9890" stroke-width="2"/>
+      <path d="${path(b)}" fill="none" stroke="#1c5cab" stroke-width="2"/>
+      <line id="sim-cur" x1="2" y1="4" x2="2" y2="86" stroke="var(--fg)" stroke-width="1" stroke-dasharray="3 3"/>`;
+  }
+
+  function draw() {
+    const { rows, cols, frames } = sim.grid, u = sim[scen].u8, off = frame * rows * cols;
+    const ctx = canvas.getContext("2d"), img = ctx.createImageData(cols, rows);
+    for (let i = 0; i < rows * cols; i++) {
+      const v = u[off + i];
+      if (v < 6) { img.data[i * 4 + 3] = 0; continue; }
+      const t = v / 255;  // light → deep blue
+      img.data[i * 4] = Math.round(170 - 160 * t); img.data[i * 4 + 1] = Math.round(215 - 150 * t);
+      img.data[i * 4 + 2] = Math.round(255 - 80 * t); img.data[i * 4 + 3] = Math.round(90 + 165 * t);
+    }
+    ctx.putImageData(img, 0, 0);
+    const url = canvas.toDataURL();
+    if (!overlay) overlay = L.imageOverlay(url, sim.grid.bounds, { opacity: .95, className: "sim-pix" }).addTo(map);
+    else overlay.setUrl(url);
+    const step = frame * sim.params.frame_every;
+    panel.querySelector("#sim-t").value = frame;
+    panel.querySelector("#sim-tl").textContent = `t ${step}`;
+    const cur = panel.querySelector("#sim-cur");
+    if (cur) { const x = (step / (sim.without.outflow.length - 1) * 296 + 2).toFixed(1); cur.setAttribute("x1", x); cur.setAttribute("x2", x); }
+  }
+
+  function play() {
+    stop(); const b = panel.querySelector("#sim-play"); if (b) b.textContent = "⏸";
+    timer = setInterval(() => { frame = (frame + 1) % sim.grid.frames; draw(); }, 120);
+  }
+  function stop() {
+    if (timer) clearInterval(timer); timer = null;
+    const b = panel.querySelector("#sim-play"); if (b) b.textContent = "▶";
+  }
+})();

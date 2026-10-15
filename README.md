@@ -16,7 +16,7 @@ En 2022, Cerro Prieto y La Boca bajaron a menos del 5 % de su capacidad, y la ZM
 
 ---
 
-## La solución en 5 piezas
+## La solución en 6 piezas
 
 | # | Pieza | Pregunta que responde |
 |---|---|---|
@@ -25,6 +25,7 @@ En 2022, Cerro Prieto y La Boca bajaron a menos del 5 % de su capacidad, y la ZM
 | 3 | **Ficha de obra** por sitio (motor de reglas) | ¿Qué obra hacer aquí y por qué? |
 | 4 | **Optimización de captación para las presas** | Con *N* hectáreas, ¿dónde restaurar para retener más agua que llegue a cada fuente de abasto? |
 | 5 | **Optimizador de ubicación de barreras** | ¿Exactamente dónde trazar las barreras para interceptar más escurrimiento? |
+| 6 | **Simulación de tormenta** | ¿Qué cambia cuando llueve, sin barreras y con barreras? |
 
 Todo es **determinista y auditable**: no hay modelos de lenguaje en la aplicación. Cada recomendación muestra las razones que la produjeron.
 
@@ -136,6 +137,23 @@ Dentro de una ventana de ~1.2 km alrededor del sitio (`pipeline/barriers.py`):
 Duplicar el presupuesto rinde cada vez menos (61 % → 77 %), que es el comportamiento esperado de una buena optimización: los primeros metros van a donde más se intercepta.
 
 ---
+
+### 7. Simulación de tormenta: sin barreras vs con barreras
+
+Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terreno y con las barreras optimizadas (`pipeline/simulate.py`, `POST /api/simulate`).
+
+1. **Tormenta:** 40 mm de lluvia uniforme sobre la ventana de ~1.2 km.
+2. **Ruteo por celdas:** se usa la misma red de flujo D8 del optimizador. En cada paso el agua avanza una celda (~30 m) ladera abajo y la ladera degradada infiltra 1 mm por paso.
+3. **Obras:** las barreras encharcan hasta ~45 mm por celda (≈ 40 m³) y las presas en cárcava hasta ~120 mm. Lo encharcado infiltra a 6 mm por paso y el excedente sigue escurriendo.
+4. **Resultado:** animación en el mapa, hidrograma del agua que sale de la ventana (sin y con barreras) y balance en m³.
+
+| Sitio | Escurrimiento que sale | Pico | Infiltración adicional por tormenta |
+|---|---|---|---|
+| Pilón (-100.05, 25.00) | −31 % | −22 % | +17,900 m³ |
+| Santa Catarina (-100.45, 25.45) | −31 % | −24 % | +20,300 m³ |
+| La Boca (-100.12, 25.43) | −30 % | −14 % | +19,600 m³ |
+
+> Es un **modelo didáctico** para comparar escenarios sobre el mismo terreno y la misma tormenta. No modela humedad previa del suelo ni velocidades reales: no es un modelo hidrológico calibrado.
 
 ## ¿Por qué estos sitios?
 
@@ -263,16 +281,18 @@ pipeline/
   obras.py        Motor de reglas: sitio → tipo de obra, razones, espaciamiento
   ficha.py        Ficha de obra en Markdown
   barriers.py     Optimizador de ubicación de barreras (DEM → flujo → curvas → selección)
+  simulate.py     Simulación de tormenta sin/con barreras (ruteo D8 por celdas)
   optimize.py     Optimización de captación: celdas de 1 km → m³ al abasto → selección por presupuesto
   build_static.py Genera la versión estática de GitHub Pages
 api/
   main.py         /api/config, /api/tiles, /api/summary, /api/basins, /api/robustness, /api/site
   barriers_api.py /api/barriers
-  (main.py)       /api/optimize
+  (main.py)       /api/optimize, /api/simulate
 web/
   index.html      Mapa, controles, leyenda, ficha
   barriers.js     Panel del optimizador de barreras
   optimize.js     Panel de optimización de captación
+  simulate.js     Animación de la tormenta e hidrograma
 ```
 
 ## Próximos pasos
