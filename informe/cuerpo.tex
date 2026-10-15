@@ -1,5 +1,5 @@
 \begin{abstract}
-En el momento más crítico de la crisis hídrica de 2022, las presas Cerro Prieto y La Boca descendieron a menos de 5\% de su capacidad y el abasto disponible para la zona metropolitana de Monterrey (ZMM) se estimó entre 13,000 y 13,500 L/s, frente a un consumo regular de 16,500 L/s. Pronatura Noreste planteó la pregunta: \emph{¿dónde restaurar suelos en partes altas para favorecer la infiltración?} Este trabajo responde diez preguntas de investigación con datos satelitales abiertos procesados en Google Earth Engine. Se delimitan las cuencas que abastecen a la ZMM con HydroBASINS, se construye un índice de prioridad de siete criterios y se mide su robustez con 40 ponderaciones aleatorias. La elección de sitios se formula como un problema de optimización lineal con restricción de presupuesto que maximiza el agua retenida que llega a cada fuente de abasto, y la ubicación de las barreras como un problema de \emph{minimum-cost maximum-flow} (MCMF) sobre la red de drenaje D8, en el que todo el escurrimiento de la ladera sale de la red y, entre todos los flujos máximos (\emph{maximum flow}), se selecciona el de menor costo, es decir, el que retiene más agua en las barreras sin exceder su capacidad de almacenamiento e infiltración. En laderas de 8° o más hay «alta» ha de prioridad alta, «directa_pct» de ellas en cuencas que drenan directo a una fuente de abasto y «robusta_pct» robustas. La restauración de 3,000 ha seleccionadas por la optimización retendría del orden de «max_ls» L/s (intervalo de 90\% por Monte Carlo de «mc_p5» a «mc_p95» L/s), equivalentes a «max_days» día de abasto de la ZMM al año; con la lluvia de los doce meses previos a la crisis de 2022 se mantendrían «dr_ls» L/s y «dr_overlap» de los mismos sitios. A escala de programa, 30,000 ha aportarían «ab30_d» L/s en un año como el previo a la crisis («ab30_pct» del déficit estimado de 2022), y aun la totalidad de las «ab_all_ha» ha elegibles cubriría sólo «aball_pct» de dicho déficit. Estas cifras son agua retenida bruta. Un análisis probabilístico de su destino, que descuenta la evapotranspiración y el escurrimiento que ya llegaba a las presas, indica que la ganancia neta es positiva con probabilidad de «pg_sc» en el acuífero del Santa Catarina, pero que en las cuencas de las presas la retención probablemente reduce el volumen que llega al embalse; seleccionando sólo laderas del Santa Catarina, 30,000 ha aportarían una ganancia neta esperada del orden de «n30n_mean» L/s. Cada obra se acompaña únicamente con especies nativas del piso de vegetación de su ladera, según inventarios publicados en Nuevo León. En tormentas grandes, la retención está limitada por la capacidad de almacenamiento de las barreras más que por su posición: retienen «ret5» del escurrimiento de una tormenta de 5 mm y sólo «ret40» del de una de 40 mm. El trazo guiado por MCMF retiene hasta «gain_max»\% más que un trazo \emph{greedy} por área cuando la capacidad no se satura.
+En el momento más crítico de la crisis hídrica de 2022, las presas Cerro Prieto y La Boca descendieron a menos de 5\% de su capacidad y el abasto disponible para la zona metropolitana de Monterrey (ZMM) se estimó entre 13,000 y 13,500 L/s, frente a un consumo regular de 16,500 L/s. Pronatura Noreste planteó la pregunta: \emph{¿dónde restaurar suelos en partes altas para favorecer la infiltración?} Este trabajo responde diez preguntas de investigación con datos satelitales abiertos procesados en Google Earth Engine. Se delimitan las cuencas que abastecen a la ZMM con HydroBASINS, se construye un índice de prioridad de siete criterios y se mide su robustez con 40 ponderaciones aleatorias. La elección de sitios se formula como un problema de optimización lineal con restricción de presupuesto que maximiza el agua retenida que llega a cada fuente de abasto, y la ubicación de las barreras como un problema de \emph{minimum-cost maximum-flow} (MCMF) sobre la red de drenaje D8, en el que todo el escurrimiento de la ladera sale de la red y, entre todos los flujos máximos (\emph{maximum flow}), se selecciona el de menor costo, es decir, el que retiene más agua en las barreras sin exceder su capacidad de almacenamiento e infiltración. En laderas de 8° o más hay «alta» ha de prioridad alta, «directa_pct» de ellas en cuencas que drenan directo a una fuente de abasto y «robusta_pct» robustas. La restauración de 3,000 ha seleccionadas por la optimización retendría del orden de «max_ls» L/s de agua bruta (intervalo de 90\% por Monte Carlo de «mc_p5» a «mc_p95» L/s), equivalentes a «max_days» día de abasto de la ZMM al año; con la lluvia de los doce meses previos a la crisis de 2022 se mantendrían «dr_ls» L/s y «dr_overlap» de los mismos sitios. A escala de programa, 30,000 ha retendrían «ab30_d» L/s brutos en un año como el previo a la crisis («ab30_pct» del déficit estimado de 2022), y aun la totalidad de las «ab_all_ha» ha elegibles cubriría sólo «aball_pct» de dicho déficit. Estas cifras son agua retenida bruta. Un análisis probabilístico de su destino, que descuenta la evapotranspiración y el escurrimiento que ya llegaba a las presas, indica que la ganancia neta es positiva con probabilidad de «pg_sc» en el acuífero del Santa Catarina, pero que en las cuencas de las presas la retención probablemente reduce el volumen que llega al embalse; seleccionando sólo laderas del Santa Catarina, 30,000 ha aportarían una ganancia neta esperada del orden de «n30n_mean» L/s. Cada obra se acompaña únicamente con especies nativas del tipo de vegetación de su ladera, según la carta del INEGI e inventarios publicados en Nuevo León. En tormentas grandes, la retención está limitada por la capacidad de almacenamiento de las barreras más que por su posición: retienen «ret5» del escurrimiento de una tormenta de 5 mm y sólo «ret40» del de una de 40 mm. El trazo guiado por MCMF retiene hasta «gain_max»\% más que un trazo \emph{greedy} por área cuando la capacidad no se satura.
 
 \medskip
 \textbf{Palabras clave:} infiltración, restauración de suelos, cuencas de abasto, \emph{minimum-cost maximum-flow}, programación lineal, recarga, vegetación nativa, dualidad, Monte Carlo, Gumbel, frontera de Pareto, Google Earth Engine, Monterrey.
@@ -38,7 +38,7 @@ Pronatura Noreste planteó el reto en el Grok Monterrey Build Day a partir de do
 \hyperref[res:p7]{P7} & ¿Qué efecto tienen las barreras durante una tormenta? & \ref{fig:m4_simulacion}, \ref{fig:g7_tormenta_sitios} \\
 \hyperref[res:p8]{P8} & ¿Cuánto aumentaría el abasto de la ZMM a escala de programa y qué fracción del déficit de 2022 habría cubierto? & \ref{fig:g13_abasto} \\
 \hyperref[res:p9]{P9} & ¿A dónde va el agua retenida y cuánta aumenta realmente el abasto de cada fuente? & \ref{fig:g14_destino}, \ref{fig:g15_neto} \\
-\hyperref[res:p10]{P10} & ¿Qué vegetación nativa debe acompañar a cada tipo de obra según el piso de la ladera? & \ref{tab:pisos}, \ref{tab:especies} \\
+\hyperref[res:p10]{P10} & ¿Qué vegetación nativa debe acompañar a cada tipo de obra según el tipo de vegetación de la ladera? & \ref{tab:pisos}, \ref{tab:especies} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -102,6 +102,8 @@ Precipitación diaria & CHIRPS & Lluvia media, tormentas diarias, sequía jul 20
 Humedad del suelo & NASA SMAP L4 v8 & Humedad superficial en temporada seca \\
 Cuencas & WWF HydroSHEDS / HydroBASINS nivel 12 & Cuencas de abasto y conectividad \\
 Agua superficial & JRC Global Surface Water 1.4 & Ubicar las presas \\
+Evapotranspiración & MODIS MOD16A2GF & Destino del agua retenida (2015 a 2024) \\
+Uso del suelo y vegetación & INEGI serie VII, 1:250,000 & Tipo de vegetación de referencia \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -160,7 +162,7 @@ $e_g$ & Fracción del agua infiltrada que se pierde por evapotranspiración en l
 $\phi_g$ & Fracción del agua infiltrada no evapotranspirada que llega a la fuente $g$ & adimensional \\
 $\tau_g$ & Fracción del agua retenida que, sin obras, habría llegado a $g$ como escurrimiento & adimensional \\
 $G_g$ & Ganancia neta de la fuente $g$ por cada m³ retenido, $(1-e_g)\phi_g-\tau_g$ & adimensional \\
-$b(p)$, $\mathcal E_b$ & Piso de vegetación del pixel $p$ y especies de referencia del piso $b$ & \\
+$b(p)$, $\mathcal E_b$ & Tipo de vegetación del pixel $p$ (INEGI) y especies de referencia del tipo $b$ & \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -253,11 +255,11 @@ estimada con la lluvia observada $P_d$ en cada día $d$ de 2019 a 2026 (CHIRPS).
 
 \subsection{Optimización de captación para las fuentes de abasto}
 
-El territorio se divide en celdas $i$ de 1 km con área elegible $A_i$ (ha) en laderas de 8° a 35°, sin zona urbana, agua ni cobertura densa. El agua retenida que llega al abasto por año si se restaura toda la celda es
+El territorio se divide en celdas $i$ de 1 km con área elegible $A_i$ (ha) en laderas de 8° a 35°, sin zona urbana, agua ni cobertura densa. El agua retenida que llegaría al abasto por año si se restaura toda la celda y toda el agua retenida llega a la fuente es
 \begin{equation}
 v_i = 10\,P_i\, C_i\, A_i\, \rho(P_i)\, k_i, \qquad C_i = 0.05 + 0.35\,\frac{\min\{\theta_i,35^\circ\}}{35^\circ} + 0.35\,\bigl(1-\ell(\text{NDVI}_i;0.1,0.7)\bigr),
 \end{equation}
-en m³/año, donde $P_i$ es la lluvia media anual de la celda (mm), el factor 10 convierte mm sobre ha en m³, $\theta_i$ y $\text{NDVI}_i$ son la pendiente y el NDVI medios de su área elegible, $k_i$ es la conectividad de su cuenca y $C_i\in[0.05,0.75]$ es un coeficiente de escurrimiento que crece con la pendiente y el suelo desnudo. Dado un presupuesto de $H$ hectáreas, se resuelve el problema de optimización lineal
+en m³/año, donde $P_i$ es la lluvia media anual de la celda (mm), el factor 10 convierte mm sobre ha en m³, $\theta_i$ y $\text{NDVI}_i$ son la pendiente y el NDVI medios de su área elegible, $k_i$ es la conectividad de su cuenca y $C_i\in[0.05,0.75]$ es un coeficiente de escurrimiento que crece con la pendiente y el suelo desnudo. En adelante, este volumen se denomina \emph{agua bruta}: es una cota superior del aporte al abasto, porque supone que toda el agua retenida llega a la fuente. La sección~\ref{sec:destino} relaja ese supuesto y estima la \emph{ganancia neta}. Dado un presupuesto de $H$ hectáreas, se resuelve el problema de optimización lineal
 \begin{equation}
 W^\ast(H)=\max_{x}\ \sum_i v_i\, x_i \quad\text{s.a.}\quad \sum_i A_i\, x_i \le H,\qquad 0\le x_i\le 1,
 \end{equation}
@@ -394,23 +396,15 @@ Con $N=«fate_n»$ escenarios de Monte Carlo, que incluyen también los parámet
 \end{equation}
 y la distribución de $W_{\text{neta}}$ para dos selecciones: la de la sección de optimización, que maximiza el agua bruta $\sum_i x_iR_ik_i$, y una que maximiza la ganancia neta esperada $\sum_i x_iR_i\,\mathbb E[G_{g(i)}]$ y excluye las celdas con $\mathbb E[G_{g(i)}]<0$. La importancia de cada parámetro se mide con el coeficiente de correlación de rangos de Spearman entre el parámetro y $W_{\text{neta}}$. Para evaluar si el signo de $G_g$ depende de las cotas elegidas, se repite el cálculo con cotas optimistas: $e_g\sim\mathcal U(0.2,\,\text{ET}/P)$, $\phi_g\sim\mathcal U(0.6,0.95)$ y $\tau_g\sim\mathcal U(0.1,0.5)$ en las presas, y $\phi_g\sim\mathcal U(0.7,0.95)$ y $\tau_g\sim\mathcal U(0,0.2)$ en el Santa Catarina.
 
-\subsection{Selección de vegetación por piso}\label{sec:vegetacion}
+\subsection{Selección de vegetación por tipo de vegetación}\label{sec:vegetacion}
 
-Cada pixel elegible $p$ se asigna a un piso de vegetación $b(p)$ con su elevación $z$ (NASADEM) y su lluvia media anual $P$ (CHIRPS):
-\begin{equation}
-b(p)=\begin{cases}
-\text{matorral desértico rosetófilo} & \text{si } P<500\ \text{mm},\\
-\text{matorral submontano} & \text{si } P\ge500\ \text{mm y } z<900\ \text{m},\\
-\text{encino} & \text{si } P\ge500\ \text{mm y } 900\le z<1{,}500\ \text{m},\\
-\text{pino-encino} & \text{si } P\ge500\ \text{mm y } 1{,}500\le z<2{,}200\ \text{m},\\
-\text{bosque de alta montaña} & \text{si } P\ge500\ \text{mm y } z\ge2{,}200\ \text{m}.
-\end{cases}
-\end{equation}
-Los umbrales son aproximados: el límite superior del matorral submontano se fija en 900 m, por encima de los 800 m reportados \citap{alanis2015a}, para incluir la transición hacia el encinar, y el de 500 mm separa las laderas secas a sotavento. Sea $\mathcal E_b$ el conjunto de especies de referencia del piso $b$, tomado de inventarios publicados en Nuevo León (cuadro~\ref{tab:especies}); para el piso de encino se usan las especies de hoja ancha y los enebros de los inventarios de pino-encino, porque no se consultó un inventario del encinar puro. La regla de selección es
+El tipo de vegetación de cada sitio se toma de la carta de uso del suelo y vegetación del INEGI, serie VII, escala 1:250,000 \citap{inegi2021}, obtenida del servicio de mapas de CONAFOR para el área de análisis (2,104 polígonos). Las clases se agrupan en tipos de vegetación de referencia; la vegetación secundaria arbustiva o arbórea se asigna a su tipo primario, porque es el ecosistema al que tiende la restauración. Sea $b(p)$ el tipo de vegetación del pixel $p$. Como las celdas de 1 km contienen varios polígonos, el área elegible $A_i$ de cada celda se reparte en proporción a la superficie de cada tipo dentro de ella.
+
+Sea $\mathcal E_b$ el conjunto de especies de referencia del tipo $b$, tomado de inventarios publicados en Nuevo León (cuadro~\ref{tab:especies}); para el bosque de encino se usan las especies de hoja ancha y los enebros de los inventarios de pino-encino, porque no se consultó un inventario del encinar puro. La regla de selección es
 \begin{equation}
 \text{especies admisibles en el sitio } p \;=\; \mathcal E_{b(p)},
 \end{equation}
-es decir, ninguna especie de otro piso, aunque sea nativa de la sierra, y nunca una especie exótica. Como $b(p)$ es una estimación, el piso de cada sitio se confirma en campo con la vegetación remanente de las laderas vecinas, que sirve como ecosistema de referencia \citap{ser2004}, y el material vegetal se obtiene de procedencia local. Para los bosques de más de 2,200 m no se propone lista: los inventarios consultados no los cubren y algunas de sus especies están protegidas por la NOM-059-SEMARNAT-2010 \citap{nom059}. Se calcula la superficie de cada piso dentro de las celdas seleccionadas con 3,000 y 30,000 ha.
+es decir, ninguna especie de otro tipo de vegetación, aunque sea nativa de la sierra, y nunca una especie exótica. Donde el INEGI registra pastizal inducido o cultivado o agricultura, el tipo de referencia es el de la vegetación natural contigua. Como la carta tiene escala 1:250,000, el tipo de cada sitio se confirma en campo con la vegetación remanente de las laderas vecinas, que sirve como ecosistema de referencia \citap{ser2004}, y el material vegetal se obtiene de procedencia local. Para los bosques de oyamel y de ayarín no se propone lista: los inventarios consultados no los cubren y algunas de sus especies están protegidas por la NOM-059-SEMARNAT-2010 \citap{nom059}. Se calcula la superficie de cada tipo dentro de las celdas seleccionadas con 3,000 y 30,000 ha.
 
 \section{Resultados}
 
@@ -438,12 +432,12 @@ En laderas de 8° o más se identifican \textbf{«alta» ha de prioridad alta} y
 
 \respuesta{La prioridad es mayoritariamente robusta: «robusta» ha («robusta_pct» de la prioridad alta) conservan esa clase en al menos la mitad de las ponderaciones. Este núcleo constituye el punto de partida más seguro; la clasificación del resto depende de la ponderación de los criterios.}
 
-\subsection{P4 · Agua adicional en las fuentes de abasto}\label{res:p4}
+\subsection{P4 · Agua bruta retenida para las fuentes de abasto}\label{res:p4}
 
 \grafica{m2_optimizacion}{Celdas óptimas para la captación}{Optimización con 3,000 ha repartidas entre las cuatro fuentes, en dos acercamientos. Fuente: elaboración propia.}
 
 \begin{table}[H]\centering\small
-\caption{Optimización con 3,000 ha restauradas}\label{tab:optim}
+\caption{Optimización con 3,000 ha restauradas (agua bruta)}\label{tab:optim}
 \begin{tabularx}{\linewidth}{Xrrrr}
 \toprule
  & \multicolumn{2}{c}{Máxima agua total} & \multicolumn{2}{c}{Repartir entre presas} \\
@@ -457,13 +451,13 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{«max_days»} & \multicol
 \end{tabularx}
 \end{table}
 
-\grafica{g4_agua_hectareas}{Agua para la ZMM según hectáreas restauradas}{L/s retenidos que llegan al abasto al restaurar primero las celdas de mayor rendimiento, en un año normal y con la lluvia de julio de 2021 a junio de 2022. Fuente: elaboración propia con CHIRPS.}
+\grafica{g4_agua_hectareas}{Agua bruta retenida para la ZMM según hectáreas restauradas}{L/s de agua bruta (cota superior del aporte al abasto) al restaurar primero las celdas de mayor rendimiento, en un año normal y con la lluvia de julio de 2021 a junio de 2022. Fuente: elaboración propia con CHIRPS.}
 
-\grafica{g5_productividad}{Agua por hectárea, por fuente de abasto}{Distribución de m³/ha/año que llegarían al abasto, ponderada por hectárea elegible; la línea punteada indica la mediana. Fuente: elaboración propia.}
+\grafica{g5_productividad}{Agua bruta por hectárea, por fuente de abasto}{Distribución de m³/ha/año de agua bruta, ponderada por hectárea elegible; la línea punteada indica la mediana. Fuente: elaboración propia.}
 
 \lectura{Las medianas son de «prod_sc» m³/ha/año en Santa Catarina, «prod_cp» en Cerro Prieto, «prod_lb» en La Boca y «prod_ec» en El Cuchillo. La Boca recibe más lluvia, pero una proporción importante ocurre en tormentas grandes que desbordan las barreras, lo que reduce $\rho$; El Cuchillo rinde menos por su conexión lejana con el abasto. La curva de la figura~\ref{fig:g4_agua_hectareas} es casi lineal, lo que indica una amplia superficie con rendimientos similares. Para sumar 25 L/s se requieren unas «t25» ha; para 50 L/s, «t50» ha; para 100 L/s, «t100» ha, y para 200 L/s, «t200» ha.}
 
-\grafica{g9_incertidumbre}{Incertidumbre del agua retenida}{Distribución del agua retenida con 3,000 ha en 2,000 escenarios de parámetros (sección~\ref{sec:incertidumbre}). Fuente: elaboración propia.}
+\grafica{g9_incertidumbre}{Incertidumbre del agua bruta retenida}{Distribución del agua retenida con 3,000 ha en 2,000 escenarios de parámetros (sección~\ref{sec:incertidumbre}). Fuente: elaboración propia.}
 
 \lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen «mc_p50» L/s (intervalo de 90\% de «mc_p5» a «mc_p95» L/s); con el reparto entre presas, «mcb_p50» L/s (de «mcb_p5» a «mcb_p95» L/s). La selección es estable: «mc_p80» de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
 
@@ -475,7 +469,7 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{«max_days»} & \multicol
 
 \lectura{Sin exigir reparto ($\alpha=0$) se obtienen «w0» L/s con equidad $J=$ «j0»; con reparto igualitario ($\alpha=1$), «w1» L/s con $J=$ «j1». La frontera es aproximadamente lineal: cada 0.1 de equidad reduce el agua total en unos «pareto_slope» L/s, y con $\alpha=0.5$ se conservan «w05» L/s con $J=$ «j05». Pasar de la máxima agua al reparto igualitario reduce el agua en «bal_cost» y triplica la equidad.}
 
-\respuesta{Del orden de «max_ls» L/s con 3,000 ha seleccionadas por la optimización («max_m3» millones de m³ al año, equivalentes a «max_days» día de abasto de la ZMM; intervalo de 90\% de «mc_p5» a «mc_p95» L/s), principalmente en la cuenca del Santa Catarina. El reparto del presupuesto entre las cuatro fuentes produce «bal_ls» L/s, una reducción de «bal_cost» respecto del máximo.}
+\respuesta{En agua bruta, del orden de «max_ls» L/s con 3,000 ha seleccionadas por la optimización («max_m3» millones de m³ al año, equivalentes a «max_days» día de abasto de la ZMM; intervalo de 90\% de «mc_p5» a «mc_p95» L/s), principalmente en la cuenca del Santa Catarina. El reparto del presupuesto entre las cuatro fuentes produce «bal_ls» L/s, una reducción de «bal_cost» respecto del máximo. La ganancia neta, que descuenta la evapotranspiración y el escurrimiento que ya llegaba a las presas, es mucho menor: seleccionando por ganancia neta, 3,000 ha aportan en promedio «n3n_mean» L/s netos al acuífero del Santa Catarina (sección~\ref{res:p9}).}
 
 \subsection{P5 · Resistencia a la sequía y frecuencia de las tormentas}\label{res:p5}
 
@@ -483,7 +477,7 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{«max_days»} & \multicol
 
 \lectura{La tormenta de diseño de 40 mm en un día tiene un periodo de retorno de «t40_range» años según la cuenca, y la de 10 años es de «x10_range» mm. Dado que 1,500 m de barreras se llenan con unos «fill_mm» mm, en la mayoría de los años ocurre al menos una tormenta que las desborda; en esos eventos, la retención está limitada por la capacidad y no por la posición.}
 
-\respuesta{Sí. Con la lluvia de julio de 2021 a junio de 2022, las mismas 3,000 ha habrían retenido unos «dr_ls» L/s («dr_pct» de un año normal). En un año seco ocurren menos tormentas grandes que desborden las barreras, por lo que la fracción retenida aumenta y compensa parcialmente la menor precipitación. Al reoptimizar con esa lluvia se conserva «dr_overlap» de los sitios seleccionados.}
+\respuesta{Sí. Con la lluvia de julio de 2021 a junio de 2022, las mismas 3,000 ha habrían retenido unos «dr_ls» L/s de agua bruta («dr_pct» de un año normal). En un año seco ocurren menos tormentas grandes que desborden las barreras, por lo que la fracción retenida aumenta y compensa parcialmente la menor precipitación. Al reoptimizar con esa lluvia se conserva «dr_overlap» de los sitios seleccionados.}
 
 \subsection{P6 · Ubicación de las barreras}\label{res:p6}
 
@@ -510,8 +504,8 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{«max_days»} & \multicol
 \subsection{P8 · Contribución al sistema de abasto de la ZMM}\label{res:p8}
 
 \begin{table}[H]\centering\small
-\caption{Aporte al abasto de la ZMM según la superficie restaurada}\label{tab:abasto}
-{\color{gris}Selección con lluvia media, evaluada también con la lluvia de julio de 2021 a junio de 2022. Intervalo de 90\% por Monte Carlo. Déficit en el momento más crítico de 2022: 3,000 L/s (sección~\ref{sec:abasto}).\par}\smallskip
+\caption{Agua bruta retenida para el abasto de la ZMM según la superficie restaurada}\label{tab:abasto}
+{\color{gris}Selección con lluvia media, evaluada también con la lluvia de julio de 2021 a junio de 2022. Intervalo de 90\% por Monte Carlo. Déficit en el momento más crítico de 2022: 3,000 L/s (sección~\ref{sec:abasto}). Cota superior: la ganancia neta esperada es de «n3n_mean» L/s con 3,000 ha y de «n30n_mean» L/s con 30,000 ha (cuadro~\ref{tab:neta}).\par}\smallskip
 \begin{tabularx}{\linewidth}{Xrrrrr}
 \toprule
  & \multicolumn{1}{c}{Año normal} & \multicolumn{2}{c}{Año 2021 a 2022} & \multicolumn{2}{c}{Proporción} \\
@@ -522,9 +516,9 @@ Hectáreas & L/s & L/s & Intervalo 90\% & del consumo & del déficit 2022 \\
 \end{tabularx}
 \end{table}
 
-\grafica{g13_abasto}{Aporte al abasto frente al déficit de 2022}{Agua retenida que llega al abasto según la superficie restaurada, con lluvia media y con la lluvia del año previo a la crisis; las barras de error son el intervalo de 90\% por Monte Carlo y la línea punteada es el déficit de 3,000 L/s en el momento más crítico de 2022. Fuente: elaboración propia.}
+\grafica{g13_abasto}{Agua bruta retenida frente al déficit de 2022}{Agua bruta retenida, cota superior del aporte al abasto, según la superficie restaurada, con lluvia media y con la lluvia del año previo a la crisis; las barras de error son el intervalo de 90\% por Monte Carlo y la línea punteada es el déficit de 3,000 L/s en el momento más crítico de 2022. Fuente: elaboración propia.}
 
-\lectura{El aporte crece de forma casi proporcional a la superficie: «ab3_d» L/s con 3,000 ha, «ab10_d» con 10,000, «ab30_d» con 30,000 y «ab60_d» con 60,000 ha en el año seco, es decir, «ab3_pct», «ab10_pct», «ab30_pct» y «ab60_pct» del déficit de 2022. La totalidad de las «ab_all_ha» ha elegibles, que representa un límite teórico más que un programa factible, aportaría «aball_d» L/s (intervalo de 90\% de «aball_lo» a «aball_hi» L/s), equivalentes a «aball_pct» del déficit. Con un déficit de 3,500 L/s, todas las proporciones serían 14\% menores. Hasta 60,000 ha el aporte se concentra en el acuífero del Santa Catarina («ab60_sc» L/s en el año seco) y en Cerro Prieto («ab60_cp» L/s); El Cuchillo sólo se incorpora cuando se agotan las celdas de las cuencas de conexión directa.}
+\lectura{El agua bruta crece de forma casi proporcional a la superficie: «ab3_d» L/s con 3,000 ha, «ab10_d» con 10,000, «ab30_d» con 30,000 y «ab60_d» con 60,000 ha en el año seco, es decir, «ab3_pct», «ab10_pct», «ab30_pct» y «ab60_pct» del déficit de 2022. La totalidad de las «ab_all_ha» ha elegibles, que representa un límite teórico más que un programa factible, retendría «aball_d» L/s brutos (intervalo de 90\% de «aball_lo» a «aball_hi» L/s), equivalentes a «aball_pct» del déficit. Con un déficit de 3,500 L/s, todas las proporciones serían 14\% menores. Hasta 60,000 ha el agua bruta se concentra en el acuífero del Santa Catarina («ab60_sc» L/s en el año seco) y en Cerro Prieto («ab60_cp» L/s); El Cuchillo sólo se incorpora cuando se agotan las celdas de las cuencas de conexión directa.}
 
 \respuesta{En términos de agua retenida bruta, la restauración con barreras aumentaría el abasto de la ZMM en decenas de L/s con algunos miles de hectáreas y en algunos cientos de L/s con decenas de miles. Con 30,000 ha, en un año como el previo a la crisis se habrían recibido unos «ab30_d» L/s, del orden de «ab30_pct» del déficit de 3,000 L/s estimado para el momento más crítico y de «ab30_dem» del consumo regular. Por sí sola, la restauración no habría evitado la crisis de 2022; su valor reside en ser una fuente complementaria que se mantiene en años secos, que recarga el acuífero del Santa Catarina, del que dependieron los pozos cuando las presas se vaciaron, y que reduce el azolve de las presas. Estas cifras suponen que toda el agua retenida llega a la fuente; la sección~\ref{res:p9} muestra que la ganancia neta es mucho menor.}
 
@@ -555,11 +549,11 @@ Selección & Bruta (L/s) & Neta (L/s) & Intervalo 90\% & $\Pr[W_{\text{neta}}>0]
 \subsection{P10 · Vegetación para acompañar las obras}\label{res:p10}
 
 \begin{table}[H]\centering\small
-\caption{Superficie de cada piso de vegetación en las celdas seleccionadas}\label{tab:pisos}
-{\color{gris}Hectáreas elegibles. Selección por ganancia neta esperada (sección~\ref{sec:destino}).\par}\smallskip
+\caption{Superficie de cada tipo de vegetación en las celdas seleccionadas}\label{tab:pisos}
+{\color{gris}Hectáreas elegibles según la carta de uso del suelo y vegetación del INEGI, serie VII. Selección por ganancia neta esperada (sección~\ref{sec:destino}).\par}\smallskip
 \begin{tabularx}{\linewidth}{Xrr}
 \toprule
-Piso de vegetación & 3,000 ha & 30,000 ha \\
+Tipo de vegetación & 3,000 ha & 30,000 ha \\
 \midrule
 «belt_rows»
 \bottomrule
@@ -567,23 +561,24 @@ Piso de vegetación & 3,000 ha & 30,000 ha \\
 \end{table}
 
 \begin{table}[H]\centering\footnotesize
-\caption{Especies de referencia por piso y obra asociada}\label{tab:especies}
+\caption{Especies de referencia por tipo de vegetación y obra asociada}\label{tab:especies}
 \begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{4.1cm}}
 \toprule
-Piso & Especies de referencia (inventarios en Nuevo León) & Obra y uso de la vegetación \\
+Tipo de vegetación & Especies de referencia (inventarios en Nuevo León) & Obra y uso de la vegetación \\
 \midrule
 Matorral submontano & \emph{Acacia amentacea}, \emph{Zanthoxylum fagara}, \emph{Gymnosperma glutinosum}, \emph{Leucophyllum frutescens}, \emph{Acacia berlandieri}, \emph{Cordia boissieri}, \emph{Eysenhardtia texana}, \emph{Havardia pallens}, \emph{Helietta parvifolia} \citap{alanis2015a} & Barreras de material vegetal muerto con residuos del mismo matorral; arbustos plantados en la franja de sedimento ladera arriba de cada barrera. \\
-Matorral desértico rosetófilo & \emph{Agave lecheguilla}, \emph{Larrea tridentata}, \emph{Koeberlinia spinosa}, \emph{Leucophyllum frutescens}, \emph{Jatropha dioica}, \emph{Fouquieria splendens} \citap{alanis2015b} & Barreras de piedra acomodada; \emph{A. lecheguilla} en hilera junto a la barrera para estabilizarla. \\
-Encino & \emph{Quercus canbyi}, \emph{Q. glaucoides}, \emph{Q. laceyi}, \emph{Juniperus deppeana}, \emph{J. flaccida}, \emph{Arbutus xalapensis} \citap{ramirez2013} & Zanja-bordo y reforestación con encinos y enebros; sin pinos por debajo de su piso. \\
-Pino-encino & \emph{Pinus pseudostrobus}, \emph{Quercus canbyi}, \emph{Q. rysophylla}, \emph{Q. laceyi}, \emph{Juniperus flaccida}, \emph{Arbutus xalapensis} \citap{jimenez2013}, \citap{ramirez2013} & Barreras de material vegetal muerto en áreas quemadas, con regeneración natural y plantación mixta de pino y encino. \\
-Bosque de alta montaña & Sin lista: requiere inventario de referencia en campo; posibles especies en la NOM-059 \citap{nom059} & Obras de conservación de suelo; plantación sólo con especies inventariadas en el sitio. \\
+Matorral desértico rosetófilo y micrófilo & \emph{Agave lecheguilla}, \emph{Larrea tridentata}, \emph{Koeberlinia spinosa}, \emph{Leucophyllum frutescens}, \emph{Jatropha dioica}, \emph{Fouquieria splendens} \citap{alanis2015b} & Barreras de piedra acomodada; \emph{A. lecheguilla} en hilera junto a la barrera para estabilizarla. \\
+Bosque de encino y encino-pino & \emph{Quercus canbyi}, \emph{Q. glaucoides}, \emph{Q. laceyi}, \emph{Juniperus deppeana}, \emph{J. flaccida}, \emph{Arbutus xalapensis} \citap{ramirez2013} & Zanja-bordo y reforestación con encinos y enebros; pinos sólo donde el bosque de referencia los tiene. \\
+Bosque de pino y pino-encino & \emph{Pinus pseudostrobus}, \emph{Quercus canbyi}, \emph{Q. rysophylla}, \emph{Q. laceyi}, \emph{Juniperus flaccida}, \emph{Arbutus xalapensis} \citap{jimenez2013}, \citap{ramirez2013} & Barreras de material vegetal muerto en áreas quemadas, con regeneración natural y plantación mixta de pino y encino; en bosques de pino puro, confirmar en campo la especie de pino. \\
+Bosque de oyamel y ayarín & Sin lista: requiere inventario de referencia en campo; posibles especies en la NOM-059 \citap{nom059} & Obras de conservación de suelo; plantación sólo con especies inventariadas en el sitio. \\
+Pastizal inducido, cultivado o agricultura & Las del tipo de vegetación natural contiguo & La obra que corresponda a la pendiente; reforestación con el tipo contiguo. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\lectura{La mayor parte de la superficie seleccionada está por encima de 900 m: con 3,000 ha, «belt_alta3» ha están en el piso de pino-encino o en el de alta montaña. El matorral submontano y el rosetófilo ocupan una fracción menor, porque las laderas bajas tienen menos lluvia y conexión con el abasto. La plantación de \emph{P. pseudostrobus} en Chipinque tuvo 35\% de supervivencia, mientras que las barreras aumentaron la profundidad del suelo \citap{alanis2015c}; en el piso de pino-encino conviene combinar las obras con la regeneración natural de encinos y pinos.}
+\lectura{Con 3,000 ha, el bosque de pino y pino-encino ocupa «inegi_pino3» ha, el matorral submontano «inegi_sub3» ha y el bosque de encino «inegi_enc3» ha; los bosques de oyamel y ayarín, para los que no se propone lista, sólo «inegi_oya3» ha. Con 30,000 ha crece la participación del matorral desértico («inegi_des30» ha). La carta del INEGI difiere de una regla por altitud: el matorral submontano llega a laderas más altas que los 800 m reportados \citap{alanis2015a}, por lo que una regla basada sólo en la altitud lo confundiría con el encinar. La plantación de \emph{P. pseudostrobus} en Chipinque tuvo 35\% de supervivencia, mientras que las barreras aumentaron la profundidad del suelo \citap{alanis2015c}; en el bosque de pino-encino conviene combinar las obras con la regeneración natural de encinos y pinos.}
 
-\respuesta{Cada obra se acompaña sólo con especies del piso de vegetación de su ladera: arbustos del matorral submontano en las laderas bajas, especies rosetófilas en las secas, encinos y enebros entre 900 y 1,500 m, y pino-encino entre 1,500 y 2,200 m; por encima, la lista se define con un inventario de campo. La densidad de plantación debe ser moderada: una cobertura arbórea intermedia favorece la infiltración sin elevar en exceso la evapotranspiración \citap{ilstedt2016}, mientras que una cobertura densa reduce el agua que llega a los cauces \citap{bosch1982}, lo que disminuiría la ganancia neta $G_g$ de la sección anterior.}
+\respuesta{Cada obra se acompaña sólo con especies del tipo de vegetación de su ladera según el INEGI: arbustos del matorral submontano, especies rosetófilas y micrófilas en el matorral desértico, encinos y enebros en el bosque de encino, y pino y encino en el de pino-encino; en los bosques de oyamel y ayarín, la lista se define con un inventario de campo. La densidad de plantación debe ser moderada: una cobertura arbórea intermedia favorece la infiltración sin elevar en exceso la evapotranspiración \citap{ilstedt2016}, mientras que una cobertura densa reduce el agua que llega a los cauces \citap{bosch1982}, lo que disminuiría la ganancia neta $G_g$ de la sección anterior.}
 
 \subsection{Sitios sugeridos}
 
@@ -603,7 +598,7 @@ Los sitios no se eligen manualmente: corresponden a las dos mejores celdas de ca
 
 \section{Conclusiones}
 
-\respuesta{La restauración debe dirigirse a las laderas de 8° a 35° con vegetación degradada que drenan directamente a Santa Catarina, Cerro Prieto y La Boca, donde se identifican «alta» ha de prioridad alta, «robusta_pct» de ellas robustas. Con 3,000 ha seleccionadas por la optimización se retendrían del orden de «max_ls» L/s de agua bruta, y «dr_ls» L/s en un año como el previo a la crisis de 2022, con prácticamente los mismos sitios. Sin embargo, al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta para el abasto sólo es probablemente positiva en el acuífero del Santa Catarina, donde 30,000 ha aportarían del orden de «n30n_mean» L/s netos. En las cuencas de las presas, el valor de las obras está en la conservación del suelo, la reducción del azolve y la atenuación de avenidas. Cada obra se acompaña sólo con especies nativas del piso de vegetación de su ladera. Dentro de cada sitio, el trazo de las barreras es relevante en las tormentas frecuentes, mientras que en las grandes la retención depende de la capacidad de las obras.}
+\respuesta{La restauración debe dirigirse a las laderas de 8° a 35° con vegetación degradada que drenan directamente a Santa Catarina, Cerro Prieto y La Boca, donde se identifican «alta» ha de prioridad alta, «robusta_pct» de ellas robustas. Con 3,000 ha seleccionadas por la optimización se retendrían del orden de «max_ls» L/s de agua bruta, y «dr_ls» L/s en un año como el previo a la crisis de 2022, con prácticamente los mismos sitios. Sin embargo, al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta para el abasto sólo es probablemente positiva en el acuífero del Santa Catarina, donde 30,000 ha aportarían del orden de «n30n_mean» L/s netos. En las cuencas de las presas, el valor de las obras está en la conservación del suelo, la reducción del azolve y la atenuación de avenidas. Cada obra se acompaña sólo con especies nativas del tipo de vegetación de su ladera. Dentro de cada sitio, el trazo de las barreras es relevante en las tormentas frecuentes, mientras que en las grandes la retención depende de la capacidad de las obras.}
 
 \begin{enumerate}
   \item \textbf{La prioridad se concentra en la Sierra Madre Oriental}, principalmente en la cuenca del Santa Catarina.
@@ -611,7 +606,7 @@ Los sitios no se eligen manualmente: corresponden a las dos mejores celdas de ca
   \item \textbf{La retención bruta es del orden de decenas de L/s por cada pocos miles de hectáreas}: 3,000 ha retienen «mc_p50» L/s (intervalo de 90\% de «mc_p5» a «mc_p95»); la variable dual de la restricción de presupuesto indica «dual_3000» L/s por cada 1,000 ha adicionales, y para 100 L/s se requieren unas «t100» ha.
   \item \textbf{La ganancia neta es mucho menor que la retención bruta y depende de la fuente}: es positiva con probabilidad de «pg_sc» en el Santa Catarina y de «pg_lb» a «pg_cp» en las presas; con 30,000 ha en el Santa Catarina, la ganancia neta esperada es de «n30n_mean» L/s. Aun en términos brutos, 30,000 ha cubrirían «ab30_pct» del déficit de 2022: la restauración es complementaria y no sustituye a otras fuentes.
   \item \textbf{Lo que más conviene medir} es la evapotranspiración del agua infiltrada y la fracción del escurrimiento que ya llega a las presas: son los parámetros con mayor influencia en la ganancia neta.
-  \item \textbf{Cada obra se acompaña con la vegetación de su propio piso}: matorral submontano, rosetófilo, encino o pino-encino, con especies de inventarios publicados, procedencia local y densidad moderada.
+  \item \textbf{Cada obra se acompaña con la vegetación de su propio tipo según el INEGI}: matorral submontano, desértico, encino o pino-encino, con especies de inventarios publicados, procedencia local y densidad moderada.
   \item \textbf{La selección resiste la sequía}: con la lluvia previa a la crisis se conservan «dr_pct» del agua y «dr_overlap» de los sitios.
   \item \textbf{La equidad entre fuentes tiene un costo reducido}: repartir entre las cuatro fuentes eleva el índice de Jain de «j0» a «j1» y reduce el agua de «w0» a «w1» L/s.
   \item \textbf{La capacidad de las obras limita más que su posición}: una tormenta que las llena ocurre casi cada año (periodo de retorno de «t40_range» años para 40 mm); el almacenamiento adicional rinde más como metros nuevos que como ampliación de las barreras, y MCMF mejora el trazo cuando la capacidad no se satura.
@@ -624,7 +619,7 @@ Los sitios no se eligen manualmente: corresponden a las dos mejores celdas de ca
   \item \textbf{Orden de magnitud.} El índice compara sitios; los volúmenes en m³ y L/s son estimaciones para comparar alternativas y no constituyen un balance hídrico. No se modela la mejora del suelo a largo plazo (mayor cobertura e infiltración en toda la ladera), que podría superar el efecto de la retención de las obras.
   \item \textbf{Supuestos sin calibrar.} El análisis de Monte Carlo propaga rangos plausibles, aunque no calibrados, del coeficiente de escurrimiento, la capacidad de 1.44 m³ por metro de barrera y la conectividad de El Cuchillo. La retención anual $\rho$, los umbrales de cárcava (5 ha) y de cauce (100 ha) y los niveles de conectividad son parámetros explícitos que deben calibrarse con Pronatura Noreste.
   \item \textbf{Destino del agua.} Las fracciones $e_g$, $\phi_g$ y $\tau_g$ son distribuciones a priori no calibradas; su medición con balances hídricos, piezometría en el Santa Catarina y aforos en los afluentes de las presas cambiaría las probabilidades de la sección~\ref{res:p9}. El agua que sale de la cuenca de una presa por el subsuelo puede recargar otros acuíferos que también abastecen a la ZMM, lo que el modelo no acredita. Tampoco se modela que el agua que llega a una presa llena se pierde por vertido, lo que reduciría $\tau_g$ en años húmedos.
-  \item \textbf{Pisos de vegetación.} Los umbrales de altitud y lluvia son aproximados y la lista de especies del encinar proviene de inventarios de pino-encino; el piso de cada sitio debe confirmarse en campo con la carta de uso de suelo y vegetación del INEGI y con la vegetación remanente.
+  \item \textbf{Tipos de vegetación.} La carta del INEGI tiene escala 1:250,000 y su base es de 2017 a 2021; dentro de una celda de 1 km se supone que el área elegible se reparte como la superficie de cada tipo. La lista de especies del encinar proviene de inventarios de pino-encino. El tipo de cada sitio debe confirmarse en campo con la vegetación remanente.
   \item \textbf{Escala y tiempo.} El aporte a escala de programa supone que las obras se mantienen con su capacidad de diseño; el azolve la reduce con el tiempo. El agua infiltrada llega a los acuíferos y presas con un retraso no modelado, y no se estima la fracción que se pierde por evapotranspiración o que se extrae aguas arriba.
   \item \textbf{Resolución.} El DEM de 30 m no resuelve el intervalo vertical de 1 m, por lo que el trazo es preliminar y debe validarse con levantamiento topográfico o con dron. SMAP tiene una resolución de unos 9 km, MODIS detecta área quemada a 500 m y CHIRPS tiene una resolución de unos 5 km.
   \item \textbf{Optimización.} La selección de barreras es un problema de costo fijo; \emph{lazy greedy} no garantiza el óptimo global. La red D8 asigna un solo receptor por celda.
@@ -647,6 +642,7 @@ Los sitios no se eligen manualmente: corresponden a las dos mejores celdas de ca
 \bibitem{dantzig1957} Dantzig, G. B. (1957). Discrete-variable extremum problems. \emph{Operations Research}, 5(2), 266–288.
 \bibitem{gumbel1958} Gumbel, E. J. (1958). \emph{Statistics of Extremes}. Columbia University Press.
 \bibitem{ilstedt2016} Ilstedt, U. et al. (2016). Intermediate tree cover can maximize groundwater recharge in the seasonally dry tropics. \emph{Scientific Reports}, 6, 21930.
+\bibitem{inegi2021} INEGI (2021). \emph{Conjunto de datos vectoriales de uso del suelo y vegetación, escala 1:250 000, serie VII}. Instituto Nacional de Estadística y Geografía, Aguascalientes. Consultado en el servicio de mapas IDEFOR de CONAFOR.
 \bibitem{jain1984} Jain, R., Chiu, D.-M. y Hawe, W. R. (1984). \emph{A quantitative measure of fairness and discrimination for resource allocation in shared computer systems}. DEC-TR-301, Digital Equipment Corporation.
 \bibitem{ford1956} Ford, L. R. y Fulkerson, D. R. (1956). Maximal flow through a network. \emph{Canadian Journal of Mathematics}, 8, 399–404.
 \bibitem{funk2015} Funk, C. et al. (2015). The climate hazards infrared precipitation with stations: a new environmental record for monitoring extremes. \emph{Scientific Data}, 2, 150066.

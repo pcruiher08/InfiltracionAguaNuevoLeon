@@ -160,8 +160,8 @@ def pname(lbl):
     return {"e": "la evapotranspiración", "phi": "la fracción que llega a la fuente", "tau": "el escurrimiento que ya llegaba"}[par] + " en " + SHORT[src]
 top = DE["spearman"][:4]
 spear = ", ".join(f"{pname(l)} ($r_s={r:+.2f}$)" for l, r in top[:-1]) + f" y {pname(top[-1][0])} ($r_s={top[-1][1]:+.2f}$)"
-b3, b30 = DE["belts"]["neta_3000"], DE["belts"]["neta_30000"]
-belt_rows = [f"{k} & {n(b3[k])} & {n(b30[k])} \\\\" for k in b3]
+b3, b30 = DE["inegi"]["neta_3000"], DE["inegi"]["neta_30000"]
+belt_rows = [f"{k} & {n(b3[k])} & {n(b30[k])} \\\\" for k in b3 if b3[k] + b30[k] > 0]
 V.update({"fate_n": n(DE["n"]), "prior_rows": "\n".join(prior_rows), "neta_rows": "\n".join(neta_rows),
           "n30b_g": n(SEL["bruta_30000"]["gross_ls"]), "n30b": n(SEL["bruta_30000"]["net_ls"][1]), "n30b_pp": pct(SEL["bruta_30000"]["p_pos"]),
           "n30b_cp": n(SEL["bruta_30000"]["ha_by_supply"]["Presa Cerro Prieto"]),
@@ -169,7 +169,9 @@ V.update({"fate_n": n(DE["n"]), "prior_rows": "\n".join(prior_rows), "neta_rows"
           "n30n_pp": pct(SEL["neta_30000"]["p_pos"]), "n30n_mean": n(SEL["neta_30000"]["net_mean"]),
           "n3n": n(SEL["neta_3000"]["net_ls"][1]), "n3n_mean": n(SEL["neta_3000"]["net_mean"], 1),
           "spearman_top": spear, "belt_rows": "\n".join(belt_rows),
-          "belt_alta3": n(b3["Pino-encino (1,500 a 2,200 m)"] + b3["Más de 2,200 m"])})
+          "inegi_pino3": n(b3["Bosque de pino y pino-encino"]), "inegi_sub3": n(b3["Matorral submontano"]),
+          "inegi_enc3": n(b3["Bosque de encino y encino-pino"]), "inegi_oya3": n(b3["Bosque de oyamel y ayarín"]),
+          "inegi_des30": n(b30["Matorral desértico rosetófilo y micrófilo"])})
 
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():

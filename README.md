@@ -132,7 +132,7 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
     - **Máxima agua total:** el óptimo puro.
     - **Repartir entre presas:** el presupuesto se divide en partes iguales entre las 4 fuentes y se optimiza dentro de cada una.
 
-**Resultado con 3,000 ha:**
+**Resultado con 3,000 ha (agua bruta: cota superior, supone que toda el agua retenida llega a la fuente; ver sección 9):**
 
 | Fuente | Máxima agua total | | Repartir entre presas | |
 |---|---|---|---|---|
@@ -229,15 +229,16 @@ En el Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, a
 
 ### 10. Vegetación nativa para cada obra
 
-Cada ladera se restaura **sólo con especies de su propio piso de vegetación**, asignado por altitud y lluvia y confirmado en campo, con material de procedencia local y densidad moderada (una cobertura densa eleva la evapotranspiración y baja la ganancia neta). Especies de referencia de inventarios publicados en Nuevo León:
+Cada ladera se restaura **sólo con especies de su propio tipo de vegetación**, tomado de la carta de uso del suelo y vegetación del **INEGI, serie VII** (1:250,000, obtenida del servicio de mapas IDEFOR de CONAFOR; `informe/vegetacion.py`) y confirmado en campo, con material de procedencia local y densidad moderada (una cobertura densa eleva la evapotranspiración y baja la ganancia neta). Con 3,000 ha seleccionadas por ganancia neta: pino y pino-encino 1,230 ha, matorral submontano 934 ha, encino 366 ha, oyamel y ayarín 315 ha, matorral desértico 150 ha.
 
-| Piso | Especies de referencia | Obra |
+| Tipo de vegetación (INEGI) | Especies de referencia (inventarios en Nuevo León) | Obra |
 |---|---|---|
-| Matorral submontano (< 900 m) | *Acacia amentacea*, *Zanthoxylum fagara*, *Leucophyllum frutescens*, *Cordia boissieri*, *Helietta parvifolia* | Material vegetal muerto; arbustos ladera arriba de cada barrera |
-| Matorral desértico rosetófilo (< 500 mm) | *Agave lecheguilla*, *Larrea tridentata*, *Koeberlinia spinosa*, *Fouquieria splendens* | Piedra acomodada con lechuguilla en hilera |
-| Encino (900 a 1,500 m) | *Quercus canbyi*, *Q. glaucoides*, *Q. laceyi*, *Juniperus*, *Arbutus xalapensis* | Zanja-bordo y reforestación sin pinos |
-| Pino-encino (1,500 a 2,200 m) | *Pinus pseudostrobus*, *Q. rysophylla*, *Q. canbyi*, *Juniperus flaccida* | Material vegetal muerto en áreas quemadas y regeneración natural |
-| Más de 2,200 m | Sin lista: requiere inventario de campo (posibles especies en NOM-059) | Sólo conservación de suelo |
+| Matorral submontano | *Acacia amentacea*, *Zanthoxylum fagara*, *Leucophyllum frutescens*, *Cordia boissieri*, *Helietta parvifolia* | Material vegetal muerto; arbustos ladera arriba de cada barrera |
+| Matorral desértico rosetófilo y micrófilo | *Agave lecheguilla*, *Larrea tridentata*, *Koeberlinia spinosa*, *Fouquieria splendens* | Piedra acomodada con lechuguilla en hilera |
+| Bosque de encino y encino-pino | *Quercus canbyi*, *Q. glaucoides*, *Q. laceyi*, *Juniperus*, *Arbutus xalapensis* | Zanja-bordo y reforestación con encinos y enebros |
+| Bosque de pino y pino-encino | *Pinus pseudostrobus*, *Q. rysophylla*, *Q. canbyi*, *Juniperus flaccida* | Material vegetal muerto en áreas quemadas y regeneración natural |
+| Bosque de oyamel y ayarín | Sin lista: requiere inventario de campo (posibles especies en NOM-059) | Sólo conservación de suelo |
+| Pastizal inducido o agricultura | Las del tipo de vegetación natural contiguo | La obra que corresponda a la pendiente |
 
 Fuentes y discusión completa en el informe (sección P10).
 

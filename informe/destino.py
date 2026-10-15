@@ -1,8 +1,7 @@
-"""Probabilistic fate of the water retained by the barriers, and native vegetation belts
-of the selected cells.
+"""Probabilistic fate of the water retained by the barriers.
 
     .venv/bin/python -W ignore informe/destino.py
-Writes informe/destino.json.
+Writes informe/destino.json (then run informe/vegetacion.py, which adds the INEGI vegetation types).
 
 Retained water R_i infiltrates; a fraction e is lost to evapotranspiration, a fraction
 phi_g of the rest reaches supply source g (recharge or delayed baseflow), and a fraction
@@ -21,7 +20,6 @@ sys.path.insert(0, str(ROOT.parent))
 sys.path.insert(0, str(ROOT))
 
 from pipeline import barriers_mcmf as M, layers, optimize as O  # noqa: E402
-from pipeline.config import DATASETS  # noqa: E402
 import matematicas as MT  # noqa: E402
 
 N_MC = 4000
@@ -33,8 +31,6 @@ SC, LB, CP, EC = 3, 1, 2, 4          # supply ids (pipeline.optimize.SUPPLY)
 E_MIN = 0.30                         # focused infiltration loses less to ET than diffuse rain
 PHI = {SC: (0.5, 0.9), LB: (0.3, 0.8), CP: (0.3, 0.8), EC: (0.3, 0.8)}
 TAU = {SC: (0.1, 0.4), LB: (0.3, 0.8), CP: (0.3, 0.8), EC: (0.3, 0.8)}
-BELTS = ["Matorral submontano", "Matorral desértico rosetófilo", "Encino (900 a 1,500 m)", "Pino-encino (1,500 a 2,200 m)", "Más de 2,200 m"]
-NB = len(BELTS)
 rho = lambda p: np.interp(p, O.RETENTION_RAIN, O.RETENTION_FRAC)
 ls = lambda m3: m3 / SEC_Y * 1000
 
@@ -57,25 +53,6 @@ def et_ratio():
                          layers.aoi(), 500, maxPixels=1e10, bestEffort=True).get("groups").getInfo()
     return {int(r["supply"]): {"et_mm": round(r["mean"][0]), "rain_mm": round(r["mean"][1]),
                                "ratio": round(r["mean"][0] / r["mean"][1], 3)} for r in g if int(r["supply"]) in PHI}
-
-
-def belts(rows, idx):
-    """Eligible ha of each vegetation belt inside the given cells."""
-    elev = ee.Image(DATASETS["dem"]).select("elevation")
-    rain = layers.raw().select("rain_mm")
-    dry = rain.lt(500)
-    wet = dry.Not()
-    b = [elev.lt(900).And(wet), dry, elev.gte(900).And(elev.lt(1500)).And(wet),
-         elev.gte(1500).And(elev.lt(2200)).And(wet), elev.gte(2200).And(wet)]
-    area = ee.Image.pixelArea().divide(1e4).updateMask(eligible())
-    img = ee.Image.cat([area.updateMask(m).rename(f"b{k}") for k, m in enumerate(b)]).unmask(0)
-    out = {}
-    for off in range(0, len(idx), 400):
-        fc = ee.FeatureCollection([ee.Feature(ee.Geometry(rows[i]["geometry"]), {"i": int(i)}) for i in idx[off:off + 400]])
-        res = img.reduceRegions(fc, ee.Reducer.sum(), 30).getInfo()["features"]
-        for f in res:
-            p = f["properties"]; out[p["i"]] = [p.get(f"b{k}", 0) or 0 for k in range(NB)]
-    return out
 
 
 def best_first(v, A, H):
@@ -158,18 +135,6 @@ def main():
     out["spearman"] = sorted(([lab, round(float(np.corrcoef(rk(Pm[:, j]), rk(y))[0, 1]), 3)] for j, lab in enumerate(labels)),
                              key=lambda r: -abs(r[1]))
 
-    # vegetation belts of the cells chosen at 30,000 ha (gross and net selections)
-    idx = sorted(set(np.flatnonzero(sel[("bruta", 30_000)] > 0)) | set(np.flatnonzero(sel[("neta", 30_000)] > 0)))
-    bel = belts(rows, idx)
-    out["belts"] = {}
-    for (kind, H), x in sel.items():
-        ha = np.zeros(NB)
-        for i in np.flatnonzero(x > 0):
-            v = np.array(bel.get(int(i), [0] * NB)); tot_b = v.sum()
-            if tot_b > 0:
-                ha += v / tot_b * x[i] * A[i]
-        out["belts"][f"{kind}_{H}"] = {b: round(float(h)) for b, h in zip(BELTS, ha)}
-    print("belts", out["belts"], flush=True)
     # optimistic priors: how robust is the sign of G_g?
     opt = {"phi_dam": (0.6, 0.95), "tau_dam": (0.1, 0.5), "phi_sc": (0.7, 0.95), "tau_sc": (0.0, 0.2), "e_min": 0.2}
     rng = np.random.default_rng(5); n = 200_000; out["optimista"] = opt; out["factor_optimista"] = {}

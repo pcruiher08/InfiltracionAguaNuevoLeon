@@ -101,7 +101,7 @@ def water():
         ax.axvline(x, color="#9c9890", ls=(0, (3, 3)), lw=1)
         ax.text(x + 500, ax.get_ylim()[1] * h, lab, fontsize=8, color="#4a4740",
                 bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none"))
-    ax.set_xlabel("hectáreas restauradas (mejores celdas primero)"); ax.set_ylabel("L/s retenidos que llegan al abasto")
+    ax.set_xlabel("hectáreas restauradas (mejores celdas primero)"); ax.set_ylabel("L/s de agua bruta retenida")
     ax.xaxis.set_major_formatter(lambda v, _: fmt(v)); ax.set_xlim(0, 60000); ax.set_ylim(0)
     top_legend(ax)
     save(fig, "g4_agua_hectareas")
@@ -117,7 +117,7 @@ def productivity():
         ax.axvline(P[k]["median"], color="#1d1b18", ls=(0, (3, 3)), lw=1)
         ax.set_title(f"{SHORT[k]} · mediana {fmt(P[k]['median'])}", fontsize=9, loc="left", color="#1d1b18")
         ax.grid(axis="x", visible=False)
-    for ax in axs[1]: ax.set_xlabel("m³/ha/año al abasto")
+    for ax in axs[1]: ax.set_xlabel("m³/ha/año de agua bruta")
     for ax in axs[:, 0]: ax.set_ylabel("% del área elegible")
     fig.tight_layout()
     save(fig, "g5_productividad")
@@ -187,7 +187,7 @@ def uncertainty():
     for v, ls_, lab in ((p5, (0, (3, 3)), f"P5 {p5:.0f}"), (p50, "-", f"mediana {p50:.0f}"), (p95, (0, (3, 3)), f"P95 {p95:.0f}")):
         ax.axvline(v, color="#0d366b", ls=ls_, lw=1.2)
         ax.text(v, ax.get_ylim()[1] * 0.95, f" {lab} L/s", fontsize=8, color="#0d366b", va="top")
-    ax.set_xlabel("L/s retenidos con 3,000 ha (máxima agua), 2,000 escenarios de parámetros")
+    ax.set_xlabel("L/s de agua bruta con 3,000 ha (máxima agua), 2,000 escenarios de parámetros")
     ax.set_ylabel("escenarios"); ax.grid(axis="x", visible=False)
     save(fig, "g9_incertidumbre")
 
@@ -248,7 +248,7 @@ def pareto_fig():
         if r["alpha"] in (0.0, 0.25, 0.5, 0.75, 1.0):
             ax.annotate(f"$\\alpha$ = {r['alpha']:.2f}", (r["jain"], r["ls"]), xytext=(6, 4), textcoords="offset points", fontsize=7.5, color="#4a4740")
     ax.set_xlabel("equidad entre las cuatro fuentes (índice de Jain, 1 = igual para todas)")
-    ax.set_ylabel("L/s retenidos (3,000 ha)")
+    ax.set_ylabel("L/s de agua bruta (3,000 ha)")
     save(fig, "g12_pareto")
 
 
@@ -272,7 +272,7 @@ def supply_fig():
     ax.text(A["deficit_ls"] - 40, y[0] + 0.55, "déficit de 2022: 3,000 L/s", ha="right", fontsize=7.5, color="#1d1b18")
     labels = [fmt(r["ha"]) + (" ha (todas las elegibles)" if r is R[-1] else " ha") for r in R]
     ax.set_yticks(y, labels); ax.set_xlim(0, 3600); ax.grid(axis="y", visible=False)
-    ax.set_xlabel("L/s retenidos que llegan al abasto de la ZMM"); ax.xaxis.set_major_formatter(lambda v, _: fmt(v))
+    ax.set_xlabel("L/s de agua bruta retenida (cota superior del aporte al abasto)"); ax.xaxis.set_major_formatter(lambda v, _: fmt(v))
     top_legend(ax)
     save(fig, "g13_abasto")
 

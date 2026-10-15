@@ -4,3 +4,8 @@ uvicorn[standard]
 python-dotenv
 numpy
 contourpy
+ortools
+# informe (PDF y figuras)
+matplotlib
+pillow
+shapely
