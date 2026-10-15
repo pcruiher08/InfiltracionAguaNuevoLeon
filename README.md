@@ -1,4 +1,4 @@
-# Infiltración ZMM: dónde y cómo restaurar suelo para que infiltre más agua
+# ¿Dónde restaurar suelos en las partes altas de las cuencas de Monterrey para favorecer la infiltración, y cuánta agua gana el abasto?
 
 **Reto 1 · Infiltración**, Grok Monterrey Build Day (14 oct 2026). Planteado por Antonio Hernández Ramírez (Pronatura Noreste).
 
@@ -6,15 +6,15 @@
 
 > *¿Dónde restaurar suelos en partes altas para favorecer la infiltración?*
 
-En 2022, Cerro Prieto y La Boca bajaron a menos del 5 % de su capacidad, y la ZMM tuvo ~13,500 L/s disponibles contra ~16,500 L/s de consumo. La recuperación posterior ayuda, pero no elimina la vulnerabilidad ante sequías prolongadas. Esta herramienta prioriza **dónde** intervenir en las cuencas altas que abastecen a Monterrey, recomienda **qué obra** hacer en cada sitio y optimiza **exactamente dónde** trazar las barreras.
+En lo más crítico de 2022 (junio y julio), Cerro Prieto y La Boca bajaron a menos del 5 % de su capacidad, y la ZMM tuvo entre ~13,000 y ~13,500 L/s disponibles contra ~16,500 L/s de consumo regular (AP, 21 jun 2022; Grupo Legislativo PAN, Congreso NL, 2023). Son cifras del momento más crítico, no promedios anuales. La recuperación posterior ayuda, pero no elimina la vulnerabilidad ante sequías prolongadas. Esta herramienta prioriza **dónde** intervenir en las cuencas altas que abastecen a Monterrey, recomienda **qué obra** hacer en cada sitio y optimiza **exactamente dónde** trazar las barreras.
 
 > El índice compara **potencial relativo**. **No** mide volumen de agua infiltrada.
 
 **Ver el flujo de agua:** en la app local, el botón **▶ Ver flujo de agua (demo)** carga un sitio y anima una tormenta sin y con barreras.
 
-**Demo en línea (versión estática):** https://pcruiher08.github.io/InflitracionAguaNuevoLeon/ — prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
+**Demo en línea (versión estática):** https://pcruiher08.github.io/InflitracionAguaNuevoLeon/ : prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
 
-**Documento en PDF:** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf).
+**Informe técnico en PDF (36 páginas, diez preguntas de investigación):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Las figuras de este README salen de ese informe.
 
 ---
 
@@ -51,6 +51,9 @@ En lugar de un rectángulo, el análisis cubre la **unión de las cuencas de aba
 
 Los niveles de conectividad (1.0 y 0.6) son un **supuesto explícito**, ajustable en `pipeline/config.py`.
 
+![Cuencas de abasto y prioridad de restauración](informe/figuras/m1_cuencas.png)
+
+
 ### 2. Índice de prioridad
 
 Se calculan siete criterios en Google Earth Engine. Cada uno se normaliza a 0–1, donde 1 significa más prioridad para restaurar, y luego se combinan con una suma ponderada.
@@ -68,9 +71,17 @@ Se calculan siete criterios en Google Earth Engine. Cada uno se normaliza a 0–
 - **Clases:** alta si el índice supera 0.55, media entre 0.45 y 0.55, baja por debajo. Los umbrales se calibraron con la distribución real en laderas de más de 8°: equivalen a la mediana (~p50) y a ~p80.
 - **Exclusiones:** zonas urbanas y cuerpos de agua (ESA WorldCover). El mapa muestra por defecto solo laderas de 8° o más.
 
+![Hectáreas prioritarias por cuenca](informe/figuras/g1_ha_cuenca.png)
+
+![Puntaje de los criterios por clase](informe/figuras/g2_criterios.png)
+
+
 ### 3. Robustez
 
 Se recalcula el índice con **40 combinaciones aleatorias de pesos**. Para cada píxel se cuenta en qué porcentaje de esas combinaciones queda como prioridad alta. Los sitios con ≥ 50 % son prioritarios **sin importar cómo ponderen los criterios los expertos**: convierte el desacuerdo entre expertos en un resultado, en lugar de una debilidad.
+
+![Robustez de la prioridad alta](informe/figuras/g3_robustez.png)
+
 
 ### ¿Qué significa cada prioridad?
 
@@ -131,6 +142,11 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 | Presa El Cuchillo | 0 ha | 0.00 M m³ | 750 ha | 0.24 M m³ |
 | **Total** | 3,000 ha | **1.41 M m³/año (44.6 L/s)** | 3,000 ha | **1.27 M m³/año (40.1 L/s)** |
 
+
+![Celdas óptimas para la captación](informe/figuras/m2_optimizacion.png)
+
+![Agua para la ZMM según hectáreas restauradas](informe/figuras/g4_agua_hectareas.png)
+
 **Rendimientos decrecientes** (modo de máxima agua): 1,000 ha → 15 L/s · 3,000 ha → 45 L/s · 10,000 ha → 141 L/s · 20,000 ha → 273 L/s · 50,000 ha → 645 L/s.
 
 - **Santa Catarina rinde más por hectárea:** La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las barreras.
@@ -158,6 +174,13 @@ Dentro de una ventana de ~1.2 km alrededor del sitio (`pipeline/barriers.py`):
 
 Duplicar el presupuesto rinde cada vez menos (61 % → 77 %), que es el comportamiento esperado de una buena optimización: los primeros metros van a donde más se intercepta.
 
+**Con capacidad: minimum-cost maximum-flow (MCMF).** El trazo voraz por área ignora cuánta agua cabe en cada barrera. `pipeline/barriers_mcmf.py` modela la ladera como una red de flujo (un nodo por celda D8 y uno por barrera, con capacidad de 1.44 m³ por metro) y resuelve con *network simplex* de OR-Tools el flujo máximo de costo mínimo, que da el agua retenida respetando drenaje y capacidad. Las barreras se eligen con *lazy greedy* (CELF) usando MCMF como oráculo. Resultado: en tormentas pequeñas MCMF retiene hasta 2.6 % más que el trazo por área; en tormentas de 40 mm todas las barreras se llenan y ambos empatan. **En tormentas grandes limita la capacidad, no la posición**: 1,500 m de barreras retienen 27 a 31 % de una tormenta de 5 mm y sólo 3.4 a 4.2 % de una de 40 mm, que ocurre casi cada año.
+
+![Barreras trazadas por greedy y por MCMF](informe/figuras/m3_barreras.png)
+
+![Agua retenida según el tamaño de la tormenta](informe/figuras/g8_mcmf.png)
+
+
 ---
 
 ### 7. Simulación de tormenta: sin barreras vs con barreras
@@ -166,7 +189,7 @@ Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terr
 
 1. **Tormenta:** 40 mm de lluvia uniforme sobre la ventana de ~1.2 km.
 2. **Ruteo por celdas:** se usa la misma red de flujo D8 del optimizador. En cada paso el agua avanza una celda (~30 m) ladera abajo y la ladera degradada infiltra 1 mm por paso.
-3. **Obras:** las barreras encharcan hasta ~45 mm por celda (≈ 40 m³) y las presas en cárcava hasta ~120 mm. Lo encharcado infiltra a 6 mm por paso y el excedente sigue escurriendo.
+3. **Obras:** una barrera encharca una franja de ~3 m de ancho y 0.3 m de profundidad: hasta 30 mm por celda (≈ 27 m³), que infiltran a ~30 mm/h; las presas en cárcava hasta 67 mm. El excedente sigue escurriendo.
 4. **Resultado en tres vistas:**
     - **Sin barreras:** el agua escurriendo ladera abajo (azul).
     - **Con barreras:** el mismo escurrimiento más el **agua retenida** por barreras y presas (aqua).
@@ -176,7 +199,47 @@ Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terr
 
 En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~10 %** el escurrimiento que sale de la ventana y **~7 %** el pico, y suman de 4,300 a 5,500 m³ infiltrados por tormenta.
 
+
+![Simulación de una tormenta de 40 mm](informe/figuras/m4_simulacion.png)
+
 > Es un **modelo didáctico** para comparar escenarios sobre el mismo terreno y la misma tormenta. No modela humedad previa del suelo ni velocidades reales: no es un modelo hidrológico calibrado.
+
+### 8. Cuánto aumentaría el abasto: agua bruta frente al déficit de 2022
+
+La optimización se repite a escala de programa y se evalúa con la lluvia de julio de 2021 a junio de 2022. Aun en términos brutos, 30,000 ha aportarían ~361 L/s en un año como el previo a la crisis (~12 % de un déficit de 3,000 L/s), y la totalidad de las 192,040 ha elegibles, ~52 %.
+
+![Aporte al abasto frente al déficit de 2022](informe/figuras/g13_abasto.png)
+
+### 9. A dónde va el agua retenida (análisis probabilístico)
+
+Las barreras no desvían el agua: la retienen unas horas para que se infiltre, y sigue por el subsuelo dentro de la misma cuenca. Por cada m³ retenido, la ganancia neta de la fuente es **G = (1 − e)·φ − τ**: *e* se pierde por evapotranspiración (cota superior de MODIS), *φ* del resto llega a la fuente y *τ* habría llegado de todos modos como escurrimiento. Con distribuciones uniformes y 4,000 escenarios de Monte Carlo (`informe/destino.py`):
+
+| Fuente | G medio | P(G > 0) | P(G > 0), supuestos optimistas |
+|---|---|---|---|
+| Acuífero Santa Catarina | +0.07 | 67 % | 99.7 % |
+| La Boca | −0.30 | 5 % | 65 % |
+| Cerro Prieto | −0.35 | 4 % | 51 % |
+| El Cuchillo | −0.20 | 4 % | 58 % |
+
+En el Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en el Santa Catarina) dan una mediana de **~23 L/s netos** (intervalo de 90 %: −61 a 126).
+
+![Ganancia neta por m³ retenido](informe/figuras/g14_destino.png)
+
+![Agua neta con 30,000 ha](informe/figuras/g15_neto.png)
+
+### 10. Vegetación nativa para cada obra
+
+Cada ladera se restaura **sólo con especies de su propio piso de vegetación**, asignado por altitud y lluvia y confirmado en campo, con material de procedencia local y densidad moderada (una cobertura densa eleva la evapotranspiración y baja la ganancia neta). Especies de referencia de inventarios publicados en Nuevo León:
+
+| Piso | Especies de referencia | Obra |
+|---|---|---|
+| Matorral submontano (< 900 m) | *Acacia amentacea*, *Zanthoxylum fagara*, *Leucophyllum frutescens*, *Cordia boissieri*, *Helietta parvifolia* | Material vegetal muerto; arbustos ladera arriba de cada barrera |
+| Matorral desértico rosetófilo (< 500 mm) | *Agave lecheguilla*, *Larrea tridentata*, *Koeberlinia spinosa*, *Fouquieria splendens* | Piedra acomodada con lechuguilla en hilera |
+| Encino (900 a 1,500 m) | *Quercus canbyi*, *Q. glaucoides*, *Q. laceyi*, *Juniperus*, *Arbutus xalapensis* | Zanja-bordo y reforestación sin pinos |
+| Pino-encino (1,500 a 2,200 m) | *Pinus pseudostrobus*, *Q. rysophylla*, *Q. canbyi*, *Juniperus flaccida* | Material vegetal muerto en áreas quemadas y regeneración natural |
+| Más de 2,200 m | Sin lista: requiere inventario de campo (posibles especies en NOM-059) | Sólo conservación de suelo |
+
+Fuentes y discusión completa en el informe (sección P10).
 
 ## ¿Por qué estos sitios?
 
