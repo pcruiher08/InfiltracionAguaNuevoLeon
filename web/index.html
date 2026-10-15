@@ -89,6 +89,7 @@
 
   <h2>Sitio</h2>
   <div id="site" class="muted">Haz clic en el mapa para generar la ficha de obra de un sitio.</div>
+  <section id="barriers-panel"></section>
   <div id="ficha"></div>
 </aside>
 <div id="map"></div>
@@ -246,6 +247,7 @@ map.on("click", async ev => {
                     <details><summary>Métricas crudas</summary><table>${rows}</table></details>
                     <button id="dl">Descargar ficha (.md)</button>`;
     document.getElementById("ficha").innerHTML = marked.parse(lastSite.ficha);
+    app.siteListeners.forEach(fn => fn({ lat, lon:lng, ...lastSite }));
     document.getElementById("dl").onclick = () => {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob([lastSite.ficha], { type:"text/markdown" }));
@@ -256,11 +258,14 @@ map.on("click", async ev => {
 
 // Shared handle for feature panels (web/fires.js, web/portfolio.js)
 window.app = { map, post, state, css, fmt, setStatus, showFicha: (md) => {
-  document.getElementById("ficha").innerHTML = marked.parse(md); } };
+  document.getElementById("ficha").innerHTML = marked.parse(md); },
+  siteListeners: [],  // fn({lat, lon, stats, recommendation, ficha}) after each site click
+  onSite: (fn) => app.siteListeners.push(fn) };
 
 init().catch(e => setStatus("Error: " + e.message.slice(0, 120)));
 </script>
 <script src="fires.js"></script>
 <script src="portfolio.js"></script>
+<script src="barriers.js"></script>
 </body>
 </html>
