@@ -19,6 +19,13 @@ HYBAS_LEVEL12 = "WWF/HydroSHEDS/v1/Basins/hybas_12"
 CONNECTIVITY_TIERS = {
     "la_boca": 1.0, "cerro_prieto": 1.0, "santa_catarina": 1.0, "el_cuchillo": 0.6,
 }
+# Score of the "connection to supply" criterion in the priority index, by expected net gain for the
+# supply (informe, P9): Santa Catarina recharge is new water; in the dam catchments retention mostly
+# holds back runoff that already reached the reservoir, so they score for sediment and floods only.
+# CONNECTIVITY_TIERS (above) is still the hydrological connectivity k used for water volumes.
+INDEX_CONNECTION = {
+    "la_boca": 0.5, "cerro_prieto": 0.5, "santa_catarina": 1.0, "el_cuchillo": 0.3,
+}
 SUPPLY_POINTS = {  # reservoir centroids (JRC surface water) / river outlet
     "Presa La Boca": (-100.1381, 25.4243),
     "Presa Cerro Prieto": (-99.4228, 24.9187),

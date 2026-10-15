@@ -83,7 +83,7 @@ Pronatura Noreste planteó el reto en el Grok Monterrey Build Day a partir de do
 
 La lluvia que llega a una ladera se reparte entre infiltración, almacenamiento superficial y escurrimiento. Cuando la intensidad de la lluvia supera la capacidad de infiltración del suelo se produce escurrimiento superficial \emph{hortoniano} \citap{horton1933}; esa capacidad cae cuando el suelo pierde cobertura vegetal, se compacta o se quema, porque disminuyen la porosidad superficial y la rugosidad que frenan el agua. En hidrología aplicada, la fracción de la lluvia que escurre se resume con un coeficiente de escurrimiento $C$ (método racional) o con números de curva que dependen del suelo y la cobertura \citap{chow1988}, \citap{scs1986}; ambos crecen con la pendiente y con el suelo desnudo.
 
-Las obras de conservación de suelo y agua (barreras de piedra acomodada o de material vegetal muerto en curvas de nivel, zanjas-bordo y presas de piedra en cárcavas) cortan la longitud de la ladera, frenan el escurrimiento y lo retienen el tiempo suficiente para que infiltre \citap{conafor2007}. Su efecto tiene dos límites: sólo actúan sobre el agua que las cruza, lo que depende de su posición respecto de las rutas de flujo, y sólo retienen lo que cabe en el encharcamiento que forman, lo que depende de su capacidad. En este trabajo se cuantifican ambos límites.
+Las obras de conservación de suelo y agua (barreras de piedra acomodada o de material vegetal muerto en curvas de nivel, zanjas-bordo y presas de piedra en cárcavas) cortan la longitud de la ladera, frenan el escurrimiento y lo retienen el tiempo suficiente para que infiltre \citap{conafor2023}. Su efecto tiene dos límites: sólo actúan sobre el agua que las cruza, lo que depende de su posición respecto de las rutas de flujo, y sólo retienen lo que cabe en el encharcamiento que forman, lo que depende de su capacidad. En este trabajo se cuantifican ambos límites.
 
 \subsection{Rutas de flujo sobre un modelo digital de elevación}
 
@@ -151,20 +151,20 @@ La notación completa se resume en el apéndice~\ref{ap:notacion}. La simulació
 Las presas se ubicaron como los mayores cuerpos de agua permanente del JRC cerca de cada sitio (La Boca $\approx$ 3.8 km², Cerro Prieto $\approx$ 20 km², El Cuchillo $\approx$ 43 km²). Sea $G_H$ el grafo dirigido de HydroBASINS nivel 12, cuyos nodos son subcuencas y que tiene un arco de cada subcuenca $b$ a la subcuenca que recibe su agua, indicada en su atributo \texttt{NEXT\_DOWN}. La cuenca de una fuente cuya subcuenca de salida es $b_0$ es el conjunto $U(b_0) = \{b : b \leadsto b_0\}$ de subcuencas desde las que existe un camino dirigido hasta $b_0$, y se obtiene con una búsqueda en profundidad (\emph{depth-first search}) sobre el grafo con los arcos invertidos. El área de análisis es la unión de las cuencas de abasto (unos 10,500 km²).
 
 \begin{table}[H]\centering\small
-\caption{Cuencas de abasto y conectividad $k$}\label{tab:cuencas}
-\begin{tabularx}{\linewidth}{Xrlr}
+\caption{Cuencas de abasto, conectividad hidrológica $k$ y puntaje de conexión en el índice $s_{\text{con}}$}\label{tab:cuencas}
+\begin{tabularx}{\linewidth}{Xrlrr}
 \toprule
-Cuenca & Área (km²) & Papel en el abasto & $k$ \\
+Cuenca & Área (km²) & Papel en el abasto & $k$ & $s_{\text{con}}$ \\
 \midrule
-Presa La Boca & 347 & Presa de abasto directo & 1.0 \\
-Presa Cerro Prieto (río Pablillo) & 1,758 & Presa de abasto directo & 1.0 \\
-Río Santa Catarina aguas arriba de Monterrey & 1,392 & Recarga de pozos y galerías de SADM & 1.0 \\
-Resto de la cuenca de El Cuchillo & 8,744 & Abasto mayor, pero lejano & 0.6 \\
+Presa La Boca & 347 & Presa de abasto directo & 1.0 & 0.5 \\
+Presa Cerro Prieto (río Pablillo) & 1,758 & Presa de abasto directo & 1.0 & 0.5 \\
+Río Santa Catarina aguas arriba de Monterrey & 1,392 & Recarga de pozos y galerías de SADM & 1.0 & 1.0 \\
+Resto de la cuenca de El Cuchillo & 8,744 & Abasto mayor, pero lejano & 0.6 & 0.3 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-La conectividad $k\in[0,1]$ es la fracción del agua retenida en una cuenca que se supone llega a su fuente de abasto: 1 para las cuencas que drenan directamente a una presa o al acuífero explotado, y 0.6 para el resto de la cuenca de El Cuchillo, una fuente mayor pero lejana en la que parte del agua se pierde o se aprovecha antes de llegar a la presa. Este último valor es un supuesto explícito, que se varía de 0.4 a 0.8 en el análisis de incertidumbre (sección~\ref{sec:incertidumbre}).
+La conectividad $k\in[0,1]$ es la fracción del agua retenida en una cuenca que se supone llega a su fuente de abasto: 1 para las cuencas que drenan directamente a una presa o al acuífero explotado, y 0.6 para el resto de la cuenca de El Cuchillo, una fuente mayor pero lejana en la que parte del agua se pierde o se aprovecha antes de llegar a la presa. Este último valor es un supuesto explícito, que se varía de 0.4 a 0.8 en el análisis de incertidumbre (sección~\ref{sec:incertidumbre}). En el índice de prioridad, el criterio de conexión con el abasto no usa $k$ sino un puntaje $s_{\text{con}}$ basado en la ganancia neta esperada de cada fuente (sección~\ref{sec:destino}): 1 en el Santa Catarina, cuya recarga es agua nueva para el abasto; 0.5 en La Boca y Cerro Prieto, donde la retención no añade volumen pero reduce el azolve y las avenidas, y 0.3 en el resto de El Cuchillo. $k$ se sigue usando para los volúmenes de agua.
 
 \subsection{Índice de prioridad}
 
@@ -180,14 +180,14 @@ s_{\text{veg}} &= 1-\ell(\text{NDVI};0.1,0.7),\\
 s_{\text{suelo}} &= \ell(\text{arena}-\text{arcilla};0,12), &
 s_{\text{seco}} &= 1-\ell(\text{SM};0.06,0.15),\\
 s_{\text{lluvia}} &= \ell(P;350,850), &
-s_{\text{fuego}} &\in\{0,\,0.5,\,1\},\quad s_{\text{con}}=k,
+s_{\text{fuego}} &\in\{0,\,0.5,\,1\},\quad s_{\text{con}}\in\{0.3,\,0.5,\,1\},
 \end{aligned}
 \end{equation}
-donde $\theta=\arctan\lVert\nabla z\rVert$ es la pendiente en grados del terreno de elevación $z(x,y)$, calculada con diferencias finitas sobre el DEM (el puntaje es un trapecio: máximo entre 8° y 25° y nulo hacia 45°); NDVI es el índice de vegetación de temporada seca; arena y arcilla son sus porcentajes en la capa superficial del suelo; SM es la humedad volumétrica superficial del suelo (m³/m³) en temporada seca; $P$ es la lluvia media anual (mm); $s_{\text{fuego}}$ vale 1 si el pixel se quemó en los últimos 3 años, 0.5 si se quemó antes, desde 2019, y 0 si no se quemó, y $k$ es la conectividad de su cuenca. El índice es la combinación convexa
+donde $\theta=\arctan\lVert\nabla z\rVert$ es la pendiente en grados del terreno de elevación $z(x,y)$, calculada con diferencias finitas sobre el DEM (el puntaje es un trapecio: máximo entre 8° y 25° y nulo hacia 45°); NDVI es el índice de vegetación de temporada seca; arena y arcilla son sus porcentajes en la capa superficial del suelo; SM es la humedad volumétrica superficial del suelo (m³/m³) en temporada seca; $P$ es la lluvia media anual (mm); $s_{\text{fuego}}$ vale 1 si el pixel se quemó en los últimos 3 años, 0.5 si se quemó antes, desde 2019, y 0 si no se quemó, y $s_{\text{con}}$ es el puntaje de conexión de su cuenca (cuadro~\ref{tab:cuencas}). El índice es la combinación convexa
 \begin{equation}
 I(p)=\sum_c \tilde w_c\, s_c(p),\qquad \tilde w_c = \frac{w_c}{\sum_{c'} w_{c'}},
 \end{equation}
-con los pesos $w_c$ del cuadro~\ref{tab:criterios}, de modo que $I(p)\in[0,1]$. Las clases son alta si $I>\tau_2=0.55$, media si $\tau_1=0.45<I\le\tau_2$ y baja en otro caso; $\tau_1$ y $\tau_2$ son aproximadamente la mediana y el percentil 80 del índice en laderas de más de 8°. Se excluyen zonas urbanas y cuerpos de agua. Las superficies que se reportan son integrales sobre el dominio $\Omega$ de laderas de 8° o más, con $dA$ el elemento de área,
+con los pesos $w_c$ del cuadro~\ref{tab:criterios}, de modo que $I(p)\in[0,1]$. Las clases son alta si $I>\tau_2=0.55$, media si $\tau_1=0.45<I\le\tau_2$ y baja en otro caso; $\tau_1$ y $\tau_2$ son aproximadamente la mediana y el percentil 80 del índice en laderas de más de 8° («p50» y «p80»). Se excluyen zonas urbanas y cuerpos de agua. Las superficies que se reportan son integrales sobre el dominio $\Omega$ de laderas de 8° o más, con $dA$ el elemento de área,
 \begin{equation}
 A_{\text{alta}}=\int_{\Omega}\mathbf 1\!\left[I(\mathbf x)>\tau_2\right]\,dA \;\approx\; \sum_{p\in\Omega}\mathbf 1\!\left[I(p)>\tau_2\right]\,a_p ,
 \end{equation}
@@ -201,7 +201,7 @@ Criterio & Qué captura & $w_c$ \\
 \midrule
 Vegetación degradada & NDVI bajo en temporada seca: mayor margen de mejora & 0.25 \\
 Pendiente & Ladera que genera escurrimiento y es accesible a las obras & 0.20 \\
-Conexión con abasto & Drena directamente a una fuente de la ZMM (cuadro~\ref{tab:cuencas}) & 0.20 \\
+Conexión con abasto & Ganancia neta esperada de su fuente: Santa Catarina 1, presas 0.5, resto de El Cuchillo 0.3 (cuadro~\ref{tab:cuencas}) & 0.20 \\
 Incendios & Quemado de 2019 a 2026: 1 si fue en los últimos 3 años, 0.5 si antes & 0.10 \\
 Suelo seco & Humedad superficial baja en temporada seca & 0.10 \\
 Lluvia & Mayor precipitación por captar & 0.10 \\
@@ -384,7 +384,7 @@ En laderas de 8° o más se identifican \textbf{«alta» ha de prioridad alta} y
 
 \subsection{P4 · Agua bruta retenida para las fuentes de abasto}\label{res:p4}
 
-\grafica{m2_optimizacion}{Celdas óptimas para la captación}{Optimización con 3,000 ha repartidas entre las cuatro fuentes, en dos acercamientos. Fuente: elaboración propia.}
+\grafica{m2_optimizacion}{Celdas óptimas por ganancia neta esperada}{Optimización con 3,000 ha por ganancia neta esperada (sección~\ref{sec:destino}): todas las celdas están en la cuenca del Santa Catarina. Líneas punteadas: áreas naturales protegidas (WDPA); la mayor es el Parque Nacional Cumbres de Monterrey. Fuente: elaboración propia.}
 
 \begin{table}[H]\centering\small
 \caption{Optimización con 3,000 ha restauradas (agua bruta)}\label{tab:optim}
@@ -663,7 +663,7 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
 \bibitem{conagua_cba} CONAGUA (s. f.). \emph{Determinación de la disponibilidad de agua en el acuífero Campo Buenos Aires (1907), estado de Nuevo León}. Comisión Nacional del Agua, Subdirección General Técnica, Gerencia de Aguas Subterráneas.
 \bibitem{conagua_disp} CONAGUA (s. f.). \emph{Disponibilidad media de agua superficial por cuenca} [conjunto de datos]. Datos abiertos de la Comisión Nacional del Agua, consultado el 15 de octubre de 2026.
 \bibitem{conafor2026} CONAFOR (2026). Reglas de Operación 2026 del Programa Desarrollo Forestal Sustentable para el Bienestar, concepto RF.1 Restauración Forestal. \emph{Diario Oficial de la Federación}.
-\bibitem{conafor2007} Comisión Nacional Forestal (2007). \emph{Protección, restauración y conservación de suelos forestales. Manual de obras y prácticas}. CONAFOR, Zapopan.
+\bibitem{conafor2023} Comisión Nacional Forestal (2023). \emph{Manual de restauración forestal}, 3.ª ed. CONAFOR, Zapopan.
 \bibitem{dantzig1957} Dantzig, G. B. (1957). Discrete-variable extremum problems. \emph{Operations Research}, 5(2), 266–288.
 \bibitem{gumbel1958} Gumbel, E. J. (1958). \emph{Statistics of Extremes}. Columbia University Press.
 \bibitem{ilstedt2016} Ilstedt, U. et al. (2016). Intermediate tree cover can maximize groundwater recharge in the seasonally dry tropics. \emph{Scientific Reports}, 6, 21930.
@@ -725,7 +725,7 @@ $z$, $\theta$ & Elevación del terreno y pendiente, $\theta=\arctan\lVert\nabla 
 $\ell(x;a,b)$ & Función lineal acotada que vale 0 si $x\le a$ y 1 si $x\ge b$ & adimensional \\
 $s_c(p)$, $w_c$, $\tilde w_c$ & Puntaje del criterio $c$ en el pixel $p$, peso y peso normalizado & adimensional \\
 $I(p)$, $\tau_1$, $\tau_2$ & Índice de prioridad y umbrales de las clases media y alta & adimensional \\
-$k$ & Conectividad de la cuenca con el abasto (cuadro~\ref{tab:cuencas}) & adimensional \\
+$k$, $s_{\text{con}}$ & Conectividad hidrológica de la cuenca con el abasto y puntaje de conexión en el índice (cuadro~\ref{tab:cuencas}) & adimensional \\
 $\Omega$, $a_p$ & Dominio de laderas de 8° o más y área de un pixel (900 m²) & m² \\
 $M$, $R(p)$ & Número de ponderaciones aleatorias y robustez del pixel $p$ & adimensional \\
 \multicolumn{3}{l}{\textit{Captación y optimización}}\\
@@ -829,9 +829,9 @@ que vale 1 cuando todas reciben lo mismo y $1/4$ cuando una sola recibe toda el 
 
 \grafica{g2_criterios}{Puntaje de los criterios por clase de prioridad}{Puntaje promedio de cada criterio en las clases alta, media y baja. Fuente: elaboración propia.}
 
-\lectura{Los criterios que más distinguen la prioridad alta de la baja son la vegetación degradada («c_veg_a» frente a «c_veg_b»), el suelo seco («c_sm_a» frente a «c_sm_b») y la pendiente («c_sl_a» frente a «c_sl_b»). La lluvia y la textura del suelo apenas varían entre clases. Los incendios tienen un peso promedio reducido porque afectan sólo una parte del territorio, aunque elevan considerablemente la prioridad donde ocurren.}
+\lectura{Los criterios que más distinguen la prioridad alta de la baja son la conexión con el abasto («c_con_a» frente a «c_con_b»), la vegetación degradada («c_veg_a» frente a «c_veg_b»), el suelo seco («c_sm_a» frente a «c_sm_b») y la pendiente («c_sl_a» frente a «c_sl_b»). La lluvia y la textura del suelo apenas varían entre clases. Los incendios tienen un peso promedio reducido porque afectan sólo una parte del territorio, aunque elevan considerablemente la prioridad donde ocurren.}
 
-\respuesta{La degradación de la cobertura vegetal y la sequedad del suelo en laderas accesibles a las obras. La lluvia y la textura del suelo contribuyen poco a la diferencia entre clases.}
+\respuesta{La conexión con una fuente de abasto que gana agua (el Santa Catarina), la degradación de la cobertura vegetal y la sequedad del suelo en laderas accesibles a las obras. La lluvia y la textura del suelo contribuyen poco a la diferencia entre clases.}
 
 \subsection{P3 · Robustez de la prioridad}\label{res:p3}
 

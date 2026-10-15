@@ -117,25 +117,32 @@ def regional_maps():
               loc="lower left", fontsize=8, frameon=True, framealpha=.9)
     fig.savefig(OUT / "m1_cuencas.png"); plt.close(fig); print("wrote m1_cuencas")
 
-    # Fig 5 · optimal cells, two zoomed panels
+    # Fig 5 · optimal cells by expected net gain (all in the Santa Catarina catchment) and protected areas
     cells = json.loads((DOCS / "cells.geojson").read_text())
-    zooms = [("Santa Catarina y La Boca", [-100.62, -100.02, 25.30, 25.72]), ("Cerro Prieto", [-100.12, -99.60, 24.42, 24.98])]
-    fig, axs = plt.subplots(1, 2, figsize=(7.2, 4.4))
-    for ax, (title, z) in zip(axs, zooms):
-        ax.imshow(hs, extent=ext, zorder=1); ax.imshow(pr, extent=ext, alpha=.35, zorder=2)
-        for f in cells["features"]:
-            ring = np.array(f["geometry"]["coordinates"][0])
-            ax.fill(ring[:, 0], ring[:, 1], color=SCOL[f["properties"]["supply_name"]], ec="white", lw=.4, zorder=4)
-        draw_catchments(ax, gj, labels=False)
-        for f in gj["features"]:
-            if f["geometry"]["type"] == "Point":
-                x, y = f["geometry"]["coordinates"]
-                if z[0] < x < z[1] and z[2] < y < z[3]:
-                    ax.annotate(f["properties"]["name"].replace(" (Monterrey)", ""), (x, y), xytext=(4, 3), textcoords="offset points",
-                                fontsize=7, zorder=7, bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="none", alpha=.85))
-        base_axes(ax, z, km=10); ax.set_title(title, fontsize=9, loc="left")
-    fig.legend(handles=[Patch(color=c, label=k.replace(" (pozos SADM)", "")) for k, c in SCOL.items()],
-               loc="lower center", ncol=4, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.02))
+    anp = json.loads((DOCS / "anp.geojson").read_text())
+    xy = np.array([p for f in cells["features"] for p in f["geometry"]["coordinates"][0]])
+    pad = 0.06
+    z = [xy[:, 0].min() - pad, xy[:, 0].max() + pad, xy[:, 1].min() - pad, xy[:, 1].max() + pad]
+    fig, ax = plt.subplots(figsize=(7.2, 5.2))
+    ax.imshow(hs, extent=ext, zorder=1); ax.imshow(pr, extent=ext, alpha=.35, zorder=2)
+    for f in cells["features"]:
+        ring = np.array(f["geometry"]["coordinates"][0])
+        ax.fill(ring[:, 0], ring[:, 1], color=SCOL[f["properties"]["supply_name"]], ec="white", lw=.4, zorder=4)
+    for f in anp["features"]:
+        from shapely.geometry import shape
+        geom = shape(f["geometry"])
+        parts = getattr(geom, "geoms", [geom])
+        for poly in (q for part in parts for q in getattr(part, "geoms", [part])):
+            if poly.geom_type != "Polygon":
+                continue
+            ring = np.array(poly.exterior.coords)
+            ax.plot(ring[:, 0], ring[:, 1], color="#0a9055", lw=1.4 if f["properties"]["desig"] == "Parque Nacional" else .8,
+                    ls=(0, (3, 2)), zorder=5)
+    draw_catchments(ax, gj, labels=False)
+    base_axes(ax, z, km=5)
+    fig.legend(handles=[Patch(color=SCOL["Acuífero Santa Catarina (pozos SADM)"], label="Celdas seleccionadas (Santa Catarina)"),
+                        Line2D([], [], color="#0a9055", ls=(0, (3, 2)), label="Áreas naturales protegidas (WDPA)")],
+               loc="lower center", ncol=2, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.01))
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     fig.savefig(OUT / "m2_optimizacion.png"); plt.close(fig); print("wrote m2_optimizacion")
 

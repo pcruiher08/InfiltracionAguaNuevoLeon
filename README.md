@@ -42,14 +42,14 @@ En lugar de un rectángulo, el análisis cubre la **unión de las cuencas de aba
 - Se ubicaron las presas con datos de agua superficial (JRC): La Boca ≈ 3.8 km², Cerro Prieto ≈ 20 km², El Cuchillo ≈ 43 km².
 - Desde cada fuente se trazó la cuenca aguas arriba con **HydroBASINS nivel 12**, recorriendo los enlaces `HYBAS_ID → NEXT_DOWN`.
 
-| Cuenca | Área | Papel en el abasto | Conectividad |
-|---|---|---|---|
-| Presa La Boca | 347 km² | Presa de abasto directo | **1.0** |
-| Presa Cerro Prieto (río Pablillo) | 1,758 km² | Presa de abasto directo | **1.0** |
-| Río Santa Catarina aguas arriba de Monterrey | 1,392 km² | Recarga de pozos y galerías de SADM | **1.0** |
-| Resto de la cuenca de El Cuchillo | 8,744 km² (incluye las anteriores salvo Cerro Prieto) | Abasto mayor, pero lejano | **0.6** |
+| Cuenca | Área | Papel en el abasto | Conectividad hidrológica *k* | Conexión en el índice |
+|---|---|---|---|---|
+| Presa La Boca | 347 km² | Presa de abasto directo | **1.0** | 0.5 |
+| Presa Cerro Prieto (río Pablillo) | 1,758 km² | Presa de abasto directo | **1.0** | 0.5 |
+| Río Santa Catarina aguas arriba de Monterrey | 1,392 km² | Recarga de pozos y galerías de SADM | **1.0** | 1.0 |
+| Resto de la cuenca de El Cuchillo | 8,744 km² (incluye las anteriores salvo Cerro Prieto) | Abasto mayor, pero lejano | **0.6** | 0.3 |
 
-Los niveles de conectividad (1.0 y 0.6) son un **supuesto explícito**, ajustable en `pipeline/config.py`.
+Los niveles de conectividad son un **supuesto explícito**, ajustable en `pipeline/config.py`. La conectividad hidrológica *k* se usa para los volúmenes de agua; la conexión en el índice (`INDEX_CONNECTION`) refleja la ganancia neta esperada de cada fuente (sección 9).
 
 ![Cuencas de abasto y prioridad de restauración](informe/figuras/m1_cuencas.png)
 
@@ -66,7 +66,7 @@ Se calculan siete criterios en Google Earth Engine. Cada uno se normaliza a 0–
 | Incendios | Área quemada entre 2019 y 2026: 1 si fue en los últimos 3 años, 0.5 si antes | 0.10 |
 | Suelo seco | Humedad superficial SMAP en temporada seca | 0.10 |
 | Lluvia | Precipitación media anual (CHIRPS): más agua por captar | 0.10 |
-| **Conexión con abasto** | Si drena directo a una fuente de la ZMM (ver tabla anterior) | 0.20 |
+| **Conexión con abasto** | Según la ganancia neta esperada de su fuente: Santa Catarina 1.0, La Boca y Cerro Prieto 0.5 (la retención no añade volumen a las presas, pero reduce azolve y avenidas), resto de El Cuchillo 0.3 | 0.20 |
 
 - **Clases:** alta si el índice supera 0.55, media entre 0.45 y 0.55, baja por debajo. Los umbrales se calibraron con la distribución real en laderas de más de 8°: equivalen a la mediana (~p50) y a ~p80.
 - **Exclusiones:** zonas urbanas y cuerpos de agua (ESA WorldCover). El mapa muestra por defecto solo laderas de 8° o más.
@@ -91,9 +91,9 @@ Las tres cifras de resultados describen **lo mismo**: cuánto ganaría un terren
 
 | Clase | Regla | Superficie | Qué significa |
 |---|---|---|---|
-| **Prioridad alta** | Índice > 0.55 (~20 % superior de las laderas) | ~141,200 ha | Las mejores candidatas a restaurar |
-| **Prioridad media** | Índice entre 0.45 y 0.55 | ~175,500 ha | Vale la pena restaurarlas, pero van en segundo lugar |
-| **Alta y robusta** | Alta en ≥ 50 % de 40 ponderaciones aleatorias | ~90,600 ha (64 % de la alta) | Prioritarias **sin importar cómo se ponderen los criterios** |
+| **Prioridad alta** | Índice > 0.55 (~20 % superior de las laderas) | ~79,500 ha | Las mejores candidatas a restaurar |
+| **Prioridad media** | Índice entre 0.45 y 0.55 | ~126,700 ha | Vale la pena restaurarlas, pero van en segundo lugar |
+| **Alta y robusta** | Alta en ≥ 50 % de 40 ponderaciones aleatorias | ~56,500 ha (71 % de la alta) | Prioritarias **sin importar cómo se ponderen los criterios** |
 
 **Por qué importa la robustez:** los pesos de los criterios son una decisión de criterio experto; alguien podría darle más peso a los incendios o menos a la pendiente. Lo robusto se mantiene alto con casi cualquier ponderación, así que es **el lugar más seguro para empezar**.
 
@@ -326,10 +326,10 @@ En cada sitio, el optimizador elige las barreras así:
 
 Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en laderas de 8° o más.
 
-1. **La prioridad se concentra en las laderas de la Sierra Madre.** Hay ~**141,200 ha de prioridad alta** y ~175,500 ha de prioridad media.
-2. **Más de dos tercios de la prioridad alta drenan directo a una fuente de abasto.** ~**99,600 ha (71 %)** están en las cuencas de La Boca, Cerro Prieto o Santa Catarina. Restaurar ahí beneficia directamente a la ZMM.
-3. **La prioridad es robusta.** ~**90,600 ha (64 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
-4. **Los incendios abren una ventana de acción.** ~**17,100 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
+1. **La prioridad se concentra en las laderas de la Sierra Madre, sobre todo en la cuenca del Santa Catarina.** Hay ~**79,500 ha de prioridad alta** (~61,100 ha en el Santa Catarina) y ~126,700 ha de prioridad media.
+2. **La conexión con el abasto pesa según la ganancia neta.** El Santa Catarina, donde la recarga es agua nueva para los pozos de SADM, puntúa 1.0; las cuencas de las presas, 0.5. ~**66,100 ha (83 %)** de la prioridad alta están en las cuencas de La Boca, Cerro Prieto o Santa Catarina.
+3. **La prioridad es robusta.** ~**56,500 ha (71 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
+4. **Los incendios abren una ventana de acción.** ~**14,800 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
 5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈400 L/s brutos) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero del Santa Catarina**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
     - Para maximizar agua: **Santa Catarina**, que además es donde la ganancia neta es más probable.

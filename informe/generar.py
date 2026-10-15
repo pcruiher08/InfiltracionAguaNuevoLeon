@@ -75,11 +75,13 @@ for k in ORDER:
 
 V = {
     "alta": n(alta), "media": n(media), "robusta": n(robusta), "robusta_pct": pct(100 * robusta / alta),
-    "directa": n(directa), "directa_pct": pct(100 * directa / alta), "quemada": n(EX["quemada_ha"]),
+    "directa": n(directa), "directa_pct": pct(100 * directa / alta), "quemada": n(S.get("burned_high", EX["quemada_ha"])),
+    "p50": f"{S['class_percentiles']['priority_p50']:.2f}", "p80": f"{S['class_percentiles']['priority_p80']:.2f}",
     "sc_alta": n(hc["Acuífero Santa Catarina (pozos SADM)"]["alta"]), "lb_alta": n(hc["Presa La Boca"]["alta"]),
     "c_veg_a": f"{crit['alta']['vegetation']:.2f}", "c_veg_b": f"{crit['baja']['vegetation']:.2f}",
     "c_sm_a": f"{crit['alta']['moisture']:.2f}", "c_sm_b": f"{crit['baja']['moisture']:.2f}",
     "c_sl_a": f"{crit['alta']['slope']:.2f}", "c_sl_b": f"{crit['baja']['slope']:.2f}",
+    "c_con_a": f"{crit['alta']['connectivity']:.2f}", "c_con_b": f"{crit['baja']['connectivity']:.2f}",
     "max_ls": n(mx["impact"]["ls"], 0), "max_days": n(mx["impact"]["days_of_zmm_supply"], 1),
     "bal_ls": n(bal["impact"]["ls"], 0), "bal_days": n(bal["impact"]["days_of_zmm_supply"], 1),
     "max_m3": n(mx["m3"] / 1e6, 2), "bal_m3": n(bal["m3"] / 1e6, 2),

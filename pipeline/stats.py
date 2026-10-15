@@ -38,6 +38,21 @@ def ha_by_catchment():
     return out
 
 
+def burned_high():
+    """Hectares of high priority (uplands) burned 2019-2026."""
+    idx, cls = _uplands_classes()
+    burned = layers.raw().select("burned").gt(0)
+    ha = ee.Image.pixelArea().divide(1e4).updateMask(cls.eq(3).And(burned))
+    return round(ha.reduceRegion(ee.Reducer.sum(), layers.aoi(), 90, maxPixels=1e10, bestEffort=True).values().get(0).getInfo())
+
+
+def class_percentiles():
+    """Median and 80th percentile of the index on slopes > 8°, to check the class thresholds."""
+    idx, _ = _uplands_classes()
+    r = idx.reduceRegion(ee.Reducer.percentile([50, 80]), layers.aoi(), 120, maxPixels=1e10, bestEffort=True).getInfo()
+    return {k: round(v, 3) for k, v in r.items()}
+
+
 def criteria_by_class():
     idx, cls = _uplands_classes()
     img = layers.scores().select(CRITERIA).addBands(cls)
