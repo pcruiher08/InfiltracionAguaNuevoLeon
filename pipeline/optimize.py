@@ -33,6 +33,11 @@ RETENTION_FRAC = (0.160, 0.130, 0.078)
 def retention(rain_mm):
     import numpy as np
     return float(np.interp(rain_mm, RETENTION_RAIN, RETENTION_FRAC))
+# Expected net gain of each supply source per m³ retained (E[(1 - e)·phi - tau], times k for El
+# Cuchillo), from the probabilistic analysis in informe/destino.py: retention in the dam catchments
+# mostly holds back runoff that already reached the reservoir, so its expected net gain is negative.
+NET_FACTOR = {1: -0.303, 2: -0.354, 3: 0.067, 4: -0.196}
+NET_P_POS = {1: 4.7, 2: 3.9, 3: 66.9, 4: 3.6}  # % probability that the source gains water
 DENSE_NDVI = 0.55
 SECONDS_YEAR = 31_536_000
 ZMM_DEMAND_LS = 16_500          # regular consumption (deck: 13,500 available vs 16,500 L/s in 2022)
@@ -110,6 +115,7 @@ def cell_table():
             "rain_mm": round(p["rain_mm_mean"]), "priority": round(p.get("priority_mean") or 0, 3),
             "connectivity": round(tier, 2), "retained_m3": round(retained),
             "delivered_m3": round(retained * tier),
+            "net_m3": round(retained * NET_FACTOR[int(sid)]),
             "rain_drought_mm": round(rain_d),
             "delivered_drought_m3": round(retained_d * tier),
         })
@@ -125,6 +131,7 @@ def _greedy(cells, budget_ha, names):
         take = min(r["eligible_ha"], budget_ha - used)
         frac = take / r["eligible_ha"]
         chosen.append({**r, "treated_ha": round(take, 1), "delivered_m3": round(r["delivered_m3"] * frac),
+                       "net_m3": round(r["net_m3"] * frac),
                        "delivered_drought_m3": round(r["delivered_drought_m3"] * frac),
                        "supply_name": names[r["supply"]]})
         used += take
@@ -170,9 +177,12 @@ def for_target(target_ls):
 def optimize(budget_ha=3000, mode="max", target_ls=None):
     if target_ls:
         budget_ha = for_target(target_ls)["ha"]
-    """mode 'max': greedy by delivered m³/ha over all cells (pure optimum).
-    mode 'balanced': budget split equally among supply sources, greedy within each."""
+    """mode 'max': greedy by gross delivered m³/ha over all cells (pure optimum).
+    mode 'balanced': budget split equally among supply sources, greedy within each.
+    mode 'net': greedy by expected net gain per ha, only cells with a positive expected gain."""
     cells = sorted(cell_table(), key=lambda r: -r["delivered_m3"] / r["eligible_ha"])
+    if mode == "net":
+        cells = sorted((r for r in cell_table() if r["net_m3"] > 0), key=lambda r: -r["net_m3"] / r["eligible_ha"])
     names = {sid: name for sid, name in SUPPLY.values()}
     if mode == "balanced":
         sids = sorted({r["supply"] for r in cells})
@@ -187,20 +197,23 @@ def optimize(budget_ha=3000, mode="max", target_ls=None):
         r["rank"] = i
     by_supply = {}
     for r in chosen:
-        s = by_supply.setdefault(r["supply_name"], {"cells": 0, "ha": 0.0, "m3": 0})
-        s["cells"] += 1; s["ha"] += r["treated_ha"]; s["m3"] += r["delivered_m3"]
+        s = by_supply.setdefault(r["supply_name"], {"cells": 0, "ha": 0.0, "m3": 0, "net_m3": 0, "p_pos": NET_P_POS[r["supply"]]})
+        s["cells"] += 1; s["ha"] += r["treated_ha"]; s["m3"] += r["delivered_m3"]; s["net_m3"] += r["net_m3"]
     # Diminishing-returns curve: m³ delivered vs hectares treated
     curve, acc_ha, acc_m3 = [], 0.0, 0
+    key = "net_m3" if mode == "net" else "delivered_m3"
     for r in cells:
-        acc_ha += r["eligible_ha"]; acc_m3 += r["delivered_m3"]
+        acc_ha += r["eligible_ha"]; acc_m3 += r[key]
         curve.append((acc_ha, acc_m3))
     marks = [500, 1000, 2000, 3000, 5000, 10000, 20000, 50000]
     curve_pts = [{"ha": m, "m3": next((v for h, v in curve if h >= m), curve[-1][1])} for m in marks if m <= curve[-1][0]]
     m3 = sum(r["delivered_m3"] for r in chosen)
+    net = sum(r["net_m3"] for r in chosen)
     return {
         "budget_ha": budget_ha, "mode": mode, "target": for_target(target_ls) if target_ls else None,
         "impact": {"ls": ls(m3), "pct_zmm_demand": round(100 * ls(m3) / ZMM_DEMAND_LS, 2),
-                   "days_of_zmm_supply": round(m3 / ZMM_DAY_M3, 1), "zmm_demand_ls": ZMM_DEMAND_LS},
+                   "days_of_zmm_supply": round(m3 / ZMM_DAY_M3, 1), "zmm_demand_ls": ZMM_DEMAND_LS,
+                   "net_ls": ls(net)},
         "drought": drought_check(chosen, mode, budget_ha),
         "totals": {"cells": len(chosen), "ha": round(used), "m3_per_year": m3,
                    "candidates": len(cells), "eligible_ha_total": round(sum(r["eligible_ha"] for r in cells))},
@@ -214,6 +227,9 @@ def optimize(budget_ha=3000, mode="max", target_ls=None):
             "Coeficiente de escurrimiento: 0.05 + 0.35·(pendiente/35°) + 0.35·(suelo desnudo); regla simple, no calibrada.",
             "Fracción retenida anual (8–16 %): modelo de flujo de costo mínimo con la capacidad de las barreras y la lluvia diaria CHIRPS; menor donde llueve más en tormentas grandes.",
             "Conexión: 1.0 si drena directo a La Boca, Cerro Prieto o Santa Catarina; 0.6 en el resto de El Cuchillo.",
+            "Agua bruta: supone que toda el agua retenida llega a la fuente; es una cota superior.",
+            "Ganancia neta esperada: descuenta la evapotranspiración y el escurrimiento que ya llegaba a las presas (informe, sección P9). Es positiva sólo en el Santa Catarina (probabilidad ~67 %); en las presas es negativa.",
+            "Calibrado con el escurrimiento natural de Cerro Prieto (CONAGUA), el agua bruta y la neta bajan ~18 %.",
             "Es una estimación de orden de magnitud para comparar opciones, no un balance hídrico.",
             f"L/s = m³/año ÷ segundos del año. Días de abasto: frente a {ZMM_DEMAND_LS:,} L/s de consumo regular de la ZMM.",
             f"Sequía: misma fórmula con la lluvia real CHIRPS de {DROUGHT_LABEL}.",

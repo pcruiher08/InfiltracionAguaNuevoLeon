@@ -80,6 +80,7 @@
   <label class="row"><input type="checkbox" id="showLow"> Mostrar prioridad baja</label>
   <label class="row"><input type="checkbox" id="robust"> Robustez (prioridad alta en ≥ 50% de escenarios)</label>
   <label class="row"><input type="checkbox" id="basins" checked> Cuencas de abasto y presas</label>
+  <label class="row"><input type="checkbox" id="anp" checked> Áreas naturales protegidas (WDPA)</label>
   <label class="w">Opacidad <span id="opv">80%</span></label>
   <input type="range" id="opacity" min="0.2" max="1" step="0.05" value="0.8">
 
@@ -220,6 +221,11 @@ async function init() {
       .bindTooltip(p.name, { permanent:true, direction:"right", className:"supply-label" })));
     applyVisibility();
   });
+  fetch("anp.geojson").then(r => r.json()).then(g => {
+    layers.anp = L.geoJSON(g, { style: f => ({ color:"#0a9055", weight:f.properties.desig === "Parque Nacional" ? 2.5 : 1.5,
+        dashArray:"4 4", fillColor:"#0a9055", fillOpacity:.06 }), interactive:false }).addTo(map);
+    document.getElementById("anp").onchange = e => e.target.checked ? layers.anp.addTo(map) : map.removeLayer(layers.anp);
+  }).catch(() => {});
   await refresh();
 }
 

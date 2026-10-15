@@ -59,13 +59,14 @@ ls_at = lambda ha: min(wc, key=lambda p: abs(p["ha"] - ha))["ls"]
 slope_first = ls_at(1000) / 1; slope_last = (ls_at(60000) - ls_at(50000)) / 10
 
 sites_rows = []
+PARK = {"Cumbres de Monterrey": "PN", "C.A.D.N.R. 026 Bajo Río San Juan": "APRN", None: "No"}
 for i, s in enumerate(SITES, 1):
     w, t = s["why"], s["barriers"]["totals"]
     obra = s["recommendation"]["obra"].replace("Barreras de material vegetal muerto en curvas de nivel", "Material vegetal muerto") \
         .replace("Reforestación con nativas + barreras de material vegetal", "Reforestación + material vegetal") \
         .replace("Barreras de piedra acomodada", "Piedra acomodada").replace("Zanja-bordo + reforestación con nativas", "Zanja-bordo + reforestación")
-    sites_rows.append(f"{i} & {SHORT[w['supply']]} & {w['opt_rank']} & {n(w['m3_per_ha'])} & {n(w['rain_mm'])} & "
-                      f"{s['stats']['priority']:.2f} · {round(100 * w['robustness'])}\\% & {obra} & {round(t['intercepted_pct'])}\\% \\\\")
+    sites_rows.append(f"{i} & {w['opt_rank']} & {n(w['m3_per_ha'])} & {n(w['net_m3_per_ha'])} & {n(w['rain_mm'])} & "
+                      f"{s['stats']['priority']:.2f} · {round(100 * w['robustness'])}\\% & {obra} & {round(t['intercepted_pct'])}\\% & {PARK.get(w.get('park'), 'Otra')} \\\\")
 
 opt_rows = []
 for k in ORDER:
@@ -95,6 +96,7 @@ V = {
     "ret5": f"{min(ret5):.0f} a {max(ret5):.0f}\\%", "ret40": f"{min(ret40):.1f} a {max(ret40):.1f}\\%",
     "rho": " · ".join(f"{r:,} mm: {100 * f:.0f}\\%" for r, f in zip(EX["retention"]["rain"], EX["retention"]["frac"])),
     "opt_rows": "\n".join(opt_rows), "sites_rows": "\n".join(sites_rows),
+    "sitios_parque": n(sum(1 for s in SITES if s["why"].get("park") == "Cumbres de Monterrey")),
     "max_tot_ls": n(ls(mx["m3"]), 1), "bal_tot_ls": n(ls(bal["m3"]), 1),
 }
 
@@ -222,9 +224,8 @@ CL = json.loads((ROOT / "clima.json").read_text()); PR = CL["protegidas"]
 a3, a30 = PR["neta_3000"], PR["neta_30000"]
 anp_rows = [f"{k} & {n(a3.get(k, 0))} & {n(a30.get(k, 0))} \\\\" for k in sorted(set(a3) | set(a30), key=lambda k: -a30.get(k, 0))]
 cum = "Cumbres de Monterrey (Parque Nacional)"
-sit = PR["sitios_en_cumbres"]
-sit_txt = ("De los 8 sitios sugeridos, " + (" y ".join(str(x) for x in sit) if sit else "ninguno")
-           + (" están" if len(sit) > 1 else " está") + " dentro del parque.") if sit else "Ninguno de los 8 sitios sugeridos está dentro del parque."
+sit = [i for i, s in enumerate(SITES, 1) if s["why"].get("park") == "Cumbres de Monterrey"]
+sit_txt = f"{len(sit)} de los 8 sitios sugeridos están dentro del parque." if sit else "Ninguno de los 8 sitios sugeridos está dentro del parque."
 fq = lambda v: pct(100 * v)
 def crow(lbl, f):
     return f"{lbl} & {f('ssp245')} & {f('ssp585')} \\\\"
@@ -240,6 +241,20 @@ V.update({"anp_rows": "\n".join(anp_rows), "anp_cumbres3": n(a3.get(cum, 0)), "a
           "clima_more245": str(CL["ssp245"]["models_more_droughts"]), "clima_more585": str(CL["ssp585"]["models_more_droughts"]),
           "clima_f245": fq(CL["ssp245"]["freq_median"]), "clima_f585": fq(CL["ssp585"]["freq_median"]),
           "clima_g245": f"{CL['ssp245']['gross_change_pct']:+.1f}\\%", "clima_g585": f"{CL['ssp585']['gross_change_pct']:+.1f}\\%"})
+
+# ---------------------------------------------------------------- Campo Buenos Aires aquifer (CONAGUA, DR 1907)
+AQ = {"recarga": 57.0, "concesion": 62.803450, "area_trib": 1120, "area_recarga": 450}
+hm3 = lambda l_s: l_s * SEC_Y / 1e9
+n30s = SEL["neta_30000"]; e_sc = (DE["e_min"] + DE["et"]["Acuífero Santa Catarina (pozos SADM)"]["ratio"]) / 2
+phi_sc = sum(DE["phi"]["Acuífero Santa Catarina (pozos SADM)"]) / 2
+R_sc = hm3(n30s["gross_ls"]); rech = (1 - e_sc) * phi_sc * R_sc
+net_u, net_c = hm3(n30s["net_mean"]), hm3(PO["selections"]["neta_30000"]["net_mean"])
+deficit = AQ["concesion"] - AQ["recarga"]
+V.update({"aq_rech": n(AQ["recarga"], 1), "aq_conc": n(AQ["concesion"], 1), "aq_def": n(deficit, 1),
+          "aq_trib": n(AQ["area_trib"]), "aq_area": n(AQ["area_recarga"]), "aq_mm": n(AQ["recarga"] / AQ["area_recarga"] * 1000),
+          "aq_R": n(R_sc, 1), "aq_inc": n(rech, 1), "aq_inc_pct": pct(100 * rech / AQ["recarga"], 1),
+          "aq_inc_mm": n(rech / 300 * 1000), "aq_net_u": n(net_u, 2), "aq_net_c": n(net_c, 2),
+          "aq_net_pct": pct(100 * net_c / AQ["recarga"], 1), "aq_def_pct_u": pct(100 * net_u / deficit), "aq_def_pct_c": pct(100 * net_c / deficit)})
 
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():

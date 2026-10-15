@@ -7,13 +7,14 @@
   const panel = document.getElementById("optimize-panel");
   let group = null, mode = "max";
   panel.innerHTML = `
-    <h2>Optimizar captación para las presas</h2>
-    <div class="muted">Elige dónde restaurar para maximizar el agua retenida que llega a cada fuente de abasto.</div>
+    <h2>Optimizar captación para el abasto</h2>
+    <div class="muted">Elige dónde restaurar. <b>Agua bruta</b>: lo que retienen las obras (cota superior). <b>Ganancia neta</b>: lo que realmente gana la fuente, descontando evapotranspiración y el escurrimiento que ya llegaba a las presas.</div>
     <label class="w">Hectáreas a restaurar <span id="op-hv">3,000 ha</span></label>
     <input type="range" id="op-ha" min="500" max="20000" step="500" value="3000">
     <div class="seg" style="margin-top:6px">
       <label><input type="radio" name="op-mode" value="max" checked><span>Máxima agua total</span></label>
       <label><input type="radio" name="op-mode" value="balanced"><span>Repartir entre presas</span></label>
+      <label><input type="radio" name="op-mode" value="net"><span>Máxima ganancia neta</span></label>
     </div>
     <button id="op-run">Optimizar</button>
     <div class="row" style="gap:6px;margin-top:10px">
@@ -47,7 +48,7 @@
       style: f => ({ color:"#ffffff", weight:1, fillColor:COLORS[f.properties.supply_name] || "#6b675f", fillOpacity:.7 }),
       onEachFeature: (f, l) => {
         const p = f.properties;
-        l.bindTooltip(`#${p.rank} · ${p.supply_name}<br>${fmt(p.treated_ha)} ha · ~${fmt(p.delivered_m3)} m³/año<br>lluvia ${p.rain_mm} mm · C ${p.c}`);
+        l.bindTooltip(`#${p.rank} · ${p.supply_name}<br>${fmt(p.treated_ha)} ha · ~${fmt(p.delivered_m3)} m³/año brutos · ${p.net_m3 >= 0 ? "+" : ""}${fmt(p.net_m3)} m³/año netos<br>lluvia ${p.rain_mm} mm · C ${p.c}`);
         l.on("click", ev => { L.DomEvent.stopPropagation(ev); map.fire("click", { latlng:L.latLng(p.lat, p.lon) }); });
       },
     }).addTo(map);
@@ -59,23 +60,25 @@
   function summarize(r) {
     const t = r.totals;
     const rows = Object.entries(r.by_supply).sort((a, b) => b[1].m3 - a[1].m3).map(([k, v]) =>
-      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]}"></span>${k}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³</b></div>`).join("");
+      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]}"></span>${k}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³ brutos · neta ${v.net_m3 >= 0 ? "+" : ""}${(v.net_m3 / 1e6).toFixed(2)} (P>0 ${Math.round(v.p_pos)}%)</b></div>`).join("");
     const curve = r.curve.map(c => `${fmt(c.ha)} ha → ${fmt(c.ls)} L/s`).join(" · ");
     const im = r.impact, d = r.drought, tg = r.target;
     const targetLine = tg ? `<div style="margin-top:10px;padding:8px;border-radius:6px;background:color-mix(in srgb, var(--accent) 12%, transparent)">
         Para <b>+${fmt(tg.target_ls)} L/s</b> hay que restaurar <b>~${fmt(tg.ha)} ha</b> en las mejores celdas${tg.reachable ? "" : ` (máximo alcanzable: ${fmt(tg.max_ls)} L/s)`}.</div>` : "";
     out.innerHTML = `${targetLine}
-      <div style="font-size:22px;font-weight:700;margin-top:10px">+${fmt(im.ls)} L/s</div>
-      <div style="font-size:13px">≈ <b>${im.days_of_zmm_supply} días de abasto</b> de la ZMM al año · ${im.pct_zmm_demand}% de los ${fmt(im.zmm_demand_ls)} L/s de consumo</div>
+      <div style="font-size:22px;font-weight:700;margin-top:10px">+${fmt(im.ls)} L/s brutos</div>
+      <div style="font-size:15px;margin-top:2px">Ganancia neta esperada: <b>${im.net_ls >= 0 ? "+" : ""}${im.net_ls} L/s</b></div>
+      <div style="font-size:13px">Brutos ≈ <b>${im.days_of_zmm_supply} días de abasto</b> de la ZMM al año · ${im.pct_zmm_demand}% de los ${fmt(im.zmm_demand_ls)} L/s de consumo</div>
+      ${im.net_ls < 0 ? `<div class="muted" style="margin-top:4px">La selección incluye cuencas de presas, donde retener escurrimiento en la ladera probablemente reduce el agua que llega al embalse. Usa <b>Máxima ganancia neta</b> para restaurar donde el abasto sí gana agua.</div>` : ""}
       <div class="muted">~${(t.m3_per_year / 1e6).toFixed(1)} millones de m³/año retenidos · ${t.cells} celdas de 1 km · ${fmt(t.ha)} ha de ${fmt(t.eligible_ha_total)} ha elegibles</div>
       <div style="margin-top:10px;padding:8px;border:1px solid var(--line);border-radius:6px">
         <b>Prueba de sequía</b> <span class="muted">· lluvia real de ${d.period}</span>
-        <div class="stat"><span>Agua que aún se capta</span><b>+${fmt(d.ls)} L/s (${d.pct_of_normal}% de un año normal)</b></div>
+        <div class="stat"><span>Agua bruta que aún se capta</span><b>+${fmt(d.ls)} L/s (${d.pct_of_normal}% de un año normal)</b></div>
         <div class="stat"><span>Sitios que se mantienen si se optimiza con la lluvia de sequía</span><b>${d.selection_overlap_pct}%</b></div>
         <div class="muted" style="margin-top:4px">${d.selection_overlap_pct >= 70 ? "La selección es estable: los mismos sitios siguen siendo los mejores en un año seco." : "La selección cambia en sequía: conviene priorizar los sitios que aparecen en ambos escenarios."}</div>
       </div>
       ${rows}
-      <div class="muted" style="margin-top:6px"><b>Rendimientos decrecientes (máxima agua):</b> ${curve}</div>
+      <div class="muted" style="margin-top:6px"><b>Rendimientos decrecientes (${r.mode === "net" ? "ganancia neta" : "agua bruta"}):</b> ${curve}</div>
       <div class="muted" style="margin-top:6px">Haz clic en una celda para ver su ficha y optimizar sus barreras.</div>
       <details><summary>Supuestos</summary><ul class="muted">${r.assumptions.map(a => `<li>${a}</li>`).join("")}</ul></details>`;
   }

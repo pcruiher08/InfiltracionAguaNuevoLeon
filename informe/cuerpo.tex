@@ -144,62 +144,7 @@ Uso del suelo y vegetación & INEGI serie VII, 1:250,000 & Tipo de vegetación d
 
 \section{Método}
 
-\subsection{Notación}
-
-El cuadro~\ref{tab:notacion} reúne los símbolos principales. Cada uno se define también en la sección donde aparece por primera vez. Los índices son $p$ para pixeles de 30 m, $i$ para celdas (de 30 m en la red de drenaje y de 1 km en la optimización de captación), $j$ para barreras candidatas, $c$ para criterios, $g$ para fuentes de abasto, $d$ para días y $n$ para escenarios de Monte Carlo. $\mathbf 1[\cdot]$ es la función indicadora, que vale 1 si la condición se cumple y 0 en otro caso.
-
-\begin{table}[H]\centering\footnotesize
-\caption{Notación}\label{tab:notacion}
-\begin{tabularx}{\linewidth}{lXl}
-\toprule
-Símbolo & Significado & Unidades \\
-\midrule
-\multicolumn{3}{l}{\textit{Índice de prioridad y robustez}}\\
-$z$, $\theta$ & Elevación del terreno y pendiente, $\theta=\arctan\lVert\nabla z\rVert$ & m, grados \\
-$\ell(x;a,b)$ & Función lineal acotada que vale 0 si $x\le a$ y 1 si $x\ge b$ & adimensional \\
-$s_c(p)$, $w_c$, $\tilde w_c$ & Puntaje del criterio $c$ en el pixel $p$, peso y peso normalizado & adimensional \\
-$I(p)$, $\tau_1$, $\tau_2$ & Índice de prioridad y umbrales de las clases media y alta & adimensional \\
-$k$ & Conectividad de la cuenca con el abasto (cuadro~\ref{tab:cuencas}) & adimensional \\
-$\Omega$, $a_p$ & Dominio de laderas de 8° o más y área de un pixel (900 m²) & m² \\
-$M$, $R(p)$ & Número de ponderaciones aleatorias y robustez del pixel $p$ & adimensional \\
-\multicolumn{3}{l}{\textit{Captación y optimización}}\\
-$P$, $P_i$, $P_d$ & Lluvia de una tormenta, lluvia media anual de la celda $i$ y lluvia del día $d$ & mm, mm/año \\
-$C_i$ & Coeficiente de escurrimiento de la celda $i$ & adimensional \\
-$\varphi(P)$, $\rho$ & Fracción retenida de una tormenta de $P$ mm y fracción retenida del escurrimiento anual & adimensional \\
-$A_i$, $H$, $x_i$ & Área elegible de la celda $i$, presupuesto y fracción restaurada de la celda & ha, ha, adimensional \\
-$v_i$ & Agua retenida que llega al abasto si se restaura toda la celda $i$ & m³/año \\
-$W^\ast(H)$ & Valor óptimo del problema de asignación con presupuesto $H$ & m³/año o L/s \\
-$\lambda^\ast$, $\mu_i$ & Variables duales de la restricción de presupuesto y de $x_i\le1$ & m³/año por ha \\
-\multicolumn{3}{l}{\textit{Red de drenaje y barreras}}\\
-$\nu(i)$, $U(\cdot)$ & Celda receptora de $i$ (D8) y conjunto de celdas que drenan a través de un punto o barrera & \\
-$r_i$, $Q(\mathbf x)$ & Escurrimiento de la celda $i$ en una tormenta y escurrimiento acumulado en $\mathbf x$ & m³ \\
-$L_j$, $\kappa$, $u_j$ & Longitud de la barrera $j$, capacidad por metro y capacidad por evento, $u_j=\kappa L_j$ & m, m³/m, m³ \\
-$\Gamma_j$, $B_j$ & Celdas que cruza la barrera $j$ y nodo que la representa en la red & \\
-$s$, $t$, $V$, $E$ & Fuente, sumidero, nodos y arcos de la red de flujo & \\
-$u_e$, $c_e$, $f_e$ & Capacidad, costo unitario y flujo del arco $e$ & m³, adimensional, m³ \\
-$\eta_v$ & Potencial dual del nodo $v$ & adimensional \\
-$S$, $F(S)$, $\bar L$ & Conjunto de barreras construidas, agua que retienen y presupuesto en metros & --, m³, m \\
-\multicolumn{3}{l}{\textit{Simulación de tormenta}}\\
-$h$, $\mathbf v$, $\omega$ & Tirante de agua, velocidad sobre la ladera e intensidad de la lluvia & m, m/s, m/s \\
-$\iota$, $\iota_b$ & Infiltración de la ladera y de la franja encharcada de una obra & mm por paso \\
-$\zeta$, $\bar\zeta$, $\sigma$ & Agua almacenada detrás de una obra, su máximo y la tasa con que entra & mm, mm, mm por paso \\
-$q_i^t$, $y_i^t$ & Agua que llega a la celda $i$ en el paso $t$ y la que se infiltra en ella & mm \\
-\multicolumn{3}{l}{\textit{Incertidumbre, extremos, equidad y abasto}}\\
-$\boldsymbol\xi$, $W(\boldsymbol\xi)$ & Vector de parámetros inciertos y agua retenida con esos parámetros & --, L/s \\
-$N$, $\bar W_N$, $\hat p_i$ & Escenarios, media muestral y probabilidad de selección de la celda $i$ & --, L/s, -- \\
-$X$, $\mu$, $\beta$, $x_T$ & Máximo anual de lluvia diaria, parámetros de Gumbel y lluvia de periodo de retorno $T$ & mm, mm, mm, mm \\
-$q_g$, $\alpha$, $J$ & Agua que recibe la fuente $g$, fracción mínima del reparto e índice de Jain & L/s, --, -- \\
-$Q_{\text{ZMM}}$, $Q_{2022}$, $D$ & Consumo regular, disponibilidad en lo más crítico de 2022 y déficit & L/s \\
-\multicolumn{3}{l}{\textit{Destino del agua retenida}}\\
-$R_i$ & Agua retenida por las obras en la celda $i$, antes de pérdidas & m³/año \\
-$e_g$ & Fracción del agua infiltrada que se pierde por evapotranspiración en la cuenca de $g$ & adimensional \\
-$\phi_g$ & Fracción del agua infiltrada no evapotranspirada que llega a la fuente $g$ & adimensional \\
-$\tau_g$ & Fracción del agua retenida que, sin obras, habría llegado a $g$ como escurrimiento & adimensional \\
-$G_g$ & Ganancia neta de la fuente $g$ por cada m³ retenido, $(1-e_g)\phi_g-\tau_g$ & adimensional \\
-$b(p)$, $\mathcal E_b$ & Tipo de vegetación del pixel $p$ (INEGI) y especies de referencia del tipo $b$ & \\
-\bottomrule
-\end{tabularx}
-\end{table}
+La notación completa se resume en el apéndice~\ref{ap:notacion}. La simulación de tormenta, la propagación de la incertidumbre por Monte Carlo, la dualidad, los periodos de retorno y la frontera entre agua y equidad se describen en el apéndice~\ref{ap:metodos}.
 
 \subsection{Área de análisis}
 
@@ -336,61 +281,6 @@ j^\ast=\arg\max_{j\notin S}\ \frac{F(S\cup\{j\})-F(S)}{L_j},
 \end{equation}
 usando $\min\{u_j,\sum_{i\in U(j)}r_i\}$, con $U(j)$ las celdas que drenan a través de $j$, como cota superior inicial de la ganancia y reevaluando sólo la barrera en la cabeza de la cola de prioridad. $F$ es monótona y, dado que el agua retenida aguas arriba ya no llega aguas abajo, presenta rendimientos decrecientes; para funciones submodulares bajo restricción de presupuesto, \emph{greedy} por razón beneficio-costo combinado con la mejor barrera individual tiene garantía de aproximación constante \citap{khuller1999}. El resultado se compara con el \emph{greedy} por área empleado en la aplicación, en el que el valor de un segmento es el área ladera arriba cuyo escurrimiento lo cruza, con retención de 60\% y crédito decreciente aguas abajo, sin restricción de capacidad. También se evaluó una linealización del costo fijo (\emph{dynamic slope scaling}, \citar{kim1999}), que se descartó por producir peores resultados que \emph{greedy}.
 
-\subsection{Simulación de tormenta}
-
-La simulación discretiza la conservación de masa del escurrimiento superficial. Con $h(\mathbf x,t)$ el tirante de agua (m) en el punto $\mathbf x$ y el tiempo $t$, $\mathbf v$ su velocidad sobre la ladera (m/s), $\omega$ la intensidad de la lluvia, $\iota$ la tasa de infiltración, $\sigma$ la tasa con que el agua entra al almacenamiento detrás de las obras, todas en m/s, y $\zeta$ el agua almacenada detrás de una obra, con máximo $\bar\zeta$ e infiltración propia $\iota_b$,
-\begin{equation}
-\frac{\partial h}{\partial t}+\nabla\!\cdot\!\left(h\,\mathbf v\right)= \omega-\iota-\sigma ,\qquad \frac{\partial \zeta}{\partial t}=\sigma-\iota_b\,\mathbf 1[\zeta>0],\quad 0\le \zeta\le \bar \zeta .
-\end{equation}
-Se resuelve con un esquema explícito de volumen finito \emph{upwind} sobre la red D8, con número de Courant $\lvert\mathbf v\rvert\Delta t/\Delta x=1$, donde $\Delta t$ es el paso de tiempo y $\Delta x=30$ m el tamaño de celda, de modo que en cada paso el agua de una celda se transfiere íntegramente a su receptor. Sea $q_i^t$ el agua (mm sobre la celda) que llega a la celda $i$ en el paso $t$, de unos 2.4 min. La lluvia de $P$ mm se reparte uniformemente en los primeros $T_r$ pasos; $y_i^t$ es lo que se infiltra en la ladera, $\sigma_i^t$ lo que entra al almacenamiento y $\zeta_i^t\le \bar\zeta_i$ el agua almacenada en las celdas con obra ($\bar\zeta_i=0$ en las demás):
-\begin{equation}
-\begin{aligned}
-y_i^t &= \min\{q_i^t,\ \iota\}, & \sigma_i^t &= \min\{q_i^t-y_i^t,\ \bar \zeta_i-\zeta_i^t\},\\
-\zeta_i^{t+1} &= \zeta_i^t+\sigma_i^t-\min\{\zeta_i^t,\ \iota_b\}, & q_{j}^{t+1} &= \frac{P}{T_r}\mathbf 1[t<T_r]+\sum_{i:\nu(i)=j}\left(q_i^t-y_i^t-\sigma_i^t\right),
-\end{aligned}
-\end{equation}
-con $\iota=1$ mm por paso (unos 25 mm/h), $\bar \zeta=30$ mm e $\iota_b=0.12$ mm por paso para la franja encharcada de una barrera (unos 27 m³ y 30 mm/h por celda), y $\bar \zeta=67$ mm para una presa en cárcava. Con la misma tormenta de 40 mm y el mismo terreno se comparan el agua que sale de la ventana, el caudal pico y la infiltración. Se trata de un modelo de balance de masa con fines comparativos, no de un modelo hidrológico calibrado.
-
-\subsection{Incertidumbre de los parámetros}\label{sec:incertidumbre}
-
-Los volúmenes dependen de parámetros inciertos, que se reúnen en el vector $\boldsymbol\xi=(f_C,\kappa,b,k_{\text{EC}})$ y se propagan con Monte Carlo. En cada uno de $N=2{,}000$ escenarios $n$ se muestrean un factor multiplicativo del coeficiente de escurrimiento $f_C\sim\mathcal U(0.7,1.3)$, la capacidad por metro de barrera $\kappa\sim\mathcal U(0.9,2.0)$ m³/m (la retención anual se escala por $\kappa/1.44$, porque las barreras operan llenas), un sesgo multiplicativo de la lluvia de CHIRPS $b\sim\mathcal N(1,0.1^2)$ y la conectividad de El Cuchillo $k_{\text{EC}}\sim\mathcal U(0.4,0.8)$, donde $\mathcal U$ y $\mathcal N$ denotan las distribuciones uniforme y normal. Con ellos se recalcula $v_i$ y se resuelve nuevamente el problema de optimización, lo que da el agua retenida $W(\boldsymbol\xi_n)$ (L/s) y la selección $x^{(n)}$. El agua retenida esperada es una integral sobre la densidad $f_{\boldsymbol\xi}$ de los parámetros, que Monte Carlo aproxima con un error estándar (EE) que decrece como $1/\sqrt N$:
-\begin{equation}
-\mathbb E[W]=\int W(\boldsymbol\xi)\,f_{\boldsymbol\xi}(\boldsymbol\xi)\,d\boldsymbol\xi\;\approx\;\bar W_N=\frac1N\sum_{n=1}^{N}W(\boldsymbol\xi_n),\qquad \text{EE}(\bar W_N)=\frac{s_W}{\sqrt N},
-\end{equation}
-con $s_W$ la desviación estándar muestral de $W$. Con $N=2{,}000$, $\bar W_N=$ «mc_mean» L/s con error estándar de «mc_se» L/s. Se reportan también los percentiles 5, 50 y 95 y la probabilidad de selección de cada celda, $\hat p_i = \frac1N\sum_n \mathbf 1[x_i^{(n)}>0.5]$.
-
-\subsection{Dualidad y precios sombra}\label{sec:duales}
-
-Con $\lambda\ge0$ la variable dual de la restricción de presupuesto y $\mu_i\ge0$ la de la cota $x_i\le1$, el dual del programa lineal de asignación de presupuesto es
-\begin{equation}
-\min_{\lambda,\mu\ge0}\ \lambda H+\sum_i\mu_i \quad\text{s.a.}\quad \lambda A_i+\mu_i\ \ge\ v_i\ \ \forall i .
-\end{equation}
-Por holgura complementaria (\emph{complementary slackness}), en el óptimo $\lambda^\ast = v_{i^\ast}/A_{i^\ast}$ es el rendimiento por hectárea de la celda marginal $i^\ast$, la última que entra parcialmente; por el teorema de la envolvente (\emph{envelope theorem}), $\lambda^\ast = dW^\ast/dH$ es el agua adicional que rinde una hectárea más de presupuesto. Integrando sobre presupuestos $h$ de 0 a $H$,
-\begin{equation}
-W^\ast(H)=\int_0^H \lambda^\ast(h)\,dh,\qquad \frac{dW^\ast}{dH}=\lambda^\ast(H),\qquad \frac{d^2W^\ast}{dH^2}=\frac{d\lambda^\ast}{dH}\le 0 ,
-\end{equation}
-porque las celdas entran en orden decreciente de $v_i/A_i$: $\lambda^\ast$ no crece con $H$, por lo que $W^\ast$ es cóncava y los rendimientos decrecientes de la figura~\ref{fig:g4_agua_hectareas} son una propiedad estructural del problema y no un artefacto de los datos. En MCMF, el precio sombra de la capacidad $u_j$ es la derivada del agua retenida respecto de ella, $\partial F/\partial u_j$: es de 1 m³ por m³ si la barrera está saturada y continúa recibiendo agua, y nulo si no se llena. Se estima empíricamente comparando dos formas de agregar el mismo almacenamiento: 25\% más capacidad en las barreras seleccionadas o 25\% más metros de barrera.
-
-\subsection{Periodos de retorno de la lluvia}\label{sec:gumbel}
-
-Los máximos anuales de lluvia diaria $X$ (mm), obtenidos de CHIRPS de 1981 a 2025, se ajustan a una distribución de Gumbel (valores extremos tipo I, \citar{gumbel1958}) con parámetro de posición $\mu$ y de escala $\beta$ (mm),
-\begin{equation}
-F(x)=\Pr[X\le x]=\exp\!\left[-e^{-(x-\mu)/\beta}\right],\qquad \hat\beta=\frac{s\sqrt6}{\pi},\qquad \hat\mu=\bar x-\gamma\hat\beta,
-\end{equation}
-por el método de momentos: con la densidad $f=F'$, los dos primeros momentos son
-\begin{equation}
-\mathbb E[X]=\int_{-\infty}^{\infty}x\,f(x)\,dx=\mu+\gamma\beta,\qquad \operatorname{Var}[X]=\int_{-\infty}^{\infty}(x-\mathbb E[X])^2 f(x)\,dx=\frac{\pi^2\beta^2}{6},
-\end{equation}
-con $\gamma\approx0.5772$ la constante de Euler y Mascheroni; igualándolos a la media $\bar x$ y la varianza $s^2$ de la muestra se obtienen los estimadores $\hat\beta$ y $\hat\mu$. La lluvia de periodo de retorno $T$ años, la que se supera en promedio una vez cada $T$ años, es $x_T=\mu-\beta\ln[-\ln(1-1/T)]$, y el periodo de retorno de una lluvia $x$ es $T(x)=1/[1-F(x)]$.
-
-\subsection{Frontera entre agua y equidad}\label{sec:pareto}
-
-Para transitar de forma continua entre los modos \emph{máxima agua total} y \emph{repartir entre presas}, se exige que cada fuente $g\in\mathcal G$ reciba al menos $\alpha H/4$ hectáreas, con $\alpha\in[0,1]$, y el presupuesto restante se asigna con el problema de optimización global. La equidad entre las cuatro fuentes se mide con el índice de equidad de Jain (\emph{Jain's fairness index}, \citar{jain1984}) sobre el agua $q_g$ (L/s) que recibe cada una,
-\begin{equation}
-J=\frac{\left(\sum_{g\in\mathcal G} q_g\right)^2}{4\sum_{g\in\mathcal G} q_g^2}\in\left[\tfrac14,1\right],
-\end{equation}
-que vale 1 cuando todas reciben lo mismo y $1/4$ cuando una sola recibe toda el agua. Variando $\alpha$ se traza la frontera de Pareto entre agua total y equidad.
-
 \subsection{Contribución al sistema de abasto}\label{sec:abasto}
 
 Para estimar el efecto a escala de programa, el problema de la sección de optimización de captación se resuelve con presupuestos $H\in\{3{,}000;\,10{,}000;\,30{,}000;\,60{,}000\}$ ha y con la totalidad del área elegible. La selección se determina con la lluvia media y se evalúa después con la lluvia de julio de 2021 a junio de 2022; sea $W^\ast_{\text{seq}}(H)$ el agua retenida que llega al abasto en ese caso. El resultado representa lo que un programa diseñado en condiciones normales habría aportado durante el año que precedió a la crisis. El aporte se compara con el consumo regular de la ZMM, $Q_{\text{ZMM}}=16{,}500$ L/s, y con el déficit en el momento más crítico de 2022,
@@ -480,6 +370,8 @@ donde $P_{m,y}$ es la lluvia de julio a junio del modelo $m$ y $Q_{m}^{\text{his
 
 \section{Resultados}
 
+Los resultados de P2, P3 y P7, y los complementos de P4 a P6 (incertidumbre, precios sombra, equidad y frecuencia de las tormentas), están en el apéndice~\ref{ap:resultados}.
+
 \subsection{P1 · Localización de la prioridad}\label{res:p1}
 
 En laderas de 8° o más se identifican \textbf{«alta» ha de prioridad alta} y «media» ha de prioridad media. De la prioridad alta, «directa» ha («directa_pct») drenan directamente a La Boca, Cerro Prieto o Santa Catarina, y «quemada» ha registraron incendios entre 2019 y 2026.
@@ -489,20 +381,6 @@ En laderas de 8° o más se identifican \textbf{«alta» ha de prioridad alta} y
 \lectura{La cuenca del Santa Catarina concentra la mayor superficie de prioridad alta («sc_alta» ha), donde coinciden la conexión directa con el abasto, laderas accesibles a las obras y suelos degradados. El Cuchillo es la cuenca de mayor extensión, pero predomina en ella la prioridad media y baja debido a su conexión lejana con el abasto. La Boca es una cuenca pequeña, con «lb_alta» ha de prioridad alta.}
 
 \respuesta{La prioridad se localiza en las laderas de 8° a 35° de la Sierra Madre Oriental, principalmente en la cuenca del Santa Catarina, que recarga los pozos y galerías de SADM; «directa_pct» de la prioridad alta drena directamente a una fuente de abasto.}
-
-\subsection{P2 · Características de los sitios prioritarios}\label{res:p2}
-
-\grafica{g2_criterios}{Puntaje de los criterios por clase de prioridad}{Puntaje promedio de cada criterio en las clases alta, media y baja. Fuente: elaboración propia.}
-
-\lectura{Los criterios que más distinguen la prioridad alta de la baja son la vegetación degradada («c_veg_a» frente a «c_veg_b»), el suelo seco («c_sm_a» frente a «c_sm_b») y la pendiente («c_sl_a» frente a «c_sl_b»). La lluvia y la textura del suelo apenas varían entre clases. Los incendios tienen un peso promedio reducido porque afectan sólo una parte del territorio, aunque elevan considerablemente la prioridad donde ocurren.}
-
-\respuesta{La degradación de la cobertura vegetal y la sequedad del suelo en laderas accesibles a las obras. La lluvia y la textura del suelo contribuyen poco a la diferencia entre clases.}
-
-\subsection{P3 · Robustez de la prioridad}\label{res:p3}
-
-\grafica{g3_robustez}{Robustez de la prioridad alta}{Hectáreas de prioridad alta según el porcentaje de 40 ponderaciones aleatorias en que conservan esa clase. Fuente: elaboración propia.}
-
-\respuesta{La prioridad es mayoritariamente robusta: «robusta» ha («robusta_pct» de la prioridad alta) conservan esa clase en al menos la mitad de las ponderaciones. Este núcleo constituye el punto de partida más seguro; la clasificación del resto depende de la ponderación de los criterios.}
 
 \subsection{P4 · Agua bruta retenida para las fuentes de abasto}\label{res:p4}
 
@@ -529,25 +407,9 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{«max_days»} & \multicol
 
 \lectura{Las medianas son de «prod_sc» m³/ha/año en Santa Catarina, «prod_cp» en Cerro Prieto, «prod_lb» en La Boca y «prod_ec» en El Cuchillo. La Boca recibe más lluvia, pero una proporción importante ocurre en tormentas grandes que desbordan las barreras, lo que reduce $\rho$; El Cuchillo rinde menos por su conexión lejana con el abasto. La curva de la figura~\ref{fig:g4_agua_hectareas} es casi lineal, lo que indica una amplia superficie con rendimientos similares. Para sumar 25 L/s se requieren unas «t25» ha; para 50 L/s, «t50» ha; para 100 L/s, «t100» ha, y para 200 L/s, «t200» ha.}
 
-\grafica{g9_incertidumbre}{Incertidumbre del agua bruta retenida}{Distribución del agua retenida con 3,000 ha en 2,000 escenarios de parámetros (sección~\ref{sec:incertidumbre}). Fuente: elaboración propia.}
-
-\lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen «mc_p50» L/s (intervalo de 90\% de «mc_p5» a «mc_p95» L/s); con el reparto entre presas, «mcb_p50» L/s (de «mcb_p5» a «mcb_p95» L/s). La selección es estable: «mc_p80» de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
-
-\grafica{g10_duales}{Precios sombra}{Izquierda: variable dual $\lambda^\ast$ de la restricción de presupuesto, en L/s por cada 1,000 ha adicionales, según el presupuesto. Derecha: m³ retenidos por cada m³ de almacenamiento agregado como capacidad o como metros nuevos, con tormentas de 10 y de 40 mm, en el sitio de la figura~\ref{fig:m3_barreras}. Fuente: elaboración propia.}
-
-\lectura{La variable dual de la restricción de presupuesto es el rendimiento de la hectárea marginal: con 3,000 ha, mil hectáreas adicionales aportarían «dual_3000» L/s; con 20,000 ha, sólo «dual_20000» L/s, porque las celdas de mayor rendimiento ya fueron asignadas. En el modo repartido el valor marginal difiere entre fuentes («dual_bal»), lo que indica que el reparto igualitario deja sin asignar hectáreas más productivas en algunas fuentes.}
-
-\grafica{g12_pareto}{Frontera entre agua y equidad para las fuentes de abasto}{Agua total frente al índice de Jain al exigir a cada fuente al menos la fracción $\alpha$ de su cuarta parte del presupuesto. Fuente: elaboración propia.}
-
-\lectura{Sin exigir reparto ($\alpha=0$) se obtienen «w0» L/s con equidad $J=$ «j0»; con reparto igualitario ($\alpha=1$), «w1» L/s con $J=$ «j1». La frontera es aproximadamente lineal: cada 0.1 de equidad reduce el agua total en unos «pareto_slope» L/s, y con $\alpha=0.5$ se conservan «w05» L/s con $J=$ «j05». Pasar de la máxima agua al reparto igualitario reduce el agua en «bal_cost» y triplica la equidad.}
-
 \respuesta{En agua bruta, del orden de «max_ls» L/s con 3,000 ha seleccionadas por la optimización («max_m3» millones de m³ al año, equivalentes a «max_days» día de abasto de la ZMM; intervalo de 90\% de «mc_p5» a «mc_p95» L/s), principalmente en la cuenca del Santa Catarina. El reparto del presupuesto entre las cuatro fuentes produce «bal_ls» L/s, una reducción de «bal_cost» respecto del máximo. La ganancia neta, que descuenta la evapotranspiración y el escurrimiento que ya llegaba a las presas, es mucho menor: seleccionando por ganancia neta, 3,000 ha aportan en promedio «n3n_mean» L/s netos al acuífero del Santa Catarina (sección~\ref{res:p9}).}
 
 \subsection{P5 · Resistencia a la sequía y frecuencia de las tormentas}\label{res:p5}
-
-\grafica{g11_gumbel}{Periodos de retorno de la lluvia máxima diaria}{Ajuste de Gumbel a los máximos anuales de lluvia diaria de CHIRPS (1981 a 2025) en cuatro sitios de las cuencas; los puntos son los máximos observados con su periodo de retorno empírico. Fuente: elaboración propia con CHIRPS.}
-
-\lectura{La tormenta de diseño de 40 mm en un día tiene un periodo de retorno de «t40_range» años según la cuenca, y la de 10 años es de «x10_range» mm. Dado que 1,500 m de barreras se llenan con unos «fill_mm» mm, en la mayoría de los años ocurre al menos una tormenta que las desborda; en esos eventos, la retención está limitada por la capacidad y no por la posición.}
 
 \respuesta{Sí. Con la lluvia de julio de 2021 a junio de 2022, las mismas 3,000 ha habrían retenido unos «dr_ls» L/s de agua bruta («dr_pct» de un año normal). En un año seco ocurren menos tormentas grandes que desborden las barreras, por lo que la fracción retenida aumenta y compensa parcialmente la menor precipitación. Al reoptimizar con esa lluvia se conserva «dr_overlap» de los sitios seleccionados.}
 
@@ -561,17 +423,7 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{«max_days»} & \multicol
 
 \lectura{Los primeros 500 m interceptan «b500» de la ventana, 1,500 m interceptan «b1500» y 3,000 m, «b3000», lo que evidencia rendimientos decrecientes. En tormentas grandes todas las barreras se llenan y ambos trazos retienen prácticamente lo mismo (diferencia de «gain_40»\%), por lo que el factor limitante es la capacidad. En tormentas pequeñas, cuando no todas las barreras se llenan, el trazo por MCMF retiene hasta «gain_max»\% más.}
 
-\lectura{Los precios sombra de la figura~\ref{fig:g10_duales} confirman este resultado. Con 10 mm se llenan «sat10» de las barreras, y con 40 mm, «sat40». Cada m³ de almacenamiento agregado como metros nuevos retiene «sm40» m³ (40 mm) y «sm10» m³ (10 mm), porque las barreras nuevas también se llenan. Agregado como capacidad adicional en las mismas barreras, el rendimiento es menor, de «sc40» y «sc10» m³ por m³, porque algunas no reciben agua suficiente para ocupar el espacio adicional.}
-
 \respuesta{En las posiciones que intercepten más escurrimiento por metro, cruzando los flujos principales y distribuidas a lo largo de la ladera. No obstante, en tormentas grandes la capacidad es más determinante que la posición: 1,500 m de barreras retienen «ret5» de una tormenta de 5 mm y sólo «ret40» de una de 40 mm. Para aumentar la retención conviene agregar almacenamiento, que rinde ligeramente más como metros nuevos bien ubicados («sm40» m³ por m³) que como ampliación de las barreras existentes («sc40»).}
-
-\subsection{P7 · Efecto durante una tormenta}\label{res:p7}
-
-\grafica{m4_simulacion}{Simulación de una tormenta de 40 mm}{Agua que pasó por cada celda sin barreras (izquierda) y fracción en que disminuyó con las barreras y presas en cárcava (derecha), en el sitio de la figura~\ref{fig:m3_barreras}. Fuente: elaboración propia.}
-
-\grafica{g7_tormenta_sitios}{Efecto de las barreras en los 8 sitios sugeridos}{Reducción del escurrimiento que sale de la ventana y del caudal pico ante una tormenta de 40 mm. Fuente: elaboración propia.}
-
-\respuesta{El efecto es moderado en una tormenta de 40 mm: en promedio, las barreras y presas en cárcava reducen en «avg_out» el agua que sale de la ventana y en «avg_peak» el caudal pico, y añaden de «inf_lo» a «inf_hi» m³ de infiltración por tormenta en cada ventana. El efecto se concentra aguas abajo de cada obra, a lo largo de los cauces.}
 
 \subsection{P8 · Contribución al sistema de abasto de la ZMM}\label{res:p8}
 
@@ -737,16 +589,22 @@ Selección & Costo total & Por L/s bruto & Por L/s neto & $\Pr[\text{más barata
 
 \respuesta{«anp_resp» En cuanto al clima, la frecuencia proyectada de un año tan seco como el previo a la crisis es de «clima_f245» en SSP2-4.5 y de «clima_f585» en SSP5-8.5 (mediana de los modelos), frente a «clima_q» histórico, y el cambio de la lluvia media modificaría el agua bruta retenida en «clima_g245» y «clima_g585», respectivamente. Como la selección de sitios resiste la sequía (sección~\ref{res:p5}), los mismos sitios siguen siendo prioritarios en el clima proyectado.}
 
+\subsection{Contraste con el balance del acuífero Campo Buenos Aires}\label{res:acuifero}
+
+Los pozos del cañón del Santa Catarina extraen del acuífero Campo Buenos Aires. Según CONAGUA, su cuenca tributaria hasta la galería Huasteca tiene «aq_trib» km², de los que unos «aq_area» km² son afloramientos de calizas que funcionan como zona de recarga; la recarga media anual es de «aq_rech» hm³ y el volumen concesionado de «aq_conc» hm³, por lo que el acuífero tiene un déficit de «aq_def» hm³ al año y no hay disponibilidad para nuevas concesiones \citap{conagua_cba}.
+
+\lectura{Con 30,000 ha seleccionadas por ganancia neta, las obras retendrían unos «aq_R» hm³ al año. Con las medias de las distribuciones a priori, la recarga adicional sería de unos «aq_inc» hm³ al año, «aq_inc_pct» de la recarga natural, equivalente a «aq_inc_mm» mm al año sobre la superficie restaurada, del orden de una décima parte de la recarga natural por unidad de área en los afloramientos de calizas («aq_mm» mm al año). La ganancia neta, que descuenta lo que ya llegaba al acuífero por el lecho del río, es de «aq_net_u» hm³ al año sin calibrar y de «aq_net_c» hm³ calibrada, «aq_net_pct» de la recarga natural, y cubriría de «aq_def_pct_c» a «aq_def_pct_u» del déficit del acuífero. Las cifras son físicamente plausibles: el aumento de recarga por hectárea es una fracción pequeña de la recarga natural. Pero no permiten acotar mejor $\phi_g$: el propio estudio de CONAGUA advierte que la recarga podría ser mayor y que los registros piezométricos son escasos, por lo que la calibración de $\phi_g$ requiere los piezómetros propuestos en la sección~\ref{sec:validacion}.}
+
 \subsection{Sitios sugeridos}
 
-Los sitios no se eligen manualmente: corresponden a las dos mejores celdas de cada fuente en la optimización con 3,000 ha repartidas, en aquellas donde las reglas recomiendan una obra de barreras.
+Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimización por ganancia neta esperada con 3,000 ha (sección~\ref{sec:destino}), separadas al menos 3 km entre sí, en las que las reglas recomiendan una obra de barreras. Todas están en la cuenca del Santa Catarina, la única en la que la ganancia neta esperada es positiva; «sitios_parque» de ellas están dentro del Parque Nacional Cumbres de Monterrey.
 
 \begin{table}[H]\centering\footnotesize
-\caption{Sitios sugeridos por la optimización}\label{tab:sitios}
-{\color{gris}Lugar: posición de la celda en la optimización. Lluvia en mm/año. Intercepta: \% de la ventana con 1,500 m de barreras.\par}\smallskip
-\begin{tabularx}{\linewidth}{rlrrrr>{\raggedright\arraybackslash}Xr}
+\caption{Sitios sugeridos por la optimización por ganancia neta}\label{tab:sitios}
+{\color{gris}Lugar: posición de la celda en la optimización. Bruta y neta en m³/ha/año. Intercepta: \% de la ventana con 1,500 m de barreras. ANP: PN, Parque Nacional Cumbres de Monterrey; APRN, Área de Protección de los Recursos Naturales C.A.D.N.R. 026.\par}\smallskip
+\begin{tabularx}{\linewidth}{rrrrrr>{\raggedright\arraybackslash}Xrl}
 \toprule
-\# & Fuente & Lugar & m³/ha/año & Lluvia & Prioridad · robustez & Obra recomendada & Intercepta \\
+\# & Lugar & Bruta & Neta & Lluvia & Prioridad · robustez & Obra recomendada & Intercepta & ANP \\
 \midrule
 «sites_rows»
 \bottomrule
@@ -765,6 +623,7 @@ Los sitios no se eligen manualmente: corresponden a las dos mejores celdas de ca
   \item \textbf{En las presas, el azolve evitado no compensa el agua retenida}: 30,000 ha en Cerro Prieto conservarían unos «sed30_50» hm³ de capacidad en 50 años, pero reducirían el agua que llega a la presa en unos «sed30_wabs» hm³ por año; ahí la restauración se justifica por el suelo, la vegetación y las avenidas.
   \item \textbf{Como fuente de agua, la restauración es cara}: cada L/s neto cuesta unos «cn30» millones de pesos, más de diez veces el costo de capital por L/s de El Cuchillo II; su valor está en el suelo, los embalses y la biodiversidad.
   \item \textbf{La prioridad para el abasto está dentro del Parque Nacional Cumbres de Monterrey}: «anp_cumbres3» de las 3,000 ha seleccionadas por ganancia neta; la restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
+  \item \textbf{En el acuífero del Santa Catarina la ganancia es plausible pero modesta}: con 30,000 ha, la ganancia neta sería de «aq_net_c» a «aq_net_u» hm³ al año, «aq_net_pct» de la recarga natural del acuífero Campo Buenos Aires, y cubriría de «aq_def_pct_c» a «aq_def_pct_u» de su déficit.
   \item \textbf{Lo que más conviene medir} es la evapotranspiración del agua infiltrada y la fracción del escurrimiento que ya llega a las presas: son los parámetros con mayor influencia en la ganancia neta.
   \item \textbf{Cada obra se acompaña con la vegetación de su propio tipo según el INEGI}: matorral submontano, desértico, encino o pino-encino, con especies de inventarios publicados, procedencia local y densidad moderada.
   \item \textbf{La selección resiste la sequía}: con la lluvia previa a la crisis se conservan «dr_pct» del agua y «dr_overlap» de los sitios.
@@ -790,22 +649,6 @@ Los sitios no se eligen manualmente: corresponden a las dos mejores celdas de ca
   \item \textbf{Clima.} Se usan ocho modelos de NEX-GDDP-CMIP6 y sólo la lluvia; no se proyectan cambios de temperatura ni de evapotranspiración, que afectarían $e_g$.
 \end{itemize}
 
-\section{Propuesta de validación en campo}\label{sec:validacion}
-
-Los parámetros que más influyen en la ganancia neta (sección~\ref{res:p9}) pueden medirse. Se propone un diseño antes y después con control e impacto (\emph{before-after control-impact}, BACI) en los 8 sitios sugeridos y en laderas testigo vecinas sin obras, con tres mediciones:
-
-\begin{itemize}
-  \item \textbf{Escurrimiento que ya llega, $\tau_g$.} Pares de microcuencas de 1 a 5 ha, una con barreras y una testigo, con vertedores aforadores en la salida. La diferencia de volumen escurrido por tormenta, antes y después de construir, mide la fracción del escurrimiento que las obras retienen y cuánto de ella habría salido de la ladera.
-  \item \textbf{Evapotranspiración del agua infiltrada, $e_g$.} Perfiles de humedad del suelo a 30, 60 y 100 cm detrás de las barreras y en las testigo. El agua que drena por debajo de la zona de raíces escapa a la evapotranspiración; la recarga puede estimarse también con el balance de masa de cloruro, el método más usado en zonas semiáridas \citap{scanlon2006}.
-  \item \textbf{Fracción que llega al acuífero, $\phi_g$.} Piezómetros ladera abajo de los sitios del Santa Catarina y la serie de niveles de los pozos de SADM, para detectar la respuesta del acuífero a las tormentas.
-\end{itemize}
-
-El número de pares necesario se obtiene de una prueba de diferencia de medias. Para detectar una diferencia relativa $\delta$ entre sitios con y sin obras, con coeficiente de variación $\text{CV}$ entre sitios, nivel de significancia $\alpha$ y potencia $1-\beta$,
-\begin{equation}
-n=\frac{2\,(z_{1-\alpha/2}+z_{1-\beta})^2\,\text{CV}^2}{\delta^2},
-\end{equation}
-donde $z_q$ es el cuantil $q$ de la distribución normal estándar. Con $\alpha=0.05$ y potencia de 80\% ($z_{0.975}=1.96$, $z_{0.8}=0.84$) y un coeficiente de variación supuesto de 0.5 entre laderas, se requieren unos 16 pares para detectar una diferencia de 50\% y unos 63 para una de 25\%. Con 8 sitios, conviene instrumentar dos o más pares por sitio, o enfocarse en diferencias grandes. Las mediciones de dos o tres temporadas de lluvia permitirían reemplazar las distribuciones a priori del cuadro~\ref{tab:priores} por distribuciones posteriores, con el mismo procedimiento de la sección~\ref{sec:calibracion}.
-
 \begin{thebibliography}{99}
 \addcontentsline{toc}{section}{Referencias}
 \bibitem{ahuja1993} Ahuja, R. K., Magnanti, T. L. y Orlin, J. B. (1993). \emph{Network Flows: Theory, Algorithms, and Applications}. Prentice Hall.
@@ -817,6 +660,7 @@ donde $z_q$ es el cuantil $q$ de la distribución normal estándar. Con $\alpha=
 \bibitem{bouma2011} Bouma, J. A., Biggs, T. W. y Bouwer, L. M. (2011). The downstream externalities of harvesting rainwater in semi-arid watersheds: An Indian case study. \emph{Agricultural Water Management}, 98(7), 1162–1170.
 \bibitem{butler1997} Butler, J., Jia, J. y Dyer, J. (1997). Simulation techniques for the sensitivity analysis of multi-criteria decision models. \emph{European Journal of Operational Research}, 103(3), 531–546.
 \bibitem{chow1988} Chow, V. T., Maidment, D. R. y Mays, L. W. (1988). \emph{Applied Hydrology}. McGraw-Hill.
+\bibitem{conagua_cba} CONAGUA (s. f.). \emph{Determinación de la disponibilidad de agua en el acuífero Campo Buenos Aires (1907), estado de Nuevo León}. Comisión Nacional del Agua, Subdirección General Técnica, Gerencia de Aguas Subterráneas.
 \bibitem{conagua_disp} CONAGUA (s. f.). \emph{Disponibilidad media de agua superficial por cuenca} [conjunto de datos]. Datos abiertos de la Comisión Nacional del Agua, consultado el 15 de octubre de 2026.
 \bibitem{conafor2026} CONAFOR (2026). Reglas de Operación 2026 del Programa Desarrollo Forestal Sustentable para el Bienestar, concepto RF.1 Restauración Forestal. \emph{Diario Oficial de la Federación}.
 \bibitem{conafor2007} Comisión Nacional Forestal (2007). \emph{Protección, restauración y conservación de suelos forestales. Manual de obras y prácticas}. CONAFOR, Zapopan.
@@ -862,6 +706,189 @@ donde $z_q$ es el cuantil $q$ de la distribución normal estándar. Con $\alpha=
 \bibitem{williams1995} Williams, J. R. (1995). The EPIC model. En V. P. Singh (ed.), \emph{Computer Models of Watershed Hydrology}, 909–1000. Water Resources Publications.
 \bibitem{wischmeier1978} Wischmeier, W. H. y Smith, D. D. (1978). \emph{Predicting Rainfall Erosion Losses: A Guide to Conservation Planning}. Agriculture Handbook 537, USDA.
 \end{thebibliography}
+
+\appendix
+\section{Métodos complementarios}\label{ap:metodos}
+
+\subsection{Notación}\label{ap:notacion}
+
+El cuadro~\ref{tab:notacion} reúne los símbolos principales. Cada uno se define también en la sección donde aparece por primera vez. Los índices son $p$ para pixeles de 30 m, $i$ para celdas (de 30 m en la red de drenaje y de 1 km en la optimización de captación), $j$ para barreras candidatas, $c$ para criterios, $g$ para fuentes de abasto, $d$ para días y $n$ para escenarios de Monte Carlo. $\mathbf 1[\cdot]$ es la función indicadora, que vale 1 si la condición se cumple y 0 en otro caso.
+
+\begin{table}[H]\centering\footnotesize
+\caption{Notación}\label{tab:notacion}
+\begin{tabularx}{\linewidth}{lXl}
+\toprule
+Símbolo & Significado & Unidades \\
+\midrule
+\multicolumn{3}{l}{\textit{Índice de prioridad y robustez}}\\
+$z$, $\theta$ & Elevación del terreno y pendiente, $\theta=\arctan\lVert\nabla z\rVert$ & m, grados \\
+$\ell(x;a,b)$ & Función lineal acotada que vale 0 si $x\le a$ y 1 si $x\ge b$ & adimensional \\
+$s_c(p)$, $w_c$, $\tilde w_c$ & Puntaje del criterio $c$ en el pixel $p$, peso y peso normalizado & adimensional \\
+$I(p)$, $\tau_1$, $\tau_2$ & Índice de prioridad y umbrales de las clases media y alta & adimensional \\
+$k$ & Conectividad de la cuenca con el abasto (cuadro~\ref{tab:cuencas}) & adimensional \\
+$\Omega$, $a_p$ & Dominio de laderas de 8° o más y área de un pixel (900 m²) & m² \\
+$M$, $R(p)$ & Número de ponderaciones aleatorias y robustez del pixel $p$ & adimensional \\
+\multicolumn{3}{l}{\textit{Captación y optimización}}\\
+$P$, $P_i$, $P_d$ & Lluvia de una tormenta, lluvia media anual de la celda $i$ y lluvia del día $d$ & mm, mm/año \\
+$C_i$ & Coeficiente de escurrimiento de la celda $i$ & adimensional \\
+$\varphi(P)$, $\rho$ & Fracción retenida de una tormenta de $P$ mm y fracción retenida del escurrimiento anual & adimensional \\
+$A_i$, $H$, $x_i$ & Área elegible de la celda $i$, presupuesto y fracción restaurada de la celda & ha, ha, adimensional \\
+$v_i$ & Agua retenida que llega al abasto si se restaura toda la celda $i$ & m³/año \\
+$W^\ast(H)$ & Valor óptimo del problema de asignación con presupuesto $H$ & m³/año o L/s \\
+$\lambda^\ast$, $\mu_i$ & Variables duales de la restricción de presupuesto y de $x_i\le1$ & m³/año por ha \\
+\multicolumn{3}{l}{\textit{Red de drenaje y barreras}}\\
+$\nu(i)$, $U(\cdot)$ & Celda receptora de $i$ (D8) y conjunto de celdas que drenan a través de un punto o barrera & \\
+$r_i$, $Q(\mathbf x)$ & Escurrimiento de la celda $i$ en una tormenta y escurrimiento acumulado en $\mathbf x$ & m³ \\
+$L_j$, $\kappa$, $u_j$ & Longitud de la barrera $j$, capacidad por metro y capacidad por evento, $u_j=\kappa L_j$ & m, m³/m, m³ \\
+$\Gamma_j$, $B_j$ & Celdas que cruza la barrera $j$ y nodo que la representa en la red & \\
+$s$, $t$, $V$, $E$ & Fuente, sumidero, nodos y arcos de la red de flujo & \\
+$u_e$, $c_e$, $f_e$ & Capacidad, costo unitario y flujo del arco $e$ & m³, adimensional, m³ \\
+$\eta_v$ & Potencial dual del nodo $v$ & adimensional \\
+$S$, $F(S)$, $\bar L$ & Conjunto de barreras construidas, agua que retienen y presupuesto en metros & --, m³, m \\
+\multicolumn{3}{l}{\textit{Simulación de tormenta}}\\
+$h$, $\mathbf v$, $\omega$ & Tirante de agua, velocidad sobre la ladera e intensidad de la lluvia & m, m/s, m/s \\
+$\iota$, $\iota_b$ & Infiltración de la ladera y de la franja encharcada de una obra & mm por paso \\
+$\zeta$, $\bar\zeta$, $\sigma$ & Agua almacenada detrás de una obra, su máximo y la tasa con que entra & mm, mm, mm por paso \\
+$q_i^t$, $y_i^t$ & Agua que llega a la celda $i$ en el paso $t$ y la que se infiltra en ella & mm \\
+\multicolumn{3}{l}{\textit{Incertidumbre, extremos, equidad y abasto}}\\
+$\boldsymbol\xi$, $W(\boldsymbol\xi)$ & Vector de parámetros inciertos y agua retenida con esos parámetros & --, L/s \\
+$N$, $\bar W_N$, $\hat p_i$ & Escenarios, media muestral y probabilidad de selección de la celda $i$ & --, L/s, -- \\
+$X$, $\mu$, $\beta$, $x_T$ & Máximo anual de lluvia diaria, parámetros de Gumbel y lluvia de periodo de retorno $T$ & mm, mm, mm, mm \\
+$q_g$, $\alpha$, $J$ & Agua que recibe la fuente $g$, fracción mínima del reparto e índice de Jain & L/s, --, -- \\
+$Q_{\text{ZMM}}$, $Q_{2022}$, $D$ & Consumo regular, disponibilidad en lo más crítico de 2022 y déficit & L/s \\
+\multicolumn{3}{l}{\textit{Destino del agua retenida}}\\
+$R_i$ & Agua retenida por las obras en la celda $i$, antes de pérdidas & m³/año \\
+$e_g$ & Fracción del agua infiltrada que se pierde por evapotranspiración en la cuenca de $g$ & adimensional \\
+$\phi_g$ & Fracción del agua infiltrada no evapotranspirada que llega a la fuente $g$ & adimensional \\
+$\tau_g$ & Fracción del agua retenida que, sin obras, habría llegado a $g$ como escurrimiento & adimensional \\
+$G_g$ & Ganancia neta de la fuente $g$ por cada m³ retenido, $(1-e_g)\phi_g-\tau_g$ & adimensional \\
+$b(p)$, $\mathcal E_b$ & Tipo de vegetación del pixel $p$ (INEGI) y especies de referencia del tipo $b$ & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Simulación de tormenta}
+
+La simulación discretiza la conservación de masa del escurrimiento superficial. Con $h(\mathbf x,t)$ el tirante de agua (m) en el punto $\mathbf x$ y el tiempo $t$, $\mathbf v$ su velocidad sobre la ladera (m/s), $\omega$ la intensidad de la lluvia, $\iota$ la tasa de infiltración, $\sigma$ la tasa con que el agua entra al almacenamiento detrás de las obras, todas en m/s, y $\zeta$ el agua almacenada detrás de una obra, con máximo $\bar\zeta$ e infiltración propia $\iota_b$,
+\begin{equation}
+\frac{\partial h}{\partial t}+\nabla\!\cdot\!\left(h\,\mathbf v\right)= \omega-\iota-\sigma ,\qquad \frac{\partial \zeta}{\partial t}=\sigma-\iota_b\,\mathbf 1[\zeta>0],\quad 0\le \zeta\le \bar \zeta .
+\end{equation}
+Se resuelve con un esquema explícito de volumen finito \emph{upwind} sobre la red D8, con número de Courant $\lvert\mathbf v\rvert\Delta t/\Delta x=1$, donde $\Delta t$ es el paso de tiempo y $\Delta x=30$ m el tamaño de celda, de modo que en cada paso el agua de una celda se transfiere íntegramente a su receptor. Sea $q_i^t$ el agua (mm sobre la celda) que llega a la celda $i$ en el paso $t$, de unos 2.4 min. La lluvia de $P$ mm se reparte uniformemente en los primeros $T_r$ pasos; $y_i^t$ es lo que se infiltra en la ladera, $\sigma_i^t$ lo que entra al almacenamiento y $\zeta_i^t\le \bar\zeta_i$ el agua almacenada en las celdas con obra ($\bar\zeta_i=0$ en las demás):
+\begin{equation}
+\begin{aligned}
+y_i^t &= \min\{q_i^t,\ \iota\}, & \sigma_i^t &= \min\{q_i^t-y_i^t,\ \bar \zeta_i-\zeta_i^t\},\\
+\zeta_i^{t+1} &= \zeta_i^t+\sigma_i^t-\min\{\zeta_i^t,\ \iota_b\}, & q_{j}^{t+1} &= \frac{P}{T_r}\mathbf 1[t<T_r]+\sum_{i:\nu(i)=j}\left(q_i^t-y_i^t-\sigma_i^t\right),
+\end{aligned}
+\end{equation}
+con $\iota=1$ mm por paso (unos 25 mm/h), $\bar \zeta=30$ mm e $\iota_b=0.12$ mm por paso para la franja encharcada de una barrera (unos 27 m³ y 30 mm/h por celda), y $\bar \zeta=67$ mm para una presa en cárcava. Con la misma tormenta de 40 mm y el mismo terreno se comparan el agua que sale de la ventana, el caudal pico y la infiltración. Se trata de un modelo de balance de masa con fines comparativos, no de un modelo hidrológico calibrado.
+
+\subsection{Incertidumbre de los parámetros}\label{sec:incertidumbre}
+
+Los volúmenes dependen de parámetros inciertos, que se reúnen en el vector $\boldsymbol\xi=(f_C,\kappa,b,k_{\text{EC}})$ y se propagan con Monte Carlo. En cada uno de $N=2{,}000$ escenarios $n$ se muestrean un factor multiplicativo del coeficiente de escurrimiento $f_C\sim\mathcal U(0.7,1.3)$, la capacidad por metro de barrera $\kappa\sim\mathcal U(0.9,2.0)$ m³/m (la retención anual se escala por $\kappa/1.44$, porque las barreras operan llenas), un sesgo multiplicativo de la lluvia de CHIRPS $b\sim\mathcal N(1,0.1^2)$ y la conectividad de El Cuchillo $k_{\text{EC}}\sim\mathcal U(0.4,0.8)$, donde $\mathcal U$ y $\mathcal N$ denotan las distribuciones uniforme y normal. Con ellos se recalcula $v_i$ y se resuelve nuevamente el problema de optimización, lo que da el agua retenida $W(\boldsymbol\xi_n)$ (L/s) y la selección $x^{(n)}$. El agua retenida esperada es una integral sobre la densidad $f_{\boldsymbol\xi}$ de los parámetros, que Monte Carlo aproxima con un error estándar (EE) que decrece como $1/\sqrt N$:
+\begin{equation}
+\mathbb E[W]=\int W(\boldsymbol\xi)\,f_{\boldsymbol\xi}(\boldsymbol\xi)\,d\boldsymbol\xi\;\approx\;\bar W_N=\frac1N\sum_{n=1}^{N}W(\boldsymbol\xi_n),\qquad \text{EE}(\bar W_N)=\frac{s_W}{\sqrt N},
+\end{equation}
+con $s_W$ la desviación estándar muestral de $W$. Con $N=2{,}000$, $\bar W_N=$ «mc_mean» L/s con error estándar de «mc_se» L/s. Se reportan también los percentiles 5, 50 y 95 y la probabilidad de selección de cada celda, $\hat p_i = \frac1N\sum_n \mathbf 1[x_i^{(n)}>0.5]$.
+
+\subsection{Dualidad y precios sombra}\label{sec:duales}
+
+Con $\lambda\ge0$ la variable dual de la restricción de presupuesto y $\mu_i\ge0$ la de la cota $x_i\le1$, el dual del programa lineal de asignación de presupuesto es
+\begin{equation}
+\min_{\lambda,\mu\ge0}\ \lambda H+\sum_i\mu_i \quad\text{s.a.}\quad \lambda A_i+\mu_i\ \ge\ v_i\ \ \forall i .
+\end{equation}
+Por holgura complementaria (\emph{complementary slackness}), en el óptimo $\lambda^\ast = v_{i^\ast}/A_{i^\ast}$ es el rendimiento por hectárea de la celda marginal $i^\ast$, la última que entra parcialmente; por el teorema de la envolvente (\emph{envelope theorem}), $\lambda^\ast = dW^\ast/dH$ es el agua adicional que rinde una hectárea más de presupuesto. Integrando sobre presupuestos $h$ de 0 a $H$,
+\begin{equation}
+W^\ast(H)=\int_0^H \lambda^\ast(h)\,dh,\qquad \frac{dW^\ast}{dH}=\lambda^\ast(H),\qquad \frac{d^2W^\ast}{dH^2}=\frac{d\lambda^\ast}{dH}\le 0 ,
+\end{equation}
+porque las celdas entran en orden decreciente de $v_i/A_i$: $\lambda^\ast$ no crece con $H$, por lo que $W^\ast$ es cóncava y los rendimientos decrecientes de la figura~\ref{fig:g4_agua_hectareas} son una propiedad estructural del problema y no un artefacto de los datos. En MCMF, el precio sombra de la capacidad $u_j$ es la derivada del agua retenida respecto de ella, $\partial F/\partial u_j$: es de 1 m³ por m³ si la barrera está saturada y continúa recibiendo agua, y nulo si no se llena. Se estima empíricamente comparando dos formas de agregar el mismo almacenamiento: 25\% más capacidad en las barreras seleccionadas o 25\% más metros de barrera.
+
+\subsection{Periodos de retorno de la lluvia}\label{sec:gumbel}
+
+Los máximos anuales de lluvia diaria $X$ (mm), obtenidos de CHIRPS de 1981 a 2025, se ajustan a una distribución de Gumbel (valores extremos tipo I, \citar{gumbel1958}) con parámetro de posición $\mu$ y de escala $\beta$ (mm),
+\begin{equation}
+F(x)=\Pr[X\le x]=\exp\!\left[-e^{-(x-\mu)/\beta}\right],\qquad \hat\beta=\frac{s\sqrt6}{\pi},\qquad \hat\mu=\bar x-\gamma\hat\beta,
+\end{equation}
+por el método de momentos: con la densidad $f=F'$, los dos primeros momentos son
+\begin{equation}
+\mathbb E[X]=\int_{-\infty}^{\infty}x\,f(x)\,dx=\mu+\gamma\beta,\qquad \operatorname{Var}[X]=\int_{-\infty}^{\infty}(x-\mathbb E[X])^2 f(x)\,dx=\frac{\pi^2\beta^2}{6},
+\end{equation}
+con $\gamma\approx0.5772$ la constante de Euler y Mascheroni; igualándolos a la media $\bar x$ y la varianza $s^2$ de la muestra se obtienen los estimadores $\hat\beta$ y $\hat\mu$. La lluvia de periodo de retorno $T$ años, la que se supera en promedio una vez cada $T$ años, es $x_T=\mu-\beta\ln[-\ln(1-1/T)]$, y el periodo de retorno de una lluvia $x$ es $T(x)=1/[1-F(x)]$.
+
+\subsection{Frontera entre agua y equidad}\label{sec:pareto}
+
+Para transitar de forma continua entre los modos \emph{máxima agua total} y \emph{repartir entre presas}, se exige que cada fuente $g\in\mathcal G$ reciba al menos $\alpha H/4$ hectáreas, con $\alpha\in[0,1]$, y el presupuesto restante se asigna con el problema de optimización global. La equidad entre las cuatro fuentes se mide con el índice de equidad de Jain (\emph{Jain's fairness index}, \citar{jain1984}) sobre el agua $q_g$ (L/s) que recibe cada una,
+\begin{equation}
+J=\frac{\left(\sum_{g\in\mathcal G} q_g\right)^2}{4\sum_{g\in\mathcal G} q_g^2}\in\left[\tfrac14,1\right],
+\end{equation}
+que vale 1 cuando todas reciben lo mismo y $1/4$ cuando una sola recibe toda el agua. Variando $\alpha$ se traza la frontera de Pareto entre agua total y equidad.
+
+
+\section{Resultados complementarios}\label{ap:resultados}
+
+\subsection{P2 · Características de los sitios prioritarios}\label{res:p2}
+
+\grafica{g2_criterios}{Puntaje de los criterios por clase de prioridad}{Puntaje promedio de cada criterio en las clases alta, media y baja. Fuente: elaboración propia.}
+
+\lectura{Los criterios que más distinguen la prioridad alta de la baja son la vegetación degradada («c_veg_a» frente a «c_veg_b»), el suelo seco («c_sm_a» frente a «c_sm_b») y la pendiente («c_sl_a» frente a «c_sl_b»). La lluvia y la textura del suelo apenas varían entre clases. Los incendios tienen un peso promedio reducido porque afectan sólo una parte del territorio, aunque elevan considerablemente la prioridad donde ocurren.}
+
+\respuesta{La degradación de la cobertura vegetal y la sequedad del suelo en laderas accesibles a las obras. La lluvia y la textura del suelo contribuyen poco a la diferencia entre clases.}
+
+\subsection{P3 · Robustez de la prioridad}\label{res:p3}
+
+\grafica{g3_robustez}{Robustez de la prioridad alta}{Hectáreas de prioridad alta según el porcentaje de 40 ponderaciones aleatorias en que conservan esa clase. Fuente: elaboración propia.}
+
+\respuesta{La prioridad es mayoritariamente robusta: «robusta» ha («robusta_pct» de la prioridad alta) conservan esa clase en al menos la mitad de las ponderaciones. Este núcleo constituye el punto de partida más seguro; la clasificación del resto depende de la ponderación de los criterios.}
+
+\subsection{Incertidumbre, dualidad y equidad (complemento de P4)}
+
+\grafica{g9_incertidumbre}{Incertidumbre del agua bruta retenida}{Distribución del agua retenida con 3,000 ha en 2,000 escenarios de parámetros (sección~\ref{sec:incertidumbre}). Fuente: elaboración propia.}
+
+\lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen «mc_p50» L/s (intervalo de 90\% de «mc_p5» a «mc_p95» L/s); con el reparto entre presas, «mcb_p50» L/s (de «mcb_p5» a «mcb_p95» L/s). La selección es estable: «mc_p80» de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
+
+\grafica{g10_duales}{Precios sombra}{Izquierda: variable dual $\lambda^\ast$ de la restricción de presupuesto, en L/s por cada 1,000 ha adicionales, según el presupuesto. Derecha: m³ retenidos por cada m³ de almacenamiento agregado como capacidad o como metros nuevos, con tormentas de 10 y de 40 mm, en el sitio de la figura~\ref{fig:m3_barreras}. Fuente: elaboración propia.}
+
+\lectura{La variable dual de la restricción de presupuesto es el rendimiento de la hectárea marginal: con 3,000 ha, mil hectáreas adicionales aportarían «dual_3000» L/s; con 20,000 ha, sólo «dual_20000» L/s, porque las celdas de mayor rendimiento ya fueron asignadas. En el modo repartido el valor marginal difiere entre fuentes («dual_bal»), lo que indica que el reparto igualitario deja sin asignar hectáreas más productivas en algunas fuentes.}
+
+\grafica{g12_pareto}{Frontera entre agua y equidad para las fuentes de abasto}{Agua total frente al índice de Jain al exigir a cada fuente al menos la fracción $\alpha$ de su cuarta parte del presupuesto. Fuente: elaboración propia.}
+
+\lectura{Sin exigir reparto ($\alpha=0$) se obtienen «w0» L/s con equidad $J=$ «j0»; con reparto igualitario ($\alpha=1$), «w1» L/s con $J=$ «j1». La frontera es aproximadamente lineal: cada 0.1 de equidad reduce el agua total en unos «pareto_slope» L/s, y con $\alpha=0.5$ se conservan «w05» L/s con $J=$ «j05». Pasar de la máxima agua al reparto igualitario reduce el agua en «bal_cost» y triplica la equidad.}
+
+\subsection{Frecuencia de las tormentas (complemento de P5)}
+
+\grafica{g11_gumbel}{Periodos de retorno de la lluvia máxima diaria}{Ajuste de Gumbel a los máximos anuales de lluvia diaria de CHIRPS (1981 a 2025) en cuatro sitios de las cuencas; los puntos son los máximos observados con su periodo de retorno empírico. Fuente: elaboración propia con CHIRPS.}
+
+\lectura{La tormenta de diseño de 40 mm en un día tiene un periodo de retorno de «t40_range» años según la cuenca, y la de 10 años es de «x10_range» mm. Dado que 1,500 m de barreras se llenan con unos «fill_mm» mm, en la mayoría de los años ocurre al menos una tormenta que las desborda; en esos eventos, la retención está limitada por la capacidad y no por la posición.}
+
+\subsection{Precios sombra del almacenamiento (complemento de P6)}
+
+\lectura{Los precios sombra de la figura~\ref{fig:g10_duales} confirman este resultado. Con 10 mm se llenan «sat10» de las barreras, y con 40 mm, «sat40». Cada m³ de almacenamiento agregado como metros nuevos retiene «sm40» m³ (40 mm) y «sm10» m³ (10 mm), porque las barreras nuevas también se llenan. Agregado como capacidad adicional en las mismas barreras, el rendimiento es menor, de «sc40» y «sc10» m³ por m³, porque algunas no reciben agua suficiente para ocupar el espacio adicional.}
+
+
+\subsection{P7 · Efecto durante una tormenta}\label{res:p7}
+
+\grafica{m4_simulacion}{Simulación de una tormenta de 40 mm}{Agua que pasó por cada celda sin barreras (izquierda) y fracción en que disminuyó con las barreras y presas en cárcava (derecha), en el sitio de la figura~\ref{fig:m3_barreras}. Fuente: elaboración propia.}
+
+\grafica{g7_tormenta_sitios}{Efecto de las barreras en los 8 sitios sugeridos}{Reducción del escurrimiento que sale de la ventana y del caudal pico ante una tormenta de 40 mm. Fuente: elaboración propia.}
+
+\respuesta{El efecto es moderado en una tormenta de 40 mm: en promedio, las barreras y presas en cárcava reducen en «avg_out» el agua que sale de la ventana y en «avg_peak» el caudal pico, y añaden de «inf_lo» a «inf_hi» m³ de infiltración por tormenta en cada ventana. El efecto se concentra aguas abajo de cada obra, a lo largo de los cauces.}
+
+
+\section{Propuesta de validación en campo}\label{sec:validacion}
+
+Los parámetros que más influyen en la ganancia neta (sección~\ref{res:p9}) pueden medirse. Se propone un diseño antes y después con control e impacto (\emph{before-after control-impact}, BACI) en los 8 sitios sugeridos y en laderas testigo vecinas sin obras, con tres mediciones:
+
+\begin{itemize}
+  \item \textbf{Escurrimiento que ya llega, $\tau_g$.} Pares de microcuencas de 1 a 5 ha, una con barreras y una testigo, con vertedores aforadores en la salida. La diferencia de volumen escurrido por tormenta, antes y después de construir, mide la fracción del escurrimiento que las obras retienen y cuánto de ella habría salido de la ladera.
+  \item \textbf{Evapotranspiración del agua infiltrada, $e_g$.} Perfiles de humedad del suelo a 30, 60 y 100 cm detrás de las barreras y en las testigo. El agua que drena por debajo de la zona de raíces escapa a la evapotranspiración; la recarga puede estimarse también con el balance de masa de cloruro, el método más usado en zonas semiáridas \citap{scanlon2006}.
+  \item \textbf{Fracción que llega al acuífero, $\phi_g$.} Piezómetros ladera abajo de los sitios del Santa Catarina y la serie de niveles de los pozos de SADM, para detectar la respuesta del acuífero a las tormentas.
+\end{itemize}
+
+El número de pares necesario se obtiene de una prueba de diferencia de medias. Para detectar una diferencia relativa $\delta$ entre sitios con y sin obras, con coeficiente de variación $\text{CV}$ entre sitios, nivel de significancia $\alpha$ y potencia $1-\beta$,
+\begin{equation}
+n=\frac{2\,(z_{1-\alpha/2}+z_{1-\beta})^2\,\text{CV}^2}{\delta^2},
+\end{equation}
+donde $z_q$ es el cuantil $q$ de la distribución normal estándar. Con $\alpha=0.05$ y potencia de 80\% ($z_{0.975}=1.96$, $z_{0.8}=0.84$) y un coeficiente de variación supuesto de 0.5 entre laderas, se requieren unos 16 pares para detectar una diferencia de 50\% y unos 63 para una de 25\%. Con 8 sitios, conviene instrumentar dos o más pares por sitio, o enfocarse en diferencias grandes. Las mediciones de dos o tres temporadas de lluvia permitirían reemplazar las distribuciones a priori del cuadro~\ref{tab:priores} por distribuciones posteriores, con el mismo procedimiento de la sección~\ref{sec:calibracion}.
+
 
 \section*{Disponibilidad de datos y código}
 \addcontentsline{toc}{section}{Disponibilidad de datos y código}

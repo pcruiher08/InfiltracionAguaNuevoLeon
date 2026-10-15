@@ -62,14 +62,15 @@
   <label class="row"><input type="checkbox" id="l-pri" checked> Prioridad (alta y media, laderas ≥ 8°)</label>
   <label class="row"><input type="checkbox" id="l-rob"> Robustez (alta en ≥ 50% de 40 ponderaciones)</label>
   <label class="row"><input type="checkbox" id="l-cat" checked> Cuencas de abasto y presas</label>
-  <label class="row"><input type="checkbox" id="l-opt" checked> Celdas óptimas para captar agua (3,000 ha)</label>
+  <label class="row"><input type="checkbox" id="l-opt" checked> Celdas óptimas por ganancia neta (3,000 ha)</label>
+  <label class="row"><input type="checkbox" id="l-anp" checked> Áreas naturales protegidas (WDPA)</label>
 
   <h2>Optimización de captación</h2>
-  <div class="muted">Con 3,000 ha a restaurar, ¿dónde se retiene más agua que llega a las fuentes de abasto? Celdas de 1 km; estimación de orden de magnitud.</div>
+  <div class="muted">Con 3,000 ha a restaurar, ¿dónde gana más agua el abasto? Celdas de 1 km. <b>Agua bruta</b>: lo que retienen las obras (cota superior). <b>Ganancia neta</b>: lo que realmente gana la fuente.</div>
   <div id="opt"></div>
 
   <h2>Sitios sugeridos</h2>
-  <div class="muted">Las 2 mejores celdas de cada fuente de abasto según la optimización (modo repartido), con barreras ya optimizadas (1,500 m lineales). Haz clic en uno.</div>
+  <div class="muted">Las 8 mejores celdas según la optimización por ganancia neta (separadas al menos 3 km), todas en la cuenca del Santa Catarina, con barreras ya optimizadas (1,500 m lineales). Haz clic en uno.</div>
   <div id="sites"></div>
   <div id="bar"></div>
   <div id="ficha"></div>
@@ -110,7 +111,7 @@ legend.onAdd = () => {
 };
 legend.addTo(map);
 
-let pri, rob, cat, opt, barGroup;
+let pri, rob, cat, opt, anp, barGroup;
 const COLORS = { "Presa La Boca":"#2a78d6", "Acuífero Santa Catarina (pozos SADM)":"#eb6834",
                  "Presa Cerro Prieto":"#1baf7a", "Presa El Cuchillo":"#eda100" };
 const toggle = (id, layer) => document.getElementById(id).onchange = e =>
@@ -143,23 +144,30 @@ let o;
   const cells = await (await fetch("data/cells.geojson")).json();
   opt = L.geoJSON(cells, {
     style: f => ({ color:"#ffffff", weight:1, fillColor:COLORS[f.properties.supply_name], fillOpacity:.75 }),
-    onEachFeature: (f, l) => l.bindTooltip(`#${f.properties.rank} · ${f.properties.supply_name}<br>${fmt(f.properties.treated_ha)} ha · ~${fmt(f.properties.delivered_m3)} m³/año`),
+    onEachFeature: (f, l) => l.bindTooltip(`#${f.properties.rank} · ${f.properties.supply_name}<br>${fmt(f.properties.treated_ha)} ha · ~${fmt(f.properties.delivered_m3)} m³/año brutos · +${fmt(f.properties.net_m3)} m³/año netos`),
   }).addTo(map);
   toggle("l-opt", () => opt);
+  const anpGj = await (await fetch("data/anp.geojson")).json();
+  anp = L.geoJSON(anpGj, { style: f => ({ color:"#0a9055", weight:f.properties.desig === "Parque Nacional" ? 2.5 : 1.5,
+      dashArray:"4 4", fillColor:"#0a9055", fillOpacity:.06 }),
+    onEachFeature:(f, l) => l.bindTooltip(`${f.properties.name} (${f.properties.desig})`) }).addTo(map);
+  toggle("l-anp", () => anp);
   o = meta.optimization;
   const optBox = document.getElementById("opt");
   const renderOpt = mode => {
     const r = o[mode];
     const rows = Object.entries(r.by_supply).sort((a, b) => b[1].m3 - a[1].m3).map(([k, v]) =>
-      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]};width:12px;height:12px"></span>${k}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³</b></div>`).join("");
+      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]};width:12px;height:12px"></span>${k}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³ brutos · neta ${v.net_m3 >= 0 ? "+" : ""}${(v.net_m3 / 1e6).toFixed(2)}</b></div>`).join("");
     optBox.innerHTML = `<div class="seg"><button data-m="max" class="${mode === "max" ? "on" : ""}">Máxima agua total</button>
-      <button data-m="balanced" class="${mode === "balanced" ? "on" : ""}">Repartir entre presas</button></div>
-      <div class="stat"><span>Agua retenida estimada</span><b>~${(r.totals.m3_per_year / 1e6).toFixed(1)} M m³/año</b></div>${rows}
+      <button data-m="balanced" class="${mode === "balanced" ? "on" : ""}">Repartir entre presas</button>
+      <button data-m="net" class="${mode === "net" ? "on" : ""}">Máxima ganancia neta</button></div>
+      <div class="stat"><span>Agua bruta retenida (cota superior)</span><b>~${fmt(r.impact.ls)} L/s</b></div>
+      <div class="stat"><span>Ganancia neta esperada para el abasto</span><b>${r.impact.net_ls >= 0 ? "+" : ""}${r.impact.net_ls} L/s</b></div>${rows}
       <div class="note">Rendimientos decrecientes: ${r.curve.slice(0, 6).map(c => `${fmt(c.ha)} ha → ${(c.m3 / 1e6).toFixed(1)} M m³`).join(" · ")}.
-      El mapa muestra el modo repartido.</div>`;
+      El mapa muestra la selección por ganancia neta. La ganancia neta descuenta la evapotranspiración y el escurrimiento que ya llegaba a las presas; en las cuencas de las presas es negativa (ver el informe en PDF).</div>`;
     optBox.querySelectorAll("button").forEach(b => b.onclick = () => renderOpt(b.dataset.m));
   };
-  renderOpt("balanced");
+  renderOpt("net");
 
   const sites = await (await fetch("data/sites.json")).json();
   const list = document.getElementById("sites");
@@ -168,7 +176,7 @@ let o;
     el.className = "site";
     const t = st.barriers.totals;
     el.innerHTML = `<b>${i + 1}.</b> <span class="sw" style="background:${COLORS[st.why.supply]};width:10px;height:10px"></span>${st.why.supply}<br>
-      <span class="muted">${st.recommendation.obra} · ${fmt(st.why.m3_per_ha)} m³/ha/año · ${t.n_barriers} barreras</span>`;
+      <span class="muted">${st.recommendation.obra} · +${fmt(st.why.net_m3_per_ha)} m³/ha/año netos · ${t.n_barriers} barreras${st.why.park ? ` · ${st.why.park}` : ""}</span>`;
     el.onclick = () => show(st, el);
     list.appendChild(el);
     L.marker([st.lat, st.lon]).addTo(map).bindTooltip(`Sitio ${i + 1}`).on("click", () => show(st, el));
@@ -202,11 +210,13 @@ function show(st, el) {
   document.getElementById("bar").innerHTML = `
     <h2>¿Por qué este sitio?</h2>
     <div class="stat"><span>Fuente de abasto</span><b>${w.supply}</b></div>
-    <div class="stat"><span>Lugar en la optimización</span><b>#${w.opt_rank} de ${fmt(o.balanced.totals.candidates)} celdas</b></div>
-    <div class="stat"><span>Agua retenida que llega al abasto</span><b>~${fmt(w.m3_per_ha)} m³/ha/año</b></div>
+    <div class="stat"><span>Lugar en la optimización por ganancia neta</span><b>#${w.opt_rank} de ${fmt(o.net.totals.candidates)} celdas</b></div>
+    <div class="stat"><span>Agua bruta retenida</span><b>~${fmt(w.m3_per_ha)} m³/ha/año</b></div>
+    <div class="stat"><span>Ganancia neta esperada · P(ganancia > 0)</span><b>+${fmt(w.net_m3_per_ha)} m³/ha/año · ${Math.round(w.p_pos)}%</b></div>
+    <div class="stat"><span>Área protegida</span><b>${w.park || "ninguna"}</b></div>
     <div class="stat"><span>Lluvia · coef. de escurrimiento</span><b>${w.rain_mm} mm · ${w.c}</b></div>
     <div class="stat"><span>Prioridad · robustez</span><b>${st.stats.priority.toFixed(2)} · ${rob}%</b></div>
-    <div class="note">Elegido por la optimización: entre las celdas de su cuenca, es de las que más agua retenida entregan a la fuente de abasto por hectárea restaurada (más lluvia, más escurrimiento que frenar y conexión directa).</div>`
+    <div class="note">Elegido por la optimización por ganancia neta: es de las celdas donde el abasto más gana agua por hectárea restaurada. En la cuenca del Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra recarga el acuífero de los pozos de SADM.${w.park === "Cumbres de Monterrey" ? " Está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP." : ""}</div>`
     + `
     <h2>Barreras optimizadas</h2>
     <div class="stat"><span>Barreras en curva de nivel</span><b>${t.n_barriers} · ${fmt(t.length_m)} m</b></div>

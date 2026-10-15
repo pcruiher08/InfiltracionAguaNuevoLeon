@@ -111,7 +111,7 @@ def robustness(body: WeightsIn):
 
 class OptimizeIn(BaseModel):
     budget_ha: float = 3000
-    mode: str = "max"  # "max" | "balanced"
+    mode: str = "max"  # "max" | "balanced" | "net"
     target_ls: float | None = None  # inverse question: hectares needed for this many L/s
 
 

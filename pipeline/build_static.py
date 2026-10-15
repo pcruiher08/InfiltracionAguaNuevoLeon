@@ -7,6 +7,7 @@ demo sites with their proposal sheet and optimized barriers.
     python -m pipeline.build_static
 """
 import json
+import sys
 import urllib.request
 from pathlib import Path
 
@@ -57,27 +58,50 @@ def catchments():
     print("wrote catchments.geojson")
 
 
+def protected_areas():
+    """WDPA polygons over the study area (simplified) for the map layer."""
+    fc = ee.FeatureCollection("WCMC/WDPA/current/polygons").filterBounds(layers.aoi())
+    fc = fc.filter(ee.Filter.inList("DESIG", ["Parque Nacional", "Monumento Natural", "Área de Protección de los Recursos Naturales",
+                                              "Zona Sujeta a Conservación Ecológica", "Santuario Biológico"]))
+    gj = fc.map(lambda f: ee.Feature(f.geometry().simplify(120), {"name": f.get("NAME"), "desig": f.get("DESIG")})).getInfo()
+    gj = {"type": "FeatureCollection", "features": gj["features"]}
+    for path in (OUT / "anp.geojson", OUT.parent.parent / "web" / "anp.geojson"):
+        path.write_text(json.dumps(gj, ensure_ascii=False))
+    print("wrote anp.geojson", len(gj["features"]))
+    return gj
+
+
 def supply_optimization(budget_ha=3000):
-    """Both optimization modes at a fixed budget; selected cells for the map."""
+    """The three optimization modes at a fixed budget; the net-gain selection is drawn on the map."""
     res = {}
-    for mode in ("max", "balanced"):
+    for mode in ("max", "balanced", "net"):
         r = optimize.optimize(budget_ha, mode)
-        res[mode] = {"totals": r["totals"], "by_supply": r["by_supply"], "curve": r["curve"]}
-        if mode == "balanced":
+        res[mode] = {"totals": r["totals"], "by_supply": r["by_supply"], "curve": r["curve"], "impact": r["impact"]}
+        if mode == "net":
             (OUT / "cells.geojson").write_text(json.dumps(r["cells"]))
             res["assumptions"] = r["assumptions"]
-            balanced = r
-    return res, balanced
+            net = r
+    return res, net
 
 
-def demo_sites(balanced, per_supply=2):
-    """Best cells of each supply source (balanced optimization) where barrier works apply."""
+def _km(a, b):
+    import math
+    dx = (a[0] - b[0]) * 111.32 * math.cos(math.radians(a[1])); dy = (a[1] - b[1]) * 110.57
+    return math.hypot(dx, dy)
+
+
+def demo_sites(net, n_sites=8, min_km=3.0, anp=None):
+    """Best cells of the net-gain optimization where barrier works apply, at least min_km apart."""
+    from shapely.geometry import Point, shape
+    parks = [(f["properties"]["name"], shape(f["geometry"])) for f in (anp or {}).get("features", [])]
     rob = layers.robustness().unmask(0)
-    cells = sorted(balanced["cells"]["features"], key=lambda f: f["properties"]["rank"])
-    taken, sites = {}, []
+    cells = sorted(net["cells"]["features"], key=lambda f: f["properties"]["rank"])
+    sites = []
     for f in cells:
         p = f["properties"]
-        if taken.get(p["supply_name"], 0) >= per_supply:
+        if len(sites) >= n_sites:
+            break
+        if any(_km((p["lon"], p["lat"]), (s["lon"], s["lat"])) < min_km for s in sites):
             continue
         pt = ee.Geometry.Point([p["lon"], p["lat"]])
         stats = layers.site_stats(pt)
@@ -86,12 +110,13 @@ def demo_sites(balanced, per_supply=2):
             continue
         r = rob.reduceRegion(ee.Reducer.mean(), pt.buffer(250), 30).get("robustez").getInfo() or 0
         bar = barriers.optimize(p["lon"], p["lat"], 1500, 1200)
+        park = next((name for name, g in parks if g.contains(Point(p["lon"], p["lat"]))), None)
         why = {"supply": p["supply_name"], "opt_rank": p["rank"], "m3_year": p["delivered_m3"],
-               "m3_per_ha": round(p["delivered_m3"] / p["treated_ha"]), "rain_mm": p["rain_mm"],
+               "m3_per_ha": round(p["delivered_m3"] / p["treated_ha"]), "net_m3_per_ha": round(p["net_m3"] / p["treated_ha"]),
+               "p_pos": optimize.NET_P_POS[p["supply"]], "rain_mm": p["rain_mm"], "park": park,
                "c": p["c"], "connectivity": p["connectivity"], "robustness": round(r, 2)}
         sites.append({"lat": p["lat"], "lon": p["lon"], "stats": stats, "recommendation": rec,
                       "ficha": ficha.render(p["lat"], p["lon"], stats, rec), "barriers": bar, "why": why})
-        taken[p["supply_name"]] = taken.get(p["supply_name"], 0) + 1
         print(f"site {p['supply_name']} #{p['rank']} {why['m3_per_ha']} m3/ha {rec['obra']}")
     (OUT / "sites.json").write_text(json.dumps(sites))
     return sites
@@ -100,10 +125,11 @@ def demo_sites(balanced, per_supply=2):
 if __name__ == "__main__":
     layers.init()
     OUT.mkdir(parents=True, exist_ok=True)
-    summary = overlays()
+    summary = overlays() if "--no-overlays" not in sys.argv else json.loads((OUT / "meta.json").read_text())["summary"]
     catchments()
-    opt, balanced = supply_optimization()
-    sites = demo_sites(balanced)
+    anp = protected_areas()
+    opt, net = supply_optimization()
+    sites = demo_sites(net, anp=anp)
     (OUT / "meta.json").write_text(json.dumps({"bbox": AOI_BBOX, "summary": summary, "optimization": opt,
                                                "n_sites": len(sites)}, ensure_ascii=False))
     print("summary", summary)

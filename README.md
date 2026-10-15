@@ -152,6 +152,7 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 - **Santa Catarina rinde más por hectárea:** La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las barreras.
 - **El Cuchillo rinde menos:** su conexión con el abasto vale 0.6.
 - **Repartir cuesta poco:** cubrir las 4 fuentes da ~10 % menos agua total que el óptimo puro.
+- **Máxima ganancia neta** (nuevo modo en la app y en la versión estática): selecciona sólo celdas donde la fuente gana agua en promedio. Con 3,000 ha, todas en el Santa Catarina: 44 L/s brutos y **+3 L/s netos esperados**. Con los otros dos modos la ganancia neta es de +1 L/s (máxima agua) y −8 L/s (repartir entre presas), porque incluyen cuencas de presas.
 
 > Los m³ son **agua retenida bruta**, una cota superior: suponen que toda el agua retenida llega a la fuente. El informe en PDF incluye un análisis probabilístico de su destino (evapotranspiración y escurrimiento que ya llegaba a las presas): la ganancia neta es probablemente positiva sólo en el acuífero del Santa Catarina (~67 %), y en las cuencas de las presas la retención probablemente reduce el volumen que llega al embalse.
 
@@ -197,7 +198,7 @@ Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terr
 
     Además hay un hidrograma del agua que sale de la ventana (sin y con barreras) y un balance en m³. En la app local, el botón **▶ Ver flujo de agua (demo)** lo muestra en un clic.
 
-En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~10 %** el escurrimiento que sale de la ventana y **~7 %** el pico, y suman de 4,300 a 5,500 m³ infiltrados por tormenta.
+En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~11 %** el escurrimiento que sale de la ventana y **~12 %** el pico, y suman de 4,900 a 5,605 m³ infiltrados por tormenta.
 
 
 ![Simulación de una tormenta de 40 mm](informe/figuras/m4_simulacion.png)
@@ -267,30 +268,30 @@ El informe incluye además un **resumen ejecutivo de una página**.
 
 ## ¿Por qué estos sitios?
 
-Los 8 sitios sugeridos **no se eligen a mano**. Salen directamente de la **optimización de captación**:
+Los 8 sitios sugeridos **no se eligen a mano**. Salen de la **optimización por ganancia neta esperada** (sección 9):
 
-1. Se corre la optimización en modo **repartir entre presas** con 3,000 ha.
-2. De cada fuente de abasto se toman sus **2 mejores celdas**, las que más agua retenida entregan por hectárea, y se analiza el punto central de cada una.
-3. Solo se conservan los sitios donde el motor de reglas recomienda una **obra de barreras, zanjas o reforestación con barreras**. Si una celda no califica, se pasa a la siguiente de la misma fuente.
+1. Se corre la optimización en modo **máxima ganancia neta** con 3,000 ha. Sólo entran celdas donde la fuente de abasto gana agua en promedio, y todas resultan en la cuenca del **Santa Catarina**.
+2. Se toman las mejores celdas en orden, **separadas al menos 3 km**, y se analiza el punto central de cada una.
+3. Solo se conservan los sitios donde el motor de reglas recomienda una **obra de barreras, zanjas o reforestación con barreras**.
 4. En cada sitio se optimizan las barreras con 1,500 m lineales.
 
-| # | Fuente de abasto | Lugar en la optimización | m³/ha/año al abasto | Lluvia · coef. escurrimiento | Prioridad · robustez | Obra recomendada | Barreras · m · % interceptado |
-|---|---|---|---|---|---|---|---|
-| 1 | Acuífero Santa Catarina (pozos SADM) | #3 | 500 | 642 mm · 0.6 | 0.57 · 38% | Reforestación con nativas + barreras de material vegetal | 35 · 1,482 m · 70% |
-| 2 | Acuífero Santa Catarina (pozos SADM) | #4 | 499 | 642 mm · 0.598 | 0.55 · 35% | Reforestación con nativas + barreras de material vegetal | 38 · 1,498 m · 65% |
-| 3 | Presa La Boca | #19 | 475 | 1181 mm · 0.51 | 0.53 · 40% | Barreras de material vegetal muerto en curvas de nivel | 35 · 1,492 m · 63% |
-| 4 | Presa Cerro Prieto | #21 | 467 | 658 mm · 0.554 | 0.62 · 45% | Reforestación con nativas + barreras de material vegetal | 38 · 1,489 m · 69% |
-| 5 | Presa Cerro Prieto | #22 | 459 | 674 mm · 0.538 | 0.49 · 34% | Barreras de material vegetal muerto en curvas de nivel | 38 · 1,486 m · 66% |
-| 6 | Presa La Boca | #23 | 459 | 980 mm · 0.479 | 0.60 · 65% | Barreras de material vegetal muerto en curvas de nivel | 37 · 1,481 m · 62% |
-| 7 | Presa El Cuchillo | #60 | 377 | 665 mm · 0.573 | 0.67 · 88% | Barreras de piedra acomodada | 39 · 1,499 m · 78% |
-| 8 | Presa El Cuchillo | #62 | 326 | 673 mm · 0.605 | 0.51 · 28% | Reforestación con nativas + barreras de material vegetal | 36 · 1,497 m · 68% |
+| # | Lugar en la optimización | m³/ha/año brutos | m³/ha/año netos | Lluvia · coef. escurrimiento | Prioridad · robustez | Obra recomendada | Barreras · m · % interceptado | Área protegida |
+|---|---|---|---|---|---|---|---|---|
+| 1 | #3 | 500 | +33 | 642 mm · 0.6 | 0.57 · 38% | Reforestación con nativas + barreras de material vegetal | 35 · 1,482 m · 70% | Cumbres de Monterrey |
+| 2 | #5 | 386 | +33 | 665 mm · 0.582 | 0.74 · 98% | Barreras de piedra acomodada | 40 · 1,497 m · 53% | C.A.D.N.R. 026 Bajo Río San Juan |
+| 3 | #8 | 487 | +33 | 635 mm · 0.587 | 0.55 · 35% | Reforestación con nativas + barreras de material vegetal | 38 · 1,486 m · 69% | Cumbres de Monterrey |
+| 4 | #12 | 473 | +32 | 673 mm · 0.567 | 0.62 · 68% | Barreras de piedra acomodada | 36 · 1,498 m · 66% | Cumbres de Monterrey |
+| 5 | #15 | 382 | +32 | 673 mm · 0.561 | 0.53 · 33% | Barreras de material vegetal muerto en curvas de nivel | 40 · 1,499 m · 68% | Cumbres de Monterrey |
+| 6 | #18 | 478 | +32 | 677 mm · 0.558 | 0.58 · 51% | Reforestación con nativas + barreras de material vegetal | 40 · 1,491 m · 55% | Cumbres de Monterrey |
+| 7 | #21 | 475 | +32 | 642 mm · 0.569 | 0.57 · 50% | Reforestación con nativas + barreras de material vegetal | 35 · 1,493 m · 61% | Cumbres de Monterrey |
+| 8 | #32 | 468 | +31 | 655 mm · 0.556 | 0.66 · 81% | Reforestación con nativas + barreras de material vegetal | 39 · 1,497 m · 57% | Cumbres de Monterrey |
 
 **Cómo leer la tabla:**
 
-- **Un sitio entra porque entrega mucha agua por hectárea a su fuente de abasto.** Eso pasa cuando coinciden **mucha lluvia**, **mucho escurrimiento que frenar** (pendiente y poca cobertura) y **conexión directa**.
-- **La Boca encabeza la optimización.** Su cuenca es la más lluviosa (~1,000 mm o más en las mejores celdas), así que cada hectárea restaurada ahí entrega más agua.
-- **El índice de prioridad mide otra cosa.** Algunos sitios óptimos para captar agua tienen prioridad media (~0.5) o robustez baja: el índice pesa también degradación, incendios y suelo, mientras que la optimización mira solo el agua que llega al abasto. **Las dos vistas se complementan**: la prioridad dice dónde el suelo más lo necesita y la optimización dice dónde rinde más el agua.
-- **Ningún sitio cae en cauces ni en zonas urbanas.** El cálculo solo cuenta área elegible, y el motor de reglas descarta lo que no admite obra.
+- **Todos los sitios están en el Santa Catarina.** Ahí el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra es recarga nueva para el acuífero de los pozos de SADM. En las cuencas de las presas, retener escurrimiento en la ladera probablemente reduce el agua que llega al embalse (sección 9).
+- **Bruta frente a neta.** Cada hectárea retiene del orden de 400 a 500 m³/año (agua bruta), pero la ganancia neta esperada para el abasto es de ~30 m³/ha/año, con probabilidad de ser positiva de ~67 %.
+- **7 de los 8 sitios están en el Parque Nacional Cumbres de Monterrey.** La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
+- **El índice de prioridad mide otra cosa.** Algunos sitios óptimos tienen prioridad media o robustez baja: el índice pesa también degradación, incendios y suelo. **Las dos vistas se complementan.**
 
 ### ¿Por qué las barreras quedan donde quedan?
 
