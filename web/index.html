@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infiltración ZMM</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<style>
+  :root { --bg:#fbf9f4; --fg:#1d1b18; --muted:#6b675f; --accent:#2f6b3a; --line:#e3ded3; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.45 system-ui, sans-serif; background:var(--bg); color:var(--fg);
+         display:grid; grid-template-columns:340px 1fr; height:100vh; }
+  aside { padding:16px; overflow-y:auto; border-right:1px solid var(--line); }
+  h1 { font-size:18px; margin:0 0 4px; } .muted { color:var(--muted); font-size:12px; }
+  label { display:flex; justify-content:space-between; margin-top:10px; }
+  input[type=range] { width:100%; }
+  button { margin-top:12px; padding:8px 12px; border:0; border-radius:6px; background:var(--accent); color:#fff; cursor:pointer; }
+  button:disabled { opacity:.5; }
+  #map { height:100vh; }
+  #site, #ficha { margin-top:16px; border-top:1px solid var(--line); padding-top:12px; }
+  table { width:100%; font-size:12px; border-collapse:collapse; } td { padding:2px 0; } td:last-child { text-align:right; }
+  @media (max-width: 760px) { body { grid-template-columns:1fr; grid-template-rows:auto 60vh; height:auto; } #map { height:60vh; } }
+</style>
+</head>
+<body>
+<aside>
+  <h1>Infiltración · prioridad de restauración</h1>
+  <div class="muted">Índice de potencial relativo — no mide volumen infiltrado.</div>
+  <div id="sliders"></div>
+  <button id="apply">Recalcular mapa</button>
+  <button id="robust">Mapa de robustez</button>
+  <div class="muted">Robustez: % de 40 ponderaciones aleatorias en que el sitio sale como prioridad alta.</div>
+  <div id="site" class="muted">Haz clic en el mapa para analizar un sitio.</div>
+  <div id="ficha"></div>
+</aside>
+<div id="map"></div>
+<script>
+const LABELS = { slope:"Pendiente", vegetation:"Vegetación degradada", soil:"Suelo permeable",
+                 fire:"Incendios", moisture:"Suelo seco", rain:"Lluvia" };
+const map = L.map("map").setView([25.3, -100.1], 9);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution:"© OpenStreetMap" }).addTo(map);
+let indexLayer, classLayer, robustLayer, layerCtl, marker, weights = {}, lastSite = null;
+
+async function post(url, body) {
+  const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+async function init() {
+  const cfg = await (await fetch("/api/config")).json();
+  weights = cfg.weights;
+  const box = document.getElementById("sliders");
+  for (const [k, v] of Object.entries(weights)) {
+    box.insertAdjacentHTML("beforeend",
+      `<label>${LABELS[k] || k}<span id="v-${k}">${v.toFixed(2)}</span></label>
+       <input type="range" min="0" max="1" step="0.05" value="${v}" data-k="${k}">`);
+  }
+  box.addEventListener("input", e => {
+    const k = e.target.dataset.k; weights[k] = +e.target.value;
+    document.getElementById("v-" + k).textContent = weights[k].toFixed(2);
+  });
+  const [w, s, e, n] = cfg.bbox; map.fitBounds([[s, w], [n, e]]);
+  await refresh();
+}
+
+async function refresh() {
+  const btn = document.getElementById("apply"); btn.disabled = true;
+  try {
+    const t = await post("/api/tiles", { weights });
+    [indexLayer, classLayer].forEach(l => l && map.removeLayer(l));
+    layerCtl && layerCtl.remove();
+    indexLayer = L.tileLayer(t.index, { opacity:.75 }).addTo(map);
+    classLayer = L.tileLayer(t.classes, { opacity:.75 });
+    layerCtl = L.control.layers(null, { "Índice continuo":indexLayer, "Alta / media / baja":classLayer }).addTo(map);
+  } finally { btn.disabled = false; }
+}
+
+map.on("click", async ev => {
+  const { lat, lng } = ev.latlng;
+  marker ? marker.setLatLng(ev.latlng) : (marker = L.marker(ev.latlng).addTo(map));
+  const el = document.getElementById("site");
+  el.textContent = "Analizando sitio…"; document.getElementById("ficha").innerHTML = "";
+  try {
+    lastSite = await post("/api/site", { lon:lng, lat, weights });
+    const rec = lastSite.recommendation;
+    const rows = Object.entries(lastSite.stats).map(([k, v]) =>
+      `<tr><td>${k}</td><td>${typeof v === "number" ? v.toFixed(2) : v}</td></tr>`).join("");
+    el.innerHTML = `<b>Sitio ${lat.toFixed(4)}, ${lng.toFixed(4)}</b>
+                    <p><b>Obra (reglas):</b> ${rec.obra}<br>${rec.razones.join("<br>")}</p>
+                    <details><summary>Métricas</summary><table>${rows}</table></details>
+                    <button id="dl">Descargar ficha (.md)</button>`;
+    document.getElementById("ficha").innerHTML = marked.parse(lastSite.ficha);
+    document.getElementById("dl").onclick = () => {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([lastSite.ficha], { type:"text/markdown" }));
+      a.download = `ficha_${lat.toFixed(4)}_${lng.toFixed(4)}.md`; a.click();
+    };
+  } catch (e) { el.textContent = "Error: " + e.message; }
+});
+
+document.getElementById("apply").onclick = refresh;
+document.getElementById("robust").onclick = async ev => {
+  ev.target.disabled = true; ev.target.textContent = "Calculando…";
+  try {
+    const t = await post("/api/robustness", {});
+    robustLayer && map.removeLayer(robustLayer);
+    robustLayer = L.tileLayer(t.url, { opacity:.8 }).addTo(map);
+    layerCtl.addOverlay(robustLayer, "Robustez");
+  } finally { ev.target.disabled = false; ev.target.textContent = "Mapa de robustez"; }
+};
+init().catch(e => document.getElementById("site").textContent = "Error: " + e.message);
+</script>
+</body>
+</html>

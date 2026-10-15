@@ -1,0 +1,4 @@
+earthengine-api
+fastapi
+uvicorn[standard]
+python-dotenv
