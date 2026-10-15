@@ -263,7 +263,7 @@ Con 25,000 a 50,000 pesos por hectárea (tope de CONAFOR para restauración fore
 
 El informe propone un diseño antes y después con control e impacto en los 8 sitios: microcuencas pareadas con vertedores (τ), perfiles de humedad del suelo y balance de cloruro (e) y piezómetros en el Santa Catarina (φ). Con CV = 0.5, α = 0.05 y potencia de 80 %, se necesitan ~16 pares para detectar una diferencia de 50 % y ~63 para una de 25 %.
 
-El informe incluye además un **resumen ejecutivo de una página** y un **abstract en inglés**.
+El informe incluye además un **resumen ejecutivo de una página**.
 
 ## ¿Por qué estos sitios?
 
