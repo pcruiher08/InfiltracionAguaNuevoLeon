@@ -76,7 +76,7 @@
   <div id="ficha"></div>
 
   <h2>Sobre esta versión</h2>
-  <div class="muted">Versión estática precalculada. La app completa —pesos ajustables, análisis de cualquier sitio y optimización en vivo— corre con Google Earth Engine; ver el
+  <div class="muted">Versión estática precalculada. La app completa (pesos ajustables, análisis de cualquier sitio y optimización en vivo) corre con Google Earth Engine; ver el
     <a href="https://github.com/pcruiher08/InflitracionAguaNuevoLeon">repositorio</a>. Documento completo: <a href="infiltracion-zmm.pdf">PDF</a>.</div>
 </aside>
 <div id="map"></div>
@@ -98,11 +98,9 @@ legend.onAdd = () => {
     <div><span class="sw" style="background:#0d366b"></span>Alta</div>
     <div><span class="sw" style="background:#2a78d6"></span>Media</div>
     <div><span class="sw" style="background:#a8401a"></span>Robusta (≥ 50%)</div>
-    <b style="margin-top:6px">Celdas óptimas por fuente</b>
-    <div><span class="sw" style="background:#2a78d6"></span>La Boca</div>
+    <b style="margin-top:6px">Celdas óptimas (ganancia neta)</b>
     <div><span class="sw" style="background:#eb6834"></span>Santa Catarina (pozos SADM)</div>
-    <div><span class="sw" style="background:#1baf7a"></span>Cerro Prieto</div>
-    <div><span class="sw" style="background:#eda100"></span>El Cuchillo</div>
+    <div><span class="sw" style="border:2px dashed #0a9055;background:transparent"></span>Área natural protegida</div>
     <b style="margin-top:6px">Barreras</b>
     <div><span class="ln" style="border-color:#1d1b18"></span>Barrera en curva de nivel</div>
     <div><span class="sw" style="background:#8f3510;border-radius:50%"></span>Presa en cárcava</div>
@@ -159,7 +157,7 @@ let o;
     const rows = Object.entries(r.by_supply).sort((a, b) => b[1].m3 - a[1].m3).map(([k, v]) =>
       `<div class="stat"><span><span class="sw" style="background:${COLORS[k]};width:12px;height:12px"></span>${k}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³ brutos · neta ${v.net_m3 >= 0 ? "+" : ""}${(v.net_m3 / 1e6).toFixed(2)}</b></div>`).join("");
     optBox.innerHTML = `<div class="seg"><button data-m="max" class="${mode === "max" ? "on" : ""}">Máxima agua total</button>
-      <button data-m="balanced" class="${mode === "balanced" ? "on" : ""}">Repartir entre presas</button>
+      <button data-m="balanced" class="${mode === "balanced" ? "on" : ""}">Repartir entre fuentes</button>
       <button data-m="net" class="${mode === "net" ? "on" : ""}">Máxima ganancia neta</button></div>
       <div class="stat"><span>Agua bruta retenida (cota superior)</span><b>~${fmt(r.impact.ls)} L/s</b></div>
       <div class="stat"><span>Ganancia neta esperada para el abasto</span><b>${r.impact.net_ls >= 0 ? "+" : ""}${r.impact.net_ls} L/s</b></div>${rows}
@@ -223,7 +221,7 @@ function show(st, el) {
     <div class="stat"><span>Escurrimiento interceptado (relativo)</span><b>~${Math.round(t.intercepted_pct)}%</b></div>
     <div class="stat"><span>Presas en cárcavas</span><b>${t.n_check_dams} de ${t.n_check_dams_total}</b></div>
     <div class="stat"><span>Pendiente media · curvas cada</span><b>${p.mean_slope_deg}° · ${p.vertical_interval_m} m</b></div>
-    <div class="note">Trazo preliminar con DEM de 30 m — validar en campo con levantamiento topográfico o dron.</div>`;
+    <div class="note">Trazo preliminar con DEM de 30 m: validar en campo con levantamiento topográfico o dron.</div>`;
   document.getElementById("ficha").innerHTML = marked.parse(st.ficha);
 }
 </script>

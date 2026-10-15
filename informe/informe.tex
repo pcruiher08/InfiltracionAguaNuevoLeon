@@ -3,7 +3,7 @@
 % Figuras:   .venv/bin/python informe/figuras.py <capturas>   (gráficas desde web/stats.json)
 \documentclass[11pt,letterpaper]{article}
 
-\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage[spanish,es-noshorthands]{babel}
 \unaccentedoperators
 \usepackage{amsmath,amssymb}
 \usepackage[no-math]{fontspec}
@@ -81,8 +81,8 @@
 \defcita{lgeepa}{LGEEPA}{1988}
 \defcita{thrasher2022}{Thrasher et al.}{2022}
 \defcita{wdpa}{UNEP-WCMC y UICN}{2026}
-\defcita{conagua_disp}{CONAGUA}{s. f.a}
-\defcita{conagua_cba}{CONAGUA}{s. f.b}
+\defcita{conagua_disp}{CONAGUA}{s. f.b}
+\defcita{conagua_cba}{CONAGUA}{s. f.a}
 \defcita{dof2017}{CONAGUA}{2017}
 \defcita{eluniversal2023}{El Universal}{2023}
 \defcita{mccool1987}{McCool et al.}{1987}
@@ -250,7 +250,7 @@ Pronatura Noreste planteó el reto en el Grok Monterrey Build Day a partir de do
 \caption{Preguntas de investigación}\label{tab:preguntas}
 \begin{tabularx}{\linewidth}{lXl}
 \toprule
- & Pregunta & Figuras \\
+ & Pregunta & Figuras y cuadros \\
 \midrule
 \hyperref[res:p1]{P1} & ¿Dónde están las laderas cuya restauración más favorece la infiltración para el abasto de la ZMM? & \ref{fig:m1_cuencas}, \ref{fig:g1_ha_cuenca} \\
 \hyperref[res:p2]{P2} & ¿Qué características distinguen a los sitios prioritarios? & \ref{fig:g2_criterios} \\
@@ -261,10 +261,10 @@ Pronatura Noreste planteó el reto en el Grok Monterrey Build Day a partir de do
 \hyperref[res:p7]{P7} & ¿Qué efecto tienen las barreras durante una tormenta? & \ref{fig:m4_simulacion}, \ref{fig:g7_tormenta_sitios} \\
 \hyperref[res:p8]{P8} & ¿Cuánto aumentaría el abasto de la ZMM a escala de programa y qué fracción del déficit de 2022 habría cubierto? & \ref{fig:g13_abasto} \\
 \hyperref[res:p9]{P9} & ¿A dónde va el agua retenida y cuánta aumenta realmente el abasto de cada fuente? & \ref{fig:g14_destino}, \ref{fig:g15_neto} \\
-\hyperref[res:p10]{P10} & ¿Qué vegetación nativa debe acompañar a cada tipo de obra según el tipo de vegetación de la ladera? & \ref{tab:pisos}, \ref{tab:especies} \\
-\hyperref[res:p11]{P11} & ¿Cuánto azolve evitan las obras en las presas, y compensa la reducción del agua que les llega? & \ref{tab:azolve} \\
-\hyperref[res:p12]{P12} & ¿Cuánto cuesta cada L/s que aporta la restauración, frente a otras fuentes? & \ref{tab:costo} \\
-\hyperref[res:p13]{P13} & ¿Cuántos sitios están en áreas protegidas, y cómo cambia el riesgo de sequía con el clima proyectado? & \ref{tab:anp}, \ref{tab:clima} \\
+\hyperref[res:p10]{P10} & ¿Qué vegetación nativa debe acompañar a cada tipo de obra según el tipo de vegetación de la ladera? & cuadros~\ref{tab:pisos} y \ref{tab:especies} \\
+\hyperref[res:p11]{P11} & ¿Cuánto azolve evitan las obras en las presas, y compensa la reducción del agua que les llega? & cuadro~\ref{tab:azolve} \\
+\hyperref[res:p12]{P12} & ¿Cuánto cuesta cada L/s que aporta la restauración, frente a otras fuentes? & cuadro~\ref{tab:costo} \\
+\hyperref[res:p13]{P13} & ¿Cuántos sitios están en áreas protegidas, y cómo cambia el riesgo de sequía con el clima proyectado? & cuadros~\ref{tab:anp} y \ref{tab:clima} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -351,7 +351,7 @@ Cuenca & Área (km²) & Papel en el abasto & $k$ & $s_{\text{con}}$ \\
 Presa La Boca & 347 & Presa de abasto directo & 1.0 & 0.5 \\
 Presa Cerro Prieto (río Pablillo) & 1,758 & Presa de abasto directo & 1.0 & 0.5 \\
 Río Santa Catarina aguas arriba de Monterrey & 1,392 & Recarga de pozos y galerías de SADM & 1.0 & 1.0 \\
-Resto de la cuenca de El Cuchillo & 8,744 & Abasto mayor, pero lejano & 0.6 & 0.3 \\
+Cuenca de El Cuchillo (incluye La Boca y Santa Catarina; $k$ y $s_{\text{con}}$ del resto) & 8,744 & Abasto mayor, pero lejano & 0.6 & 0.3 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -422,9 +422,9 @@ Una barrera en curva de nivel encharca una franja de unos 3 m de ancho y 0.3 m d
 \begin{equation}
 \rho=\frac{\displaystyle\int_0^\infty \varphi(P)\,P\,f_P(P)\,dP}{\displaystyle\int_0^\infty P\,f_P(P)\,dP}\;\approx\;\frac{\sum_d \varphi(P_d)\,P_d}{\sum_d P_d},
 \end{equation}
-estimada con la lluvia observada $P_d$ en cada día $d$ de 2019 a 2026 (CHIRPS). Se obtiene $\rho$ = 420 mm: 16\% · 640 mm: 13\% · 1,190 mm: 8\% de lluvia media anual, valores que se interpolan linealmente para obtener $\rho(P_i)$ en cada celda: en los sitios más lluviosos, una mayor proporción de la precipitación ocurre en tormentas grandes que desbordan las barreras.
+estimada con la lluvia observada $P_d$ en cada día $d$ de 2019 a 2026 (CHIRPS). Se obtiene $\rho$ igual a 16\%, 13\% y 8\% para 420, 640 y 1,190 mm de lluvia media anual, respectivamente, valores que se interpolan linealmente para obtener $\rho(P_i)$ en cada celda: en los sitios más lluviosos, una mayor proporción de la precipitación ocurre en tormentas grandes que desbordan las barreras.
 
-\subsection{Optimización de captación para las fuentes de abasto}
+\subsection{Optimización de captación para las fuentes de abasto}\label{sec:optim}
 
 El territorio se divide en celdas $i$ de 1 km con área elegible $A_i$ (ha) en laderas de 8° a 35°, sin zona urbana, agua ni cobertura densa. El agua retenida que llegaría al abasto por año si se restaura toda la celda y toda el agua retenida llega a la fuente es
 \begin{equation}
@@ -434,7 +434,7 @@ en m³/año, donde $P_i$ es la lluvia media anual de la celda (mm), el factor 10
 \begin{equation}
 W^\ast(H)=\max_{x}\ \sum_i v_i\, x_i \quad\text{s.a.}\quad \sum_i A_i\, x_i \le H,\qquad 0\le x_i\le 1,
 \end{equation}
-donde $x_i$ es la fracción restaurada de la celda $i$ y s.a. significa \emph{sujeto a}. Al tratarse de un programa lineal con una sola restricción de recurso y variables acotadas, la solución óptima se obtiene ordenando las celdas por rendimiento por hectárea $v_i/A_i$ y asignando el presupuesto en ese orden \citap{dantzig1957}. En el modo \emph{repartir entre presas} se resuelve un problema por cada fuente $g$ del conjunto $\mathcal G$ de las cuatro fuentes, con presupuesto $H/4$. El volumen se expresa en L/s, dividiendo los m³/año entre los $31{,}536{,}000$ s de un año y multiplicando por 1,000, y en días de abasto de la ZMM, dividiendo entre el consumo diario de 16,500 L/s. La \emph{prueba de sequía} sustituye $P_i$ por la lluvia acumulada de julio de 2021 a junio de 2022, evalúa la misma selección y mide qué proporción de ella se conserva al reoptimizar.
+donde $x_i$ es la fracción restaurada de la celda $i$ y s.a. significa \emph{sujeto a}. Al tratarse de un programa lineal con una sola restricción de recurso y variables acotadas, la solución óptima se obtiene ordenando las celdas por rendimiento por hectárea $v_i/A_i$ y asignando el presupuesto en ese orden \citap{dantzig1957}. En el modo \emph{repartir entre fuentes} se resuelve un problema por cada fuente $g$ del conjunto $\mathcal G$ de las cuatro fuentes, con presupuesto $H/4$. El volumen se expresa en L/s, dividiendo los m³/año entre los $31{,}536{,}000$ s de un año y multiplicando por 1,000, y en días de abasto de la ZMM, dividiendo el volumen diario entre el de un consumo regular de 16,500 L/s. La \emph{prueba de sequía} sustituye $P_i$ por la lluvia acumulada de julio de 2021 a junio de 2022, evalúa la misma selección y mide qué proporción de ella se conserva al reoptimizar.
 
 \subsection{Ubicación de las barreras: \emph{minimum-cost maximum-flow}}\label{sec:mcmf}
 
@@ -475,7 +475,7 @@ usando $\min\{u_j,\sum_{i\in U(j)}r_i\}$, con $U(j)$ las celdas que drenan a tra
 
 \subsection{Contribución al sistema de abasto}\label{sec:abasto}
 
-Para estimar el efecto a escala de programa, el problema de la sección de optimización de captación se resuelve con presupuestos $H\in\{3{,}000;\,10{,}000;\,30{,}000;\,60{,}000\}$ ha y con la totalidad del área elegible. La selección se determina con la lluvia media y se evalúa después con la lluvia de julio de 2021 a junio de 2022; sea $W^\ast_{\text{seq}}(H)$ el agua retenida que llega al abasto en ese caso. El resultado representa lo que un programa diseñado en condiciones normales habría aportado durante el año que precedió a la crisis. El aporte se compara con el consumo regular de la ZMM, $Q_{\text{ZMM}}=16{,}500$ L/s, y con el déficit en el momento más crítico de 2022,
+Para estimar el efecto a escala de programa, el problema de la sección~\ref{sec:optim} se resuelve con presupuestos $H\in\{3{,}000;\,10{,}000;\,30{,}000;\,60{,}000\}$ ha y con la totalidad del área elegible. La selección se determina con la lluvia media y se evalúa después con la lluvia de julio de 2021 a junio de 2022; sea $W^\ast_{\text{seq}}(H)$ el agua retenida que llega al abasto en ese caso. El resultado representa lo que un programa diseñado en condiciones normales habría aportado durante el año que precedió a la crisis. El aporte se compara con el consumo regular de la ZMM, $Q_{\text{ZMM}}=16{,}500$ L/s, y con el déficit en el momento más crítico de 2022,
 \begin{equation}
 D = Q_{\text{ZMM}} - Q_{2022},\qquad \text{Cob}(H)=\frac{W^\ast_{\text{seq}}(H)}{D},
 \end{equation}
@@ -509,11 +509,11 @@ El Cuchillo ($\times k_{\text{EC}}$) & $\mathcal U(0.30,\,0.90)$ & $\mathcal U(0
 \end{tabularx}
 \end{table}
 
-Con $N=4,000$ escenarios de Monte Carlo, que incluyen también los parámetros de la sección~\ref{sec:incertidumbre}, se estiman la distribución de $G_g$ y su probabilidad de ser positiva,
+Con 4,000 escenarios de Monte Carlo, que incluyen también los parámetros de la sección~\ref{sec:incertidumbre}, se estiman la distribución de $G_g$ y su probabilidad de ser positiva,
 \begin{equation}
 \Pr[G_g>0]=\int \mathbf 1\!\left[(1-e)\phi-\tau>0\right]\,f(e)\,f(\phi)\,f(\tau)\;de\,d\phi\,d\tau\;\approx\;\frac1N\sum_{n=1}^N \mathbf 1\!\left[G_g^{(n)}>0\right],
 \end{equation}
-y la distribución de $W_{\text{neta}}$ para dos selecciones: la de la sección de optimización, que maximiza el agua bruta $\sum_i x_iR_ik_i$, y una que maximiza la ganancia neta esperada $\sum_i x_iR_i\,\mathbb E[G_{g(i)}]$ y excluye las celdas con $\mathbb E[G_{g(i)}]<0$. La importancia de cada parámetro se mide con el coeficiente de correlación de rangos de Spearman entre el parámetro y $W_{\text{neta}}$. Para evaluar si el signo de $G_g$ depende de las cotas elegidas, se repite el cálculo con cotas optimistas: $e_g\sim\mathcal U(0.2,\,\text{ET}/P)$, $\phi_g\sim\mathcal U(0.6,0.95)$ y $\tau_g\sim\mathcal U(0.1,0.5)$ en las presas, y $\phi_g\sim\mathcal U(0.7,0.95)$ y $\tau_g\sim\mathcal U(0,0.2)$ en el Santa Catarina.
+y la distribución de $W_{\text{neta}}$ para dos selecciones: la de la sección~\ref{sec:optim}, que maximiza el agua bruta $\sum_i x_iR_ik_i$, y una que maximiza la ganancia neta esperada $\sum_i x_iR_i\,\mathbb E[G_{g(i)}]$ y excluye las celdas con $\mathbb E[G_{g(i)}]<0$. La importancia de cada parámetro se mide con el coeficiente de correlación de rangos de Spearman entre el parámetro y $W_{\text{neta}}$. Para evaluar si el signo de $G_g$ depende de las cotas elegidas, se repite el cálculo con cotas optimistas: $e_g\sim\mathcal U(0.2,\,\text{ET}/P)$, $\phi_g\sim\mathcal U(0.6,0.95)$ y $\tau_g\sim\mathcal U(0.1,0.5)$ en las presas, y $\phi_g\sim\mathcal U(0.7,0.95)$ y $\tau_g\sim\mathcal U(0,0.2)$ en el Santa Catarina.
 
 \subsection{Selección de vegetación por tipo de vegetación}\label{sec:vegetacion}
 
@@ -551,7 +551,7 @@ donde $\sigma_f$ combina, con unos 10\% cada una, la incertidumbre del sesgo de 
 \begin{equation}
 p(f_C\mid \hat f)\;\propto\;\mathbf 1[0.7\le f_C\le1.3]\;\exp\!\left[-\frac{(f_C-\hat f)^2}{2\sigma_f^2}\right],
 \end{equation}
-y se aplica por muestreo de importancia: cada escenario $n$ de la sección~\ref{sec:destino} recibe el peso $\omega_n\propto\exp[-(f_C^{(n)}-\hat f)^2/2\sigma_f^2]$, con $\sum_n\omega_n=1$, y las medias, cuantiles y probabilidades se recalculan con esos pesos. El tamaño efectivo de muestra es $1/\sum_n\omega_n^2$. Como el agua bruta y la neta son proporcionales a $f_C$, la calibración cambia su magnitud pero casi no su signo.
+y se aplica por muestreo de importancia: cada uno de los primeros 2,000 escenarios $n$ de la sección~\ref{sec:destino} recibe el peso $\omega_n\propto\exp[-(f_C^{(n)}-\hat f)^2/2\sigma_f^2]$, con $\sum_n\omega_n=1$, y las medias, cuantiles y probabilidades se recalculan con esos pesos. El tamaño efectivo de muestra es $1/\sum_n\omega_n^2$. Como el agua bruta y la neta son proporcionales a $f_C$, la calibración cambia su magnitud pero casi no su signo.
 
 \subsection{Áreas naturales protegidas y clima futuro}\label{sec:anp_clima}
 
@@ -585,7 +585,7 @@ En laderas de 8° o más se identifican \textbf{79,542 ha de prioridad alta} y 1
 \caption{Optimización con 3,000 ha restauradas (agua bruta)}\label{tab:optim}
 \begin{tabularx}{\linewidth}{Xrrrr}
 \toprule
- & \multicolumn{2}{c}{Máxima agua total} & \multicolumn{2}{c}{Repartir entre presas} \\
+ & \multicolumn{2}{c}{Máxima agua total} & \multicolumn{2}{c}{Repartir entre fuentes} \\
 Fuente & ha & L/s & ha & L/s \\
 \midrule
 Presa La Boca & 137 & 2.0 & 750 & 10.3 \\
@@ -619,7 +619,7 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{1.0} & \multicolumn{2}{r}
 
 \grafica{g8_mcmf}{Agua retenida según el tamaño de la tormenta}{Agua retenida por 1,500 m de barreras (con capacidad) con el trazo \emph{greedy} por área y con el trazo guiado por MCMF, en dos sitios y cuatro tormentas. Fuente: elaboración propia.}
 
-\lectura{Los primeros 500 m interceptan 29 a 35\% de la ventana, 1,500 m interceptan 60 a 63\% y 3,000 m, 77 a 80\%, lo que evidencia rendimientos decrecientes. En tormentas grandes todas las barreras se llenan y ambos trazos retienen prácticamente lo mismo (diferencia de -0.1 a +0.3\%), por lo que el factor limitante es la capacidad. En tormentas pequeñas, cuando no todas las barreras se llenan, el trazo por MCMF retiene hasta 2.6\% más.}
+\lectura{Los primeros 500 m interceptan 29 a 35\% de la ventana, 1,500 m interceptan 60 a 63\% y 3,000 m, 77 a 80\%, lo que evidencia rendimientos decrecientes. En tormentas grandes todas las barreras se llenan y ambos trazos retienen prácticamente lo mismo (diferencia de −0.1 a +0.3\%), por lo que el factor limitante es la capacidad. En tormentas pequeñas, cuando no todas las barreras se llenan, el trazo por MCMF retiene hasta 2.6\% más.}
 
 \respuesta{En las posiciones que intercepten más escurrimiento por metro, cruzando los flujos principales y distribuidas a lo largo de la ladera. No obstante, en tormentas grandes la capacidad es más determinante que la posición: 1,500 m de barreras retienen 27 a 31\% de una tormenta de 5 mm y sólo 3.4 a 4.2\% de una de 40 mm. Para aumentar la retención conviene agregar almacenamiento, que rinde ligeramente más como metros nuevos bien ubicados (1.00 m³ por m³) que como ampliación de las barreras existentes (0.84).}
 
@@ -627,7 +627,7 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{1.0} & \multicolumn{2}{r}
 
 \begin{table}[H]\centering\small
 \caption{Agua bruta retenida para el abasto de la ZMM según la superficie restaurada}\label{tab:abasto}
-{\color{gris}Selección con lluvia media, evaluada también con la lluvia de julio de 2021 a junio de 2022. Intervalo de 90\% por Monte Carlo. Déficit en el momento más crítico de 2022: 3,000 L/s (sección~\ref{sec:abasto}). Cota superior: la ganancia neta esperada es de 3.0 L/s con 3,000 ha y de 26 L/s con 30,000 ha (cuadro~\ref{tab:neta}).\par}\smallskip
+{\color{gris}Selección con lluvia media, evaluada también con la lluvia de julio de 2021 a junio de 2022. Intervalo de 90\% por Monte Carlo. Déficit en el momento más crítico de 2022: 3,000 L/s (sección~\ref{sec:abasto}). La proporción del consumo usa el año normal; la del déficit, el año 2021 a 2022. Cota superior: la ganancia neta esperada es de 3.0 L/s con 3,000 ha y de 26 L/s con 30,000 ha (cuadro~\ref{tab:neta}).\par}\smallskip
 \begin{tabularx}{\linewidth}{Xrrrrr}
 \toprule
  & \multicolumn{1}{c}{Año normal} & \multicolumn{2}{c}{Año 2021 a 2022} & \multicolumn{2}{c}{Proporción} \\
@@ -652,26 +652,26 @@ Hectáreas & L/s & L/s & Intervalo 90\% & del consumo & del déficit 2022 \\
 
 \grafica{g14_destino}{Ganancia neta por metro cúbico retenido, por fuente}{Distribución de $G_g=(1-e_g)\phi_g-\tau_g$ en 4,000 escenarios con las distribuciones del cuadro~\ref{tab:priores}; el punto es la mediana. Valores negativos indican que la restauración reduce el agua que llega a la fuente. Fuente: elaboración propia con MODIS y CHIRPS.}
 
-\lectura{La evapotranspiración de MODIS equivale a 78\% de la lluvia en las laderas elegibles del Santa Catarina, 82\% en La Boca, 100\% en Cerro Prieto y 90\% en El Cuchillo. Con esas cotas, cada m³ retenido en el Santa Catarina aporta en promedio 0.07 m³ netos al acuífero, con probabilidad de ganancia positiva de 67\%. En las presas el promedio es negativo: -0.30 en La Boca, -0.35 en Cerro Prieto y -0.20 en El Cuchillo, con probabilidad de ganancia positiva de 5\%, 4\% y 4\%, respectivamente. Con las cotas optimistas, la probabilidad de ganancia positiva sube a 99.7\% en el Santa Catarina, pero sólo a 65.4\%, 50.7\% y 58.4\% en las presas, con promedios cercanos a cero (0.08, 0.01 y 0.03).}
+\lectura{La evapotranspiración de MODIS equivale a 78\% de la lluvia en las laderas elegibles del Santa Catarina, 82\% en La Boca, 100\% en Cerro Prieto y 90\% en El Cuchillo. Con esas cotas, cada m³ retenido en el Santa Catarina aporta en promedio 0.07 m³ netos al acuífero, con probabilidad de ganancia positiva de 67\%. En las presas el promedio es negativo: −0.30 en La Boca, −0.35 en Cerro Prieto y −0.20 en El Cuchillo, con probabilidad de ganancia positiva de 5\%, 4\% y 4\%, respectivamente. Con las cotas optimistas, la probabilidad de ganancia positiva sube a 99.7\% en el Santa Catarina, pero sólo a 65.4\%, 50.7\% y 58.4\% en las presas, con promedios cercanos a cero (0.08, 0.01 y 0.03).}
 
 \grafica{g15_neto}{Agua neta para el abasto con 30,000 ha}{Distribución del agua neta $W_{\text{neta}}$ en los escenarios de Monte Carlo para la selección que maximiza el agua bruta y la que maximiza la ganancia neta esperada. Fuente: elaboración propia.}
 
 \begin{table}[H]\centering\small
 \caption{Agua bruta retenida y agua neta para el abasto}\label{tab:neta}
-{\color{gris}Agua neta: mediana e intervalo de 90\% en L/s. Probabilidad de ganancia neta positiva.\par}\smallskip
-\begin{tabularx}{\linewidth}{Xrrrr}
+{\color{gris}Agua neta en L/s: media, mediana e intervalo de 90\%. Probabilidad de ganancia neta positiva.\par}\smallskip
+\begin{tabularx}{\linewidth}{Xrrrrr}
 \toprule
-Selección & Bruta (L/s) & Neta (L/s) & Intervalo 90\% & $\Pr[W_{\text{neta}}>0]$ \\
+Selección & Bruta & Neta, media & Neta, mediana & Intervalo 90\% & $\Pr[W_{\text{neta}}>0]$ \\
 \midrule
-Máximo de agua bruta, 3,000 ha & 45 & 1 & -8 a 11 & 56\% \\
-Máxima ganancia neta esperada, 3,000 ha & 44 & 3 & -7 a 15 & 67\% \\
-Máximo de agua bruta, 30,000 ha & 401 & -42 & -128 a 31 & 17\% \\
-Máxima ganancia neta esperada, 30,000 ha & 388 & 23 & -61 a 126 & 67\% \\
+Máximo de agua bruta, 3,000 ha & 45 & 1.0 & 1 & −8 a 11 & 56\% \\
+Máxima ganancia neta esperada, 3,000 ha & 44 & 3.0 & 3 & −7 a 15 & 67\% \\
+Máximo de agua bruta, 30,000 ha & 401 & −44.1 & −42 & −128 a 31 & 17\% \\
+Máxima ganancia neta esperada, 30,000 ha & 388 & 26.1 & 23 & −61 a 126 & 67\% \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\lectura{Con la selección que maximiza el agua bruta, 30,000 ha retienen 401 L/s, pero el agua neta para el abasto tiene mediana de -42 L/s y probabilidad de ser positiva de sólo 17\%, porque 11,981 de esas hectáreas drenan a Cerro Prieto, donde la retención resta escurrimiento a la presa. Al maximizar la ganancia neta esperada, la selección se concentra por completo en el Santa Catarina y el agua neta tiene mediana de 23 L/s (intervalo de 90\% de -61 a 126 L/s), con probabilidad de ser positiva de 67\%. Los parámetros que más influyen en el resultado son, en orden, el escurrimiento que ya llegaba en Cerro Prieto ($r_s=-0.49$), la evapotranspiración en Santa Catarina ($r_s=-0.48$), el escurrimiento que ya llegaba en Santa Catarina ($r_s=-0.41$) y la evapotranspiración en Cerro Prieto ($r_s=-0.36$).}
+\lectura{Con la selección que maximiza el agua bruta, 30,000 ha retienen 401 L/s, pero el agua neta para el abasto tiene mediana de −42 L/s y probabilidad de ser positiva de sólo 17\%, porque 11,981 de esas hectáreas drenan a Cerro Prieto, donde la retención resta escurrimiento a la presa. Al maximizar la ganancia neta esperada, la selección se concentra por completo en el Santa Catarina y el agua neta tiene mediana de 23 L/s (intervalo de 90\% de −61 a 126 L/s), con probabilidad de ser positiva de 67\%. Los parámetros que más influyen en el resultado son, en orden, el escurrimiento que ya llegaba en Cerro Prieto ($r_s=-0.49$), la evapotranspiración en Santa Catarina ($r_s=-0.48$), el escurrimiento que ya llegaba en Santa Catarina ($r_s=-0.41$) y la evapotranspiración en Cerro Prieto ($r_s=-0.36$).}
 
 \respuesta{Las obras no desvían el agua: la retienen unas horas para que se infiltre, y desde ahí sigue su curso por el subsuelo dentro de la misma cuenca. Para el abasto, el resultado depende de la fuente. En el Santa Catarina, el escurrimiento de tormenta sale del sistema a través de la ciudad, así que infiltrarlo en la sierra añade recarga al acuífero que explotan los pozos y galerías; la ganancia neta es positiva con probabilidad de 67\% con las cotas base y de 99.7\% con las optimistas. En las cuencas de las presas, retener escurrimiento en la ladera no añade agua en volumen anual y probablemente la reduce: lo que se retiene ya llegaba en buena parte al embalse, y la evapotranspiración se lleva una fracción. Ahí el beneficio de las obras está en reducir el azolve, atenuar los picos de las avenidas y conservar el suelo, no en aumentar el volumen. Con 30,000 ha en el Santa Catarina, el agua neta esperada es del orden de 26 L/s, una fracción pequeña del agua bruta retenida y del déficit de 2022.}
 
@@ -726,10 +726,10 @@ Pastizal inducido, cultivado o agricultura & Las del tipo de vegetación natural
 Selección & ha en & Azolve evitado & Azolve evitado & Agua neta \\
  & presas & (miles de m³/año) & en 50 años (hm³) & (hm³/año) \\
 \midrule
-Máximo de agua bruta, 3,000 ha & 341 & 9 (4 a 19) & 0.5 & -0.1 (-0.1 a 0.0) \\
-Máximo suelo retenido en presas, 3,000 ha & 3,000 & 69 (29 a 139) & 3.4 & -0.4 (-0.8 a -0.1) \\
-Máximo de agua bruta, 30,000 ha & 12,827 & 226 (94 a 455) & 11.3 & -1.8 (-3.4 a -0.3) \\
-Máximo suelo retenido en presas, 30,000 ha & 30,000 & 448 (187 a 901) & 22.4 & -4.1 (-7.5 a -0.6) \\
+Máximo de agua bruta, 3,000 ha & 341 & 9 (4 a 19) & 0.5 & −0.1 (−0.1 a 0.0) \\
+Máximo suelo retenido en presas, 3,000 ha & 3,000 & 69 (29 a 139) & 3.4 & −0.4 (−0.8 a −0.1) \\
+Máximo de agua bruta, 30,000 ha & 12,827 & 226 (94 a 455) & 11.3 & −1.8 (−3.4 a −0.3) \\
+Máximo suelo retenido en presas, 30,000 ha & 30,000 & 448 (187 a 901) & 22.4 & −4.1 (−7.5 a −0.6) \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -769,7 +769,7 @@ Máxima ganancia neta esperada, 30,000 ha & 750 a 1,500 & 1.9 a 3.9 & 42.8 & 0.1
 \midrule
 Agua bruta (máximo de agua bruta) & 44.6 & 36.7 & 401 & 330 \\
 Agua neta, media & 3.0 & 2.4 & 26.1 & 20.8 \\
-Agua neta, intervalo de 90\% & -7.1 a 14.6 & -5.8 a 11.8 & -61 a 126 & -51 a 102 \\
+Agua neta, intervalo de 90\% & −7.1 a 14.6 & −5.8 a 11.8 & −61 a 126 & −51 a 102 \\
 $\Pr[W_{\text{neta}}>0]$ & 67\% & 66\% & 67\% & 67\% \\
 \bottomrule
 \end{tabularx}
@@ -794,7 +794,7 @@ Parque Lineal (Parque Urbano) & 0 & 3 \\
 \end{tabularx}
 \end{table}
 
-\lectura{Con 3,000 ha seleccionadas por ganancia neta, 2,933 ha están dentro del Parque Nacional Cumbres de Monterrey, y con 30,000 ha, 27,155 ha. 7 de los 8 sitios sugeridos están dentro del parque. Las obras ahí requieren la autorización de la CONANP y deben ajustarse a la zonificación del parque cuando se publique su programa de manejo.}
+\lectura{Con 3,000 ha seleccionadas por ganancia neta, 2,933 ha están dentro del Parque Nacional Cumbres de Monterrey, y con 30,000 ha, 27,155 ha. Siete de los ocho sitios sugeridos están dentro del parque. Las obras ahí requieren la autorización de la CONANP y deben ajustarse a la zonificación del parque cuando se publique su programa de manejo.}
 
 \begin{table}[H]\centering\small
 \caption{Lluvia futura y frecuencia de una sequía como la de 2021 a 2022}\label{tab:clima}
@@ -803,17 +803,17 @@ Parque Lineal (Parque Urbano) & 0 & 3 \\
 \toprule
  & SSP2-4.5 & SSP5-8.5 \\
 \midrule
-Cambio de la lluvia media de julio a junio & +4.0\% (-16.8 a +17.9) & -3.2\% (-11.6 a +9.8) \\
+Cambio de la lluvia media de julio a junio & +4.0\% (−16.8 a +17.9) & −3.2\% (−11.6 a +9.8) \\
 Frecuencia de un año como 2021 a 2022 (histórica: 11\%) & 8\% (3\% a 20\%) & 10\% (3\% a 23\%) \\
 Modelos con sequías más frecuentes & 1 de 8 & 2 de 8 \\
-Cambio del agua bruta con 3,000 ha & +1.8\% & -1.4\% \\
+Cambio del agua bruta con 3,000 ha & +1.8\% & −1.4\% \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \lectura{La lluvia de julio de 2021 a junio de 2022 en el área de análisis fue de 520 mm, frente a una media de 670 mm; ocupa el percentil 11\% de los años de 1981 a 2025, es decir, ocurre en promedio una vez cada 9 años. Hacia 2041 a 2070, 1 de 8 modelos en SSP2-4.5 y 2 en SSP5-8.5 proyectan sequías así de severas con mayor frecuencia que en el periodo histórico.}
 
-\respuesta{La superficie más valiosa para el abasto está dentro del Parque Nacional Cumbres de Monterrey: 2,933 de las 3,000 ha y 27,155 de las 30,000 ha seleccionadas por ganancia neta. La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP. En cuanto al clima, la frecuencia proyectada de un año tan seco como el previo a la crisis es de 8\% en SSP2-4.5 y de 10\% en SSP5-8.5 (mediana de los modelos), frente a 11\% histórico, y el cambio de la lluvia media modificaría el agua bruta retenida en +1.8\% y -1.4\%, respectivamente. Como la selección de sitios resiste la sequía (sección~\ref{res:p5}), los mismos sitios siguen siendo prioritarios en el clima proyectado.}
+\respuesta{La superficie más valiosa para el abasto está dentro del Parque Nacional Cumbres de Monterrey: 2,933 de las 3,000 ha y 27,155 de las 30,000 ha seleccionadas por ganancia neta. La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP. En cuanto al clima, la frecuencia proyectada de un año tan seco como el previo a la crisis es de 8\% en SSP2-4.5 y de 10\% en SSP5-8.5 (mediana de los modelos), frente a 11\% histórico, y el cambio de la lluvia media modificaría el agua bruta retenida en +1.8\% y −1.4\%, respectivamente. Como la selección de sitios resiste la sequía (sección~\ref{res:p5}), los mismos sitios siguen siendo prioritarios en el clima proyectado.}
 
 \subsection{Contraste con el balance del acuífero Campo Buenos Aires}\label{res:acuifero}
 
@@ -851,8 +851,8 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
 \begin{enumerate}
   \item \textbf{La prioridad se concentra en la Sierra Madre Oriental}, principalmente en la cuenca del Santa Catarina.
   \item \textbf{La prioridad es robusta}: 71\% de la prioridad alta no depende de los pesos, y 91\% de las celdas seleccionadas se mantienen en al menos 80\% de los escenarios de parámetros.
-  \item \textbf{La retención bruta es del orden de decenas de L/s por cada pocos miles de hectáreas}: 3,000 ha retienen 44 L/s (intervalo de 90\% de 26 a 68); la variable dual de la restricción de presupuesto indica 14.3 L/s por cada 1,000 ha adicionales, y para 100 L/s se requieren unas 6,955 ha.
-  \item \textbf{La ganancia neta es mucho menor que la retención bruta y depende de la fuente}: es positiva con probabilidad de 67\% en el Santa Catarina y de 5\% a 4\% en las presas; con 30,000 ha en el Santa Catarina, la ganancia neta esperada es de 26 L/s. Aun en términos brutos, 30,000 ha cubrirían 12\% del déficit de 2022: la restauración es complementaria y no sustituye a otras fuentes.
+  \item \textbf{La retención bruta es del orden de decenas de L/s por cada pocos miles de hectáreas}: 3,000 ha retienen 45 L/s (intervalo de 90\% por Monte Carlo de 26 a 68); la variable dual de la restricción de presupuesto indica 14.3 L/s por cada 1,000 ha adicionales, y para 100 L/s se requieren unas 6,955 ha.
+  \item \textbf{La ganancia neta es mucho menor que la retención bruta y depende de la fuente}: es positiva con probabilidad de 67\% en el Santa Catarina y de 4\% a 5\% en las presas; con 30,000 ha en el Santa Catarina, la ganancia neta esperada es de 26 L/s. Aun en términos brutos, 30,000 ha cubrirían 12\% del déficit de 2022: la restauración es complementaria y no sustituye a otras fuentes.
   \item \textbf{En las presas, el azolve evitado no compensa el agua retenida}: 30,000 ha en Cerro Prieto conservarían unos 22.4 hm³ de capacidad en 50 años, pero reducirían el agua que llega a la presa en unos 4.1 hm³ por año; ahí la restauración se justifica por el suelo, la vegetación y las avenidas.
   \item \textbf{Como fuente de agua, la restauración es cara}: cada L/s neto cuesta unos 43 millones de pesos, más de diez veces el costo de capital por L/s de El Cuchillo II; su valor está en el suelo, los embalses y la biodiversidad.
   \item \textbf{La prioridad para el abasto está dentro del Parque Nacional Cumbres de Monterrey}: 2,933 de las 3,000 ha seleccionadas por ganancia neta; la restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
@@ -860,7 +860,7 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
   \item \textbf{Lo que más conviene medir} es la evapotranspiración del agua infiltrada y la fracción del escurrimiento que ya llega a las presas: son los parámetros con mayor influencia en la ganancia neta.
   \item \textbf{Cada obra se acompaña con la vegetación de su propio tipo según el INEGI}: matorral submontano, desértico, encino o pino-encino, con especies de inventarios publicados, procedencia local y densidad moderada.
   \item \textbf{La selección resiste la sequía}: con la lluvia previa a la crisis se conservan 92\% del agua y 82\% de los sitios.
-  \item \textbf{La equidad entre fuentes tiene un costo reducido}: repartir entre las cuatro fuentes eleva el índice de Jain de 0.31 a 0.98 y reduce el agua de 44.6 a 40.1 L/s.
+  \item \textbf{La equidad entre fuentes tiene un costo reducido en agua bruta}: repartir entre las cuatro fuentes eleva el índice de Jain de 0.31 a 0.98 y reduce el agua bruta de 44.6 a 40.1 L/s; en ganancia neta, en cambio, el reparto es negativo porque asigna superficie a las cuencas de las presas.
   \item \textbf{La capacidad de las obras limita más que su posición}: una tormenta que las llena ocurre casi cada año (periodo de retorno de 1.0 a 1.7 años para 40 mm); el almacenamiento adicional rinde más como metros nuevos que como ampliación de las barreras, y MCMF mejora el trazo cuando la capacidad no se satura.
   \item \textbf{Las laderas muy pronunciadas no son aptas para obras}: por encima de 35° se recomienda la exclusión y la regeneración natural.
 \end{enumerate}
@@ -869,12 +869,12 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
 
 \begin{itemize}
   \item \textbf{Orden de magnitud.} El índice compara sitios; los volúmenes en m³ y L/s son estimaciones para comparar alternativas y no constituyen un balance hídrico. No se modela la mejora del suelo a largo plazo (mayor cobertura e infiltración en toda la ladera), que podría superar el efecto de la retención de las obras.
-  \item \textbf{Supuestos sin calibrar.} El análisis de Monte Carlo propaga rangos plausibles, aunque no calibrados, del coeficiente de escurrimiento, la capacidad de 1.44 m³ por metro de barrera y la conectividad de El Cuchillo. La retención anual $\rho$, los umbrales de cárcava (5 ha) y de cauce (100 ha) y los niveles de conectividad son parámetros explícitos que deben calibrarse con Pronatura Noreste.
+  \item \textbf{Supuestos sin calibrar.} El análisis de Monte Carlo propaga rangos plausibles del coeficiente de escurrimiento (calibrado sólo con la cuenca de Cerro Prieto, sección~\ref{sec:calibracion}), de la capacidad de 1.44 m³ por metro de barrera y de la conectividad de El Cuchillo. La retención anual $\rho$, los umbrales de cárcava (5 ha) y de cauce (100 ha) y los niveles de conectividad son parámetros explícitos que deben calibrarse con Pronatura Noreste.
   \item \textbf{Calibración.} El factor de escurrimiento se calibró sólo con la cuenca de Cerro Prieto, la única de las cuatro con escurrimiento natural publicado por cuenca en los datos abiertos de CONAGUA; se supone el mismo factor en las demás.
   \item \textbf{Destino del agua.} Las fracciones $e_g$, $\phi_g$ y $\tau_g$ son distribuciones a priori no calibradas; su medición con balances hídricos, piezometría en el Santa Catarina y aforos en los afluentes de las presas cambiaría las probabilidades de la sección~\ref{res:p9}. El agua que sale de la cuenca de una presa por el subsuelo puede recargar otros acuíferos que también abastecen a la ZMM, lo que el modelo no acredita. Tampoco se modela que el agua que llega a una presa llena se pierde por vertido, lo que reduciría $\tau_g$ en años húmedos.
   \item \textbf{Tipos de vegetación.} La carta del INEGI tiene escala 1:250,000 y su base es de 2017 a 2021; dentro de una celda de 1 km se supone que el área elegible se reparte como la superficie de cada tipo. La lista de especies del encinar proviene de inventarios de pino-encino. El tipo de cada sitio debe confirmarse en campo con la vegetación remanente.
   \item \textbf{Erosión.} La RUSLE no está calibrada en la zona: el factor $C$ con NDVI de temporada seca y la pendiente fuerte probablemente sobrestiman la pérdida de suelo, y la razón de entrega de sedimentos es una cota amplia. No se modela el azolve que ya retienen los cauces ni la erosión de cárcavas y márgenes.
-  \item \textbf{Escala y tiempo.} El aporte a escala de programa supone que las obras se mantienen con su capacidad de diseño; el azolve la reduce con el tiempo. El agua infiltrada llega a los acuíferos y presas con un retraso no modelado, y no se estima la fracción que se pierde por evapotranspiración o que se extrae aguas arriba.
+  \item \textbf{Escala y tiempo.} El aporte a escala de programa supone que las obras se mantienen con su capacidad de diseño; el azolve la reduce con el tiempo. El agua infiltrada llega a los acuíferos y presas con un retraso no modelado, y las fracciones que se pierden por evapotranspiración o que no llegan a la fuente se representan con distribuciones a priori (sección~\ref{sec:destino}).
   \item \textbf{Resolución.} El DEM de 30 m no resuelve el intervalo vertical de 1 m, por lo que el trazo es preliminar y debe validarse con levantamiento topográfico o con dron. SMAP tiene una resolución de unos 9 km, MODIS detecta área quemada a 500 m y CHIRPS tiene una resolución de unos 5 km.
   \item \textbf{Optimización.} La selección de barreras es un problema de costo fijo; \emph{lazy greedy} no garantiza el óptimo global. La red D8 asigna un solo receptor por celda.
   \item \textbf{Suelo.} La textura de OpenLandMap apenas varía en la zona; un mapa edafológico del INEGI mejoraría este criterio.
@@ -893,48 +893,48 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
 \bibitem{bouma2011} Bouma, J. A., Biggs, T. W. y Bouwer, L. M. (2011). The downstream externalities of harvesting rainwater in semi-arid watersheds: An Indian case study. \emph{Agricultural Water Management}, 98(7), 1162–1170.
 \bibitem{butler1997} Butler, J., Jia, J. y Dyer, J. (1997). Simulation techniques for the sensitivity analysis of multi-criteria decision models. \emph{European Journal of Operational Research}, 103(3), 531–546.
 \bibitem{chow1988} Chow, V. T., Maidment, D. R. y Mays, L. W. (1988). \emph{Applied Hydrology}. McGraw-Hill.
+\bibitem{conafor2023} CONAFOR (2023). \emph{Manual de restauración forestal}, 3.ª ed. CONAFOR, Zapopan.
+\bibitem{conafor2026} CONAFOR (2026). Reglas de Operación 2026 del Programa Desarrollo Forestal Sustentable para el Bienestar, concepto RF.1 Restauración Forestal. \emph{Diario Oficial de la Federación}.
+\bibitem{dof2017} CONAGUA (2017). Acuerdo por el que se dan a conocer los resultados del estudio técnico de las aguas nacionales superficiales en las cuencas hidrológicas Laguna Madre Norte, Río Potosí 1, Río Potosí 2, Río Camacho, Río Pablillo 1, Río Pablillo 2 y otras de la Región Hidrológica 25. \emph{Diario Oficial de la Federación}, 28 de julio de 2017.
 \bibitem{conagua_cba} CONAGUA (s. f.). \emph{Determinación de la disponibilidad de agua en el acuífero Campo Buenos Aires (1907), estado de Nuevo León}. Comisión Nacional del Agua, Subdirección General Técnica, Gerencia de Aguas Subterráneas.
 \bibitem{conagua_disp} CONAGUA (s. f.). \emph{Disponibilidad media de agua superficial por cuenca} [conjunto de datos]. Datos abiertos de la Comisión Nacional del Agua, consultado el 15 de octubre de 2026.
-\bibitem{conafor2026} CONAFOR (2026). Reglas de Operación 2026 del Programa Desarrollo Forestal Sustentable para el Bienestar, concepto RF.1 Restauración Forestal. \emph{Diario Oficial de la Federación}.
-\bibitem{conafor2023} Comisión Nacional Forestal (2023). \emph{Manual de restauración forestal}, 3.ª ed. CONAFOR, Zapopan.
 \bibitem{dantzig1957} Dantzig, G. B. (1957). Discrete-variable extremum problems. \emph{Operations Research}, 5(2), 266–288.
-\bibitem{gumbel1958} Gumbel, E. J. (1958). \emph{Statistics of Extremes}. Columbia University Press.
-\bibitem{ilstedt2016} Ilstedt, U. et al. (2016). Intermediate tree cover can maximize groundwater recharge in the seasonally dry tropics. \emph{Scientific Reports}, 6, 21930.
-\bibitem{inegi2021} INEGI (2021). \emph{Conjunto de datos vectoriales de uso del suelo y vegetación, escala 1:250 000, serie VII}. Instituto Nacional de Estadística y Geografía, Aguascalientes. Consultado en el servicio de mapas IDEFOR de CONAFOR.
-\bibitem{jain1984} Jain, R., Chiu, D.-M. y Hawe, W. R. (1984). \emph{A quantitative measure of fairness and discrimination for resource allocation in shared computer systems}. DEC-TR-301, Digital Equipment Corporation.
-\bibitem{ford1956} Ford, L. R. y Fulkerson, D. R. (1956). Maximal flow through a network. \emph{Canadian Journal of Mathematics}, 8, 399–404.
-\bibitem{dof2017} CONAGUA (2017). Acuerdo por el que se dan a conocer los resultados del estudio técnico de las aguas nacionales superficiales en las cuencas hidrológicas Laguna Madre Norte, Río Potosí 1, Río Potosí 2, Río Camacho, Río Pablillo 1, Río Pablillo 2 y otras de la Región Hidrológica 25. \emph{Diario Oficial de la Federación}, 28 de julio de 2017.
 \bibitem{eluniversal2023} El Universal (2023, 16 de diciembre). Inauguran AMLO y Samuel García acueducto El Cuchillo II. \emph{El Universal}.
+\bibitem{ford1956} Ford, L. R. y Fulkerson, D. R. (1956). Maximal flow through a network. \emph{Canadian Journal of Mathematics}, 8, 399–404.
 \bibitem{funk2015} Funk, C. et al. (2015). The climate hazards infrared precipitation with stations: a new environmental record for monitoring extremes. \emph{Scientific Data}, 2, 150066.
 \bibitem{glendenning2012} Glendenning, C. J., van Ogtrop, F. F., Mishra, A. K. y Vervoort, R. W. (2012). Balancing watershed and local scale impacts of rain water harvesting in India: A review. \emph{Agricultural Water Management}, 107, 1–13.
 \bibitem{gonzalez2023} González Garza, D. (2023, 24 de marzo). \emph{Análisis de la crisis de agua}. Grupo Legislativo del PAN, H. Congreso del Estado de Nuevo León. \url{https://www.hcnl.gob.mx/glpan/2023/03/analisis-de-la-crisis-de-agua.php}
 \bibitem{gorelick2017} Gorelick, N. et al. (2017). Google Earth Engine: Planetary-scale geospatial analysis for everyone. \emph{Remote Sensing of Environment}, 202, 18–27.
+\bibitem{gumbel1958} Gumbel, E. J. (1958). \emph{Statistics of Extremes}. Columbia University Press.
 \bibitem{horton1933} Horton, R. E. (1933). The role of infiltration in the hydrologic cycle. \emph{Transactions, American Geophysical Union}, 14(1), 446–460.
+\bibitem{ilstedt2016} Ilstedt, U. et al. (2016). Intermediate tree cover can maximize groundwater recharge in the seasonally dry tropics. \emph{Scientific Reports}, 6, 21930.
+\bibitem{inegi2021} INEGI (2021). \emph{Conjunto de datos vectoriales de uso del suelo y vegetación, escala 1:250 000, serie VII}. Instituto Nacional de Estadística y Geografía, Aguascalientes. Consultado en el servicio de mapas IDEFOR de CONAFOR.
+\bibitem{jain1984} Jain, R., Chiu, D.-M. y Hawe, W. R. (1984). \emph{A quantitative measure of fairness and discrimination for resource allocation in shared computer systems}. DEC-TR-301, Digital Equipment Corporation.
 \bibitem{jimenez2013} Jiménez Pérez, J., Treviño Garza, E. J. y Yerena Yamallel, J. I. (2013). Concentración de carbono en especies del bosque de pino-encino en la Sierra Madre Oriental. \emph{Revista Mexicana de Ciencias Forestales}, 4(17), 50–61.
 \bibitem{khuller1999} Khuller, S., Moss, A. y Naor, J. (1999). The budgeted maximum coverage problem. \emph{Information Processing Letters}, 70(1), 39–45.
 \bibitem{kim1999} Kim, D. y Pardalos, P. M. (1999). A solution approach to the fixed charge network flow problem using a dynamic slope scaling procedure. \emph{Operations Research Letters}, 24(4), 195–203.
-\bibitem{lgdfs2018} Ley General de Desarrollo Forestal Sustentable (2018). \emph{Diario Oficial de la Federación}, 5 de junio de 2018, artículo 127.
-\bibitem{lgeepa} Ley General del Equilibrio Ecológico y la Protección al Ambiente (1988, última reforma 2026). \emph{Diario Oficial de la Federación}, artículo 50.
+\bibitem{vanderknijff2000} van der Knijff, J. M., Jones, R. J. A. y Montanarella, L. (2000). \emph{Soil Erosion Risk Assessment in Europe}. EUR 19044 EN, European Soil Bureau, Joint Research Centre.
 \bibitem{lehner2013} Lehner, B. y Grill, G. (2013). Global river hydrography and network routing: baseline data and new approaches to study the world's large river systems. \emph{Hydrological Processes}, 27(15), 2171–2186.
 \bibitem{leskovec2007} Leskovec, J. et al. (2007). Cost-effective outbreak detection in networks. En \emph{Proceedings of the 13th ACM SIGKDD}, 420–429.
+\bibitem{lgdfs2018} Ley General de Desarrollo Forestal Sustentable (2018). \emph{Diario Oficial de la Federación}, 5 de junio de 2018, artículo 127.
+\bibitem{lgeepa} Ley General del Equilibrio Ecológico y la Protección al Ambiente (1988, última reforma 2026). \emph{Diario Oficial de la Federación}, artículo 50.
 \bibitem{malczewski2006} Malczewski, J. (2006). GIS-based multicriteria decision analysis: a survey of the literature. \emph{International Journal of Geographical Information Science}, 20(7), 703–726.
+\bibitem{martinez2022} Martínez Chacón, M. (2022, 21 de junio). Monterrey suffers weeks-long water cutoff amid drought. \emph{Associated Press}.
 \bibitem{mccool1987} McCool, D. K., Brown, L. C., Foster, G. R., Mutchler, C. K. y Meyer, L. D. (1987). Revised slope steepness factor for the Universal Soil Loss Equation. \emph{Transactions of the ASAE}, 30(5), 1387–1396.
 \bibitem{nemhauser1978} Nemhauser, G. L., Wolsey, L. A. y Fisher, M. L. (1978). An analysis of approximations for maximizing submodular set functions, I. \emph{Mathematical Programming}, 14, 265–294.
-\bibitem{martinez2022} Martínez Chacón, M. (2022, 21 de junio). Monterrey suffers weeks-long water cutoff amid drought. \emph{Associated Press}.
-\bibitem{nom059} SEMARNAT (2010). Norma Oficial Mexicana NOM-059-SEMARNAT-2010, Protección ambiental. Especies nativas de México de flora y fauna silvestres. \emph{Diario Oficial de la Federación}, 30 de diciembre de 2010.
 \bibitem{ocallaghan1984} O'Callaghan, J. F. y Mark, D. M. (1984). The extraction of drainage networks from digital elevation data. \emph{Computer Vision, Graphics, and Image Processing}, 28(3), 323–344.
 \bibitem{ramirez2013} Ramírez-Lozano, R. G., Domínguez-Gómez, T. G., González-Rodríguez, H., Cantú-Silva, I., Gómez-Meza, M. V., Sarquís-Ramírez, J. I. y Jurado, E. (2013). Composición y diversidad de la vegetación en cuatro sitios del noreste de México. \emph{Madera y Bosques}, 19(2), 59–72.
 \bibitem{renard1994} Renard, K. G. y Freimund, J. R. (1994). Using monthly precipitation data to estimate the R-factor in the revised USLE. \emph{Journal of Hydrology}, 157, 287–306.
 \bibitem{renard1997} Renard, K. G., Foster, G. R., Weesies, G. A., McCool, D. K. y Yoder, D. C. (1997). \emph{Predicting Soil Erosion by Water: A Guide to Conservation Planning with the Revised Universal Soil Loss Equation (RUSLE)}. Agriculture Handbook 703, USDA.
 \bibitem{rouse1974} Rouse, J. W., Haas, R. H., Schell, J. A. y Deering, D. W. (1974). Monitoring vegetation systems in the Great Plains with ERTS. \emph{NASA SP-351}, 309–317.
-\bibitem{sadm2023} Servicios de Agua y Drenaje de Monterrey (2023). \emph{Nuevo León informa: suministro de agua}, 10 de mayo de 2023. SADM, Monterrey.
 \bibitem{scanlon2006} Scanlon, B. R., Keese, K. E., Flint, A. L., Flint, L. E., Gaye, C. B., Edmunds, W. M. y Simmers, I. (2006). Global synthesis of groundwater recharge in semiarid and arid regions. \emph{Hydrological Processes}, 20(15), 3335–3370.
-\bibitem{ser2004} Society for Ecological Restoration International Science \& Policy Working Group (2004). \emph{The SER International Primer on Ecological Restoration}. Society for Ecological Restoration International, Tucson.
+\bibitem{nom059} SEMARNAT (2010). Norma Oficial Mexicana NOM-059-SEMARNAT-2010, Protección ambiental. Especies nativas de México de flora y fauna silvestres. \emph{Diario Oficial de la Federación}, 30 de diciembre de 2010.
+\bibitem{sadm2023} Servicios de Agua y Drenaje de Monterrey (2023). \emph{Nuevo León informa: suministro de agua}, 10 de mayo de 2023. SADM, Monterrey.
 \bibitem{shanafield2014} Shanafield, M. y Cook, P. G. (2014). Transmission losses, infiltration and groundwater recharge through ephemeral and intermittent streambeds: A review of applied methods. \emph{Journal of Hydrology}, 511, 518–529.
-\bibitem{scs1986} USDA Soil Conservation Service (1986). \emph{Urban Hydrology for Small Watersheds}. Technical Release 55.
-\bibitem{vanderknijff2000} van der Knijff, J. M., Jones, R. J. A. y Montanarella, L. (2000). \emph{Soil Erosion Risk Assessment in Europe}. EUR 19044 EN, European Soil Bureau, Joint Research Centre.
+\bibitem{ser2004} Society for Ecological Restoration International Science \& Policy Working Group (2004). \emph{The SER International Primer on Ecological Restoration}. Society for Ecological Restoration International, Tucson.
 \bibitem{thrasher2022} Thrasher, B., Wang, W., Michaelis, A., Melton, F., Lee, T. y Nemani, R. (2022). NASA Global Daily Downscaled Projections, CMIP6. \emph{Scientific Data}, 9, 262.
 \bibitem{wdpa} UNEP-WCMC y UICN (2026). \emph{Protected Planet: The World Database on Protected Areas (WDPA)}. UNEP-WCMC, Cambridge. Consultado en Google Earth Engine.
+\bibitem{scs1986} USDA Soil Conservation Service (1986). \emph{Urban Hydrology for Small Watersheds}. Technical Release 55.
 \bibitem{walling1983} Walling, D. E. (1983). The sediment delivery problem. \emph{Journal of Hydrology}, 65(1–3), 209–237.
 \bibitem{williams1995} Williams, J. R. (1995). The EPIC model. En V. P. Singh (ed.), \emph{Computer Models of Watershed Hydrology}, 909–1000. Water Resources Publications.
 \bibitem{wischmeier1978} Wischmeier, W. H. y Smith, D. D. (1978). \emph{Predicting Rainfall Erosion Losses: A Guide to Conservation Planning}. Agriculture Handbook 537, USDA.
@@ -1049,7 +1049,7 @@ con $\gamma\approx0.5772$ la constante de Euler y Mascheroni; igualándolos a la
 
 \subsection{Frontera entre agua y equidad}\label{sec:pareto}
 
-Para transitar de forma continua entre los modos \emph{máxima agua total} y \emph{repartir entre presas}, se exige que cada fuente $g\in\mathcal G$ reciba al menos $\alpha H/4$ hectáreas, con $\alpha\in[0,1]$, y el presupuesto restante se asigna con el problema de optimización global. La equidad entre las cuatro fuentes se mide con el índice de equidad de Jain (\emph{Jain's fairness index}, \citar{jain1984}) sobre el agua $q_g$ (L/s) que recibe cada una,
+Para transitar de forma continua entre los modos \emph{máxima agua total} y \emph{repartir entre fuentes}, se exige que cada fuente $g\in\mathcal G$ reciba al menos $\alpha H/4$ hectáreas, con $\alpha\in[0,1]$, y el presupuesto restante se asigna con el problema de optimización global. La equidad entre las cuatro fuentes se mide con el índice de equidad de Jain (\emph{Jain's fairness index}, \citar{jain1984}) sobre el agua $q_g$ (L/s) que recibe cada una,
 \begin{equation}
 J=\frac{\left(\sum_{g\in\mathcal G} q_g\right)^2}{4\sum_{g\in\mathcal G} q_g^2}\in\left[\tfrac14,1\right],
 \end{equation}
@@ -1076,7 +1076,7 @@ que vale 1 cuando todas reciben lo mismo y $1/4$ cuando una sola recibe toda el 
 
 \grafica{g9_incertidumbre}{Incertidumbre del agua bruta retenida}{Distribución del agua retenida con 3,000 ha en 2,000 escenarios de parámetros (sección~\ref{sec:incertidumbre}). Fuente: elaboración propia.}
 
-\lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen 44 L/s (intervalo de 90\% de 26 a 68 L/s); con el reparto entre presas, 39 L/s (de 23 a 62 L/s). La selección es estable: 91\% de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
+\lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen 44 L/s (intervalo de 90\% de 26 a 68 L/s); con el reparto entre fuentes, 39 L/s (de 23 a 62 L/s). La selección es estable: 91\% de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
 
 \grafica{g10_duales}{Precios sombra}{Izquierda: variable dual $\lambda^\ast$ de la restricción de presupuesto, en L/s por cada 1,000 ha adicionales, según el presupuesto. Derecha: m³ retenidos por cada m³ de almacenamiento agregado como capacidad o como metros nuevos, con tormentas de 10 y de 40 mm, en el sitio de la figura~\ref{fig:m3_barreras}. Fuente: elaboración propia.}
 
@@ -1094,7 +1094,7 @@ que vale 1 cuando todas reciben lo mismo y $1/4$ cuando una sola recibe toda el 
 
 \subsection{Precios sombra del almacenamiento (complemento de P6)}
 
-\lectura{Los precios sombra de la figura~\ref{fig:g10_duales} confirman este resultado. Con 10 mm se llenan 100\% de las barreras, y con 40 mm, 100\%. Cada m³ de almacenamiento agregado como metros nuevos retiene 1.00 m³ (40 mm) y 1.00 m³ (10 mm), porque las barreras nuevas también se llenan. Agregado como capacidad adicional en las mismas barreras, el rendimiento es menor, de 0.84 y 0.77 m³ por m³, porque algunas no reciben agua suficiente para ocupar el espacio adicional.}
+\lectura{Los precios sombra de la figura~\ref{fig:g10_duales} confirman este resultado. Con tormentas de 10 y de 40 mm se llenan 100\% y 100\% de las barreras, respectivamente, y cada m³ de almacenamiento agregado como metros nuevos retiene 1.00 m³, porque las barreras nuevas también se llenan. Agregado como capacidad adicional en las mismas barreras, el rendimiento es menor, de 0.84 y 0.77 m³ por m³, porque algunas no reciben agua suficiente para ocupar el espacio adicional.}
 
 
 \subsection{P7 · Efecto durante una tormenta}\label{res:p7}
@@ -1111,9 +1111,9 @@ que vale 1 cuando todas reciben lo mismo y $1/4$ cuando una sola recibe toda el 
 Los parámetros que más influyen en la ganancia neta (sección~\ref{res:p9}) pueden medirse. Se propone un diseño antes y después con control e impacto (\emph{before-after control-impact}, BACI) en los 8 sitios sugeridos y en laderas testigo vecinas sin obras, con tres mediciones:
 
 \begin{itemize}
-  \item \textbf{Escurrimiento que ya llega, $\tau_g$.} Pares de microcuencas de 1 a 5 ha, una con barreras y una testigo, con vertedores aforadores en la salida. La diferencia de volumen escurrido por tormenta, antes y después de construir, mide la fracción del escurrimiento que las obras retienen y cuánto de ella habría salido de la ladera.
+  \item \textbf{Escurrimiento que ya llega, $\tau_g$.} Pares de microcuencas de 1 a 5 ha, una con barreras y una testigo, con vertedores aforadores en la salida. La diferencia de volumen escurrido por tormenta, antes y después de construir, mide la fracción del escurrimiento que las obras retienen y cuánto de ella habría salido de la ladera. Como $\tau_g$ es el parámetro más influyente en la cuenca de Cerro Prieto, conviene instrumentar también pares de microcuencas en ella, además de los ocho sitios del Santa Catarina.
   \item \textbf{Evapotranspiración del agua infiltrada, $e_g$.} Perfiles de humedad del suelo a 30, 60 y 100 cm detrás de las barreras y en las testigo. El agua que drena por debajo de la zona de raíces escapa a la evapotranspiración; la recarga puede estimarse también con el balance de masa de cloruro, el método más usado en zonas semiáridas \citap{scanlon2006}.
-  \item \textbf{Fracción que llega al acuífero, $\phi_g$.} Piezómetros ladera abajo de los sitios del Santa Catarina y la serie de niveles de los pozos de SADM, para detectar la respuesta del acuífero a las tormentas.
+  \item \textbf{Fracción que llega al acuífero, $\phi_g$.} Piezómetros ladera abajo de los sitios y la serie de niveles de los pozos de SADM, para detectar la respuesta del acuífero a las tormentas.
 \end{itemize}
 
 El número de pares necesario se obtiene de una prueba de diferencia de medias. Para detectar una diferencia relativa $\delta$ entre sitios con y sin obras, con coeficiente de variación $\text{CV}$ entre sitios, nivel de significancia $\alpha$ y potencia $1-\beta$,

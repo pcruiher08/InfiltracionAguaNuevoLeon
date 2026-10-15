@@ -13,7 +13,7 @@
     <input type="range" id="op-ha" min="500" max="20000" step="500" value="3000">
     <div class="seg" style="margin-top:6px">
       <label><input type="radio" name="op-mode" value="max" checked><span>Máxima agua total</span></label>
-      <label><input type="radio" name="op-mode" value="balanced"><span>Repartir entre presas</span></label>
+      <label><input type="radio" name="op-mode" value="balanced"><span>Repartir entre fuentes</span></label>
       <label><input type="radio" name="op-mode" value="net"><span>Máxima ganancia neta</span></label>
     </div>
     <button id="op-run">Optimizar</button>

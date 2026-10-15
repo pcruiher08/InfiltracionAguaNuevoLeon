@@ -115,7 +115,7 @@
         <span><i style="border-top:2px solid ${DRAIN}"></i>Escurrimiento concentrado (DEM 30 m)</span>
         <span><i style="border-top:2px dashed ${DARK}"></i>Ventana de análisis</span>
       </div>
-      <div class="muted bp-note">Trazo preliminar con DEM de 30 m — validar en campo con levantamiento topográfico o dron.</div>
+      <div class="muted bp-note">Trazo preliminar con DEM de 30 m: validar en campo con levantamiento topográfico o dron.</div>
       <details><summary>Supuestos del cálculo</summary><ul class="muted">${r.notes.slice(1).map(n => `<li>${n}</li>`).join("")}</ul></details>
       <button id="bp-dl" class="bp-dl" type="button">Descargar barreras (GeoJSON)</button>`;
     out.querySelector("#bp-dl").onclick = download;

@@ -22,7 +22,15 @@ ORDER = ["Presa La Boca", "Acuífero Santa Catarina (pozos SADM)", "Presa Cerro 
 
 def n(v, d=0):
     s = f"{v:,.{d}f}"
+    if s.startswith("-"):
+        s = "\u2212" + s[1:] if s.strip("-0.,") else s[1:]
     return s
+
+
+def sg(v, d=1):
+    """Signed number with a true minus sign."""
+    s = f"{v:+.{d}f}"
+    return s.replace("-", "\u2212") if s.strip("+-0.") else s[1:]
 
 
 def pct(v, d=0):
@@ -75,7 +83,7 @@ for k in ORDER:
 
 V = {
     "alta": n(alta), "media": n(media), "robusta": n(robusta), "robusta_pct": pct(100 * robusta / alta),
-    "directa": n(directa), "directa_pct": pct(100 * directa / alta), "quemada": n(S.get("burned_high", EX["quemada_ha"])),
+    "directa": n(directa), "directa_pct": pct(100 * directa / alta), "quemada": n(S["burned_high"]),
     "p50": f"{S['class_percentiles']['priority_p50']:.2f}", "p80": f"{S['class_percentiles']['priority_p80']:.2f}",
     "sc_alta": n(hc["Acuífero Santa Catarina (pozos SADM)"]["alta"]), "lb_alta": n(hc["Presa La Boca"]["alta"]),
     "c_veg_a": f"{crit['alta']['vegetation']:.2f}", "c_veg_b": f"{crit['baja']['vegetation']:.2f}",
@@ -94,9 +102,10 @@ V = {
     "b500": f"{min(b500):.0f} a {max(b500):.0f}\\%", "b1500": f"{min(b1500):.0f} a {max(b1500):.0f}\\%", "b3000": f"{min(b3000):.0f} a {max(b3000):.0f}\\%",
     "avg_out": pct(avg_out), "avg_peak": pct(avg_peak), "inf_lo": n(inf_lo), "inf_hi": n(inf_hi),
     "best_out": pct(max(r["outflow_reduction_pct"] for r in storm)),
-    "gain_max": f"{gain_max:.1f}", "gain_40": f"{min(gain_40):+.1f} a {max(gain_40):+.1f}",
+    "gain_max": f"{gain_max:.1f}", "gain_40": f"{sg(min(gain_40), 1)} a {sg(max(gain_40), 1)}",
     "ret5": f"{min(ret5):.0f} a {max(ret5):.0f}\\%", "ret40": f"{min(ret40):.1f} a {max(ret40):.1f}\\%",
-    "rho": " · ".join(f"{r:,} mm: {100 * f:.0f}\\%" for r, f in zip(EX["retention"]["rain"], EX["retention"]["frac"])),
+    "rho": ", ".join(f"{100 * f:.0f}\\%" for f in EX["retention"]["frac"][:-1]) + f" y {100 * EX['retention']['frac'][-1]:.0f}\\% para "
+           + ", ".join(f"{r:,}" for r in EX["retention"]["rain"][:-1]) + f" y {EX['retention']['rain'][-1]:,} mm",
     "opt_rows": "\n".join(opt_rows), "sites_rows": "\n".join(sites_rows),
     "sitios_parque": n(sum(1 for s in SITES if s["why"].get("park") == "Cumbres de Monterrey")),
     "max_tot_ls": n(ls(mx["m3"]), 1), "bal_tot_ls": n(ls(bal["m3"]), 1),
@@ -149,14 +158,14 @@ for name in ORDER:
     extra = " ($\\times k_{\\text{EC}}$)" if ab == "ec" else ""
     prior_rows.append(f"{SHORT[name]}{extra} & $\\mathcal U({dec(DE['e_min'])},\\,{dec(et)})$ & $\\mathcal U({dec(ph[0])},\\,{dec(ph[1])})$ & $\\mathcal U({dec(ta[0])},\\,{dec(ta[1])})$ \\\\")
     f = DE["factor"][name]; fo = DE["factor_optimista"][name]
-    V.update({f"et_{ab}": pct(100 * et), f"g_{ab}": f"{f['mean']:+.2f}".replace("+", ""), f"pg_{ab}": pct(f["p_pos"]),
-              f"go_{ab}": f"{fo['mean']:.2f}", f"pgo_{ab}": pct(fo["p_pos"], 1)})
+    V.update({f"et_{ab}": pct(100 * et), f"g_{ab}": f"{sg(f['mean'], 2)}".replace("+", ""), f"pg_{ab}": pct(f["p_pos"]),
+              f"go_{ab}": n(fo["mean"], 2), f"pgo_{ab}": pct(fo["p_pos"], 1)})
 SEL = DE["selections"]
 lab = {"bruta": "Máximo de agua bruta", "neta": "Máxima ganancia neta esperada"}
 neta_rows = []
 for key in ("bruta_3000", "neta_3000", "bruta_30000", "neta_30000"):
     r = SEL[key]; kind, H = key.split("_")
-    neta_rows.append(f"{lab[kind]}, {n(int(H))} ha & {n(r['gross_ls'])} & {n(r['net_ls'][1])} & {n(r['net_ls'][0])} a {n(r['net_ls'][2])} & {pct(r['p_pos'])} \\\\")
+    neta_rows.append(f"{lab[kind]}, {n(int(H))} ha & {n(r['gross_ls'])} & {n(r['net_mean'], 1)} & {n(r['net_ls'][1])} & {n(r['net_ls'][0])} a {n(r['net_ls'][2])} & {pct(r['p_pos'])} \\\\")
 nice = {"f_C": "el coeficiente de escurrimiento", "kappa": "la capacidad por metro", "b": "el sesgo de CHIRPS", "k_EC": "la conectividad de El Cuchillo"}
 def pname(lbl):
     if lbl in nice: return nice[lbl]
@@ -227,22 +236,23 @@ a3, a30 = PR["neta_3000"], PR["neta_30000"]
 anp_rows = [f"{k} & {n(a3.get(k, 0))} & {n(a30.get(k, 0))} \\\\" for k in sorted(set(a3) | set(a30), key=lambda k: -a30.get(k, 0))]
 cum = "Cumbres de Monterrey (Parque Nacional)"
 sit = [i for i, s in enumerate(SITES, 1) if s["why"].get("park") == "Cumbres de Monterrey"]
-sit_txt = f"{len(sit)} de los 8 sitios sugeridos están dentro del parque." if sit else "Ninguno de los 8 sitios sugeridos está dentro del parque."
+WORDS = ["Ninguno", "Uno", "Dos", "Tres", "Cuatro", "Cinco", "Seis", "Siete", "Ocho"]
+sit_txt = f"{WORDS[len(sit)]} de los ocho sitios sugeridos están dentro del parque." if sit else "Ninguno de los 8 sitios sugeridos está dentro del parque."
 fq = lambda v: pct(100 * v)
 def crow(lbl, f):
     return f"{lbl} & {f('ssp245')} & {f('ssp585')} \\\\"
 clima_rows = [
-    crow("Cambio de la lluvia media de julio a junio", lambda sc: f"{CL[sc]['change_median']:+.1f}\\% ({CL[sc]['change_range'][0]:+.1f} a {CL[sc]['change_range'][1]:+.1f})"),
+    crow("Cambio de la lluvia media de julio a junio", lambda sc: f"{sg(CL[sc]['change_median'], 1)}\\% ({sg(CL[sc]['change_range'][0], 1)} a {sg(CL[sc]['change_range'][1], 1)})"),
     crow(f"Frecuencia de un año como 2021 a 2022 (histórica: {fq(CL['q_star'])})", lambda sc: f"{fq(CL[sc]['freq_median'])} ({fq(CL[sc]['freq_range'][0])} a {fq(CL[sc]['freq_range'][1])})"),
     crow("Modelos con sequías más frecuentes", lambda sc: f"{CL[sc]['models_more_droughts']} de {CL['n_models']}"),
-    crow("Cambio del agua bruta con 3,000 ha", lambda sc: f"{CL[sc]['gross_change_pct']:+.1f}\\%")]
+    crow("Cambio del agua bruta con 3,000 ha", lambda sc: f"{sg(CL[sc]['gross_change_pct'], 1)}\\%")]
 V.update({"anp_rows": "\n".join(anp_rows), "anp_cumbres3": n(a3.get(cum, 0)), "anp_cumbres30": n(a30.get(cum, 0)), "anp_sitios": sit_txt,
           "anp_resp": f"La superficie más valiosa para el abasto está dentro del Parque Nacional Cumbres de Monterrey: {n(a3.get(cum, 0))} de las 3,000 ha y {n(a30.get(cum, 0))} de las 30,000 ha seleccionadas por ganancia neta. La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.",
           "clima_nmod": str(CL["n_models"]), "clima_rows": "\n".join(clima_rows), "clima_p21": n(CL["chirps"]["p_2021_22"]),
           "clima_pm": n(CL["chirps"]["mean"]), "clima_q": fq(CL["q_star"]), "clima_T": n(1 / CL["q_star"]),
           "clima_more245": str(CL["ssp245"]["models_more_droughts"]), "clima_more585": str(CL["ssp585"]["models_more_droughts"]),
           "clima_f245": fq(CL["ssp245"]["freq_median"]), "clima_f585": fq(CL["ssp585"]["freq_median"]),
-          "clima_g245": f"{CL['ssp245']['gross_change_pct']:+.1f}\\%", "clima_g585": f"{CL['ssp585']['gross_change_pct']:+.1f}\\%"})
+          "clima_g245": f"{sg(CL['ssp245']['gross_change_pct'], 1)}\\%", "clima_g585": f"{sg(CL['ssp585']['gross_change_pct'], 1)}\\%"})
 
 # ---------------------------------------------------------------- Campo Buenos Aires aquifer (CONAGUA, DR 1907)
 AQ = {"recarga": 57.0, "concesion": 62.803450, "area_trib": 1120, "area_recarga": 450}

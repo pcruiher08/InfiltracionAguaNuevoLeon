@@ -82,7 +82,7 @@
       <div class="stat" style="margin-top:6px"><span></span><b>Sin</b><b>Con</b></div>
       ${kv("Sale de la ventana", fmt(a.outflow) + " m³", fmt(b.outflow) + " m³")}
       ${kv("Infiltra en ladera", fmt(a.infiltrated_hill) + " m³", fmt(b.infiltrated_hill) + " m³")}
-      ${kv("Infiltra tras obras", "—", fmt(b.infiltrated_works) + " m³")}
+      ${kv("Infiltra tras obras", "no aplica", fmt(b.infiltrated_works) + " m³")}
       <details><summary>Cómo funciona</summary><ul class="muted">${sim.notes.map(n => `<li>${n}</li>`).join("")}
         <li>El agua que sale puede superar la lluvia sobre la ventana porque también entra escurrimiento desde ladera arriba.</li></ul></details>`;
     panel.querySelectorAll("input[name=sim-s]").forEach(r => r.onchange = () => { scen = r.value; draw(); });

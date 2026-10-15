@@ -14,7 +14,7 @@ En lo más crítico de 2022 (junio y julio), Cerro Prieto y La Boca bajaron a me
 
 **Demo en línea (versión estática):** https://pcruiher08.github.io/InflitracionAguaNuevoLeon/ : prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
 
-**Informe técnico en PDF (36 páginas, diez preguntas de investigación):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Orden para regenerar los análisis: `matematicas.py`, `abasto.py`, `destino.py`, `vegetacion.py`, `calibracion.py` (y `--posterior`), `costo.py`, `sedimento.py`, `clima.py`, `figuras.py`, `mapas.py`, `generar.py` y `tectonic informe.tex`. Las figuras de este README salen de ese informe.
+**Informe técnico en PDF (52 páginas con apéndices, trece preguntas de investigación):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Para regenerar todo desde los datos: `bash informe/regenerar.sh` (Earth Engine, 1 a 2 horas); sólo figuras y PDF desde los JSON guardados: `bash informe/regenerar.sh --pdf`.
 
 ---
 
@@ -130,11 +130,11 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 4. **Agua que llega al abasto:** el agua retenida se multiplica por la conexión con la fuente (1.0 si drena directo a La Boca, Cerro Prieto o Santa Catarina; 0.6 en el resto de El Cuchillo). Cada celda se asigna a su fuente de abasto.
 5. **Optimización:** dado un presupuesto de hectáreas, se eligen las celdas con más **m³ entregados por hectárea**. Es un programa lineal con una sola restricción de presupuesto; ordenar por rendimiento por hectárea es **óptimo** cuando las celdas se pueden tratar parcialmente. Hay dos modos:
     - **Máxima agua total:** el óptimo puro.
-    - **Repartir entre presas:** el presupuesto se divide en partes iguales entre las 4 fuentes y se optimiza dentro de cada una.
+    - **Repartir entre fuentes:** el presupuesto se divide en partes iguales entre las 4 fuentes y se optimiza dentro de cada una.
 
 **Resultado con 3,000 ha (agua bruta: cota superior, supone que toda el agua retenida llega a la fuente; ver sección 9):**
 
-| Fuente | Máxima agua total | | Repartir entre presas | |
+| Fuente | Máxima agua total | | Repartir entre fuentes | |
 |---|---|---|---|---|
 | Presa La Boca | 137 ha | 0.06 M m³ | 750 ha | 0.32 M m³ |
 | Acuífero Santa Catarina (pozos SADM) | 2,659 ha | 1.25 M m³ | 750 ha | 0.37 M m³ |
@@ -152,7 +152,7 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 - **Santa Catarina rinde más por hectárea:** La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las barreras.
 - **El Cuchillo rinde menos:** su conexión con el abasto vale 0.6.
 - **Repartir cuesta poco:** cubrir las 4 fuentes da ~10 % menos agua total que el óptimo puro.
-- **Máxima ganancia neta** (nuevo modo en la app y en la versión estática): selecciona sólo celdas donde la fuente gana agua en promedio. Con 3,000 ha, todas en el Santa Catarina: 44 L/s brutos y **+3 L/s netos esperados**. Con los otros dos modos la ganancia neta es de +1 L/s (máxima agua) y −8 L/s (repartir entre presas), porque incluyen cuencas de presas.
+- **Máxima ganancia neta** (nuevo modo en la app y en la versión estática): selecciona sólo celdas donde la fuente gana agua en promedio. Con 3,000 ha, todas en el Santa Catarina: 44 L/s brutos y **+3 L/s netos esperados**. Con los otros dos modos la ganancia neta es de +1 L/s (máxima agua) y −8 L/s (repartir entre fuentes), porque incluyen cuencas de presas.
 
 > Los m³ son **agua retenida bruta**, una cota superior: suponen que toda el agua retenida llega a la fuente. El informe en PDF incluye un análisis probabilístico de su destino (evapotranspiración y escurrimiento que ya llegaba a las presas): la ganancia neta es probablemente positiva sólo en el acuífero del Santa Catarina (~67 %), y en las cuencas de las presas la retención probablemente reduce el volumen que llega al embalse.
 
@@ -278,10 +278,10 @@ Los 8 sitios sugeridos **no se eligen a mano**. Salen de la **optimización por 
 | # | Lugar en la optimización | m³/ha/año brutos | m³/ha/año netos | Lluvia · coef. escurrimiento | Prioridad · robustez | Obra recomendada | Barreras · m · % interceptado | Área protegida |
 |---|---|---|---|---|---|---|---|---|
 | 1 | #3 | 500 | +33 | 642 mm · 0.6 | 0.57 · 38% | Reforestación con nativas + barreras de material vegetal | 35 · 1,482 m · 70% | Cumbres de Monterrey |
-| 2 | #5 | 386 | +33 | 665 mm · 0.582 | 0.74 · 98% | Barreras de piedra acomodada | 40 · 1,497 m · 53% | C.A.D.N.R. 026 Bajo Río San Juan |
+| 2 | #5 | 386 | +33 | 665 mm · 0.582 | 0.73 · 96% | Barreras de piedra acomodada | 40 · 1,497 m · 53% | C.A.D.N.R. 026 Bajo Río San Juan |
 | 3 | #8 | 487 | +33 | 635 mm · 0.587 | 0.55 · 35% | Reforestación con nativas + barreras de material vegetal | 38 · 1,486 m · 69% | Cumbres de Monterrey |
 | 4 | #12 | 473 | +32 | 673 mm · 0.567 | 0.62 · 68% | Barreras de piedra acomodada | 36 · 1,498 m · 66% | Cumbres de Monterrey |
-| 5 | #15 | 382 | +32 | 673 mm · 0.561 | 0.53 · 33% | Barreras de material vegetal muerto en curvas de nivel | 40 · 1,499 m · 68% | Cumbres de Monterrey |
+| 5 | #15 | 382 | +32 | 673 mm · 0.561 | 0.51 · 25% | Barreras de material vegetal muerto en curvas de nivel | 40 · 1,499 m · 68% | Cumbres de Monterrey |
 | 6 | #18 | 478 | +32 | 677 mm · 0.558 | 0.58 · 51% | Reforestación con nativas + barreras de material vegetal | 40 · 1,491 m · 55% | Cumbres de Monterrey |
 | 7 | #21 | 475 | +32 | 642 mm · 0.569 | 0.57 · 50% | Reforestación con nativas + barreras de material vegetal | 35 · 1,493 m · 61% | Cumbres de Monterrey |
 | 8 | #32 | 468 | +31 | 655 mm · 0.556 | 0.66 · 81% | Reforestación con nativas + barreras de material vegetal | 39 · 1,497 m · 57% | Cumbres de Monterrey |
@@ -318,6 +318,11 @@ En cada sitio, el optimizador elige las barreras así:
 | Humedad del suelo | NASA SMAP L4 v8 | Humedad superficial en temporada seca |
 | Cuencas | WWF HydroSHEDS / HydroBASINS nivel 12 | Delimitar cuencas de abasto y conectividad |
 | Agua superficial | JRC Global Surface Water 1.4 | Ubicar las presas |
+| Evapotranspiración | MODIS MOD16A2GF | Destino del agua retenida (2015 a 2024) |
+| Uso del suelo y vegetación | INEGI serie VII, 1:250,000 (vía CONAFOR IDEFOR) | Tipo de vegetación de referencia |
+| Áreas protegidas | WDPA (UNEP-WCMC y UICN) | Parque Nacional Cumbres de Monterrey y otras |
+| Clima futuro | NASA NEX-GDDP-CMIP6 | Frecuencia de sequías 2041 a 2070 |
+| Balance hídrico | CONAGUA: escurrimiento natural por cuenca y disponibilidad del acuífero Campo Buenos Aires | Calibración y contraste |
 | Mapa base | Esri Light Gray Canvas + World Hillshade | Visualización |
 
 ---
@@ -330,12 +335,12 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 2. **La conexión con el abasto pesa según la ganancia neta.** El Santa Catarina, donde la recarga es agua nueva para los pozos de SADM, puntúa 1.0; las cuencas de las presas, 0.5. ~**66,100 ha (83 %)** de la prioridad alta están en las cuencas de La Boca, Cerro Prieto o Santa Catarina.
 3. **La prioridad es robusta.** ~**56,500 ha (71 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
 4. **Los incendios abren una ventana de acción.** ~**14,800 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
-5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈400 L/s brutos) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero del Santa Catarina**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
+5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero del Santa Catarina**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
     - Para maximizar agua: **Santa Catarina**, que además es donde la ganancia neta es más probable.
-    - Para cubrir todas las fuentes: repartir cuesta ~10 % del agua total.
+    - Para cubrir todas las fuentes: repartir cuesta ~10 % del agua bruta, pero en ganancia neta el reparto es negativo (−8 L/s con 3,000 ha), porque asigna superficie a las cuencas de las presas.
 7. **Las laderas muy empinadas no son para obras.** Por encima de ~35–45° conviene la exclusión y la regeneración natural.
-8. **El trazo importa tanto como el sitio.** Con 1,500 m de barreras bien ubicadas se intercepta el escurrimiento de ~45–75 % de una ventana de 1.2 km, y los rendimientos decrecen. Conviene repartir el presupuesto entre varios sitios en lugar de saturar uno.
+8. **El trazo importa en tormentas frecuentes; en las grandes manda la capacidad.** Con 1,500 m de barreras se intercepta el escurrimiento de buena parte de una ventana de 1.2 km y los rendimientos decrecen, pero en tormentas de 40 mm, que ocurren casi cada año, todas las barreras se llenan y retienen sólo ~4 %: para retener más hay que agregar almacenamiento. Conviene repartir el presupuesto entre varios sitios en lugar de saturar uno.
 
 ---
 
@@ -344,10 +349,10 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 - **El índice es relativo.** No estima metros cúbicos infiltrados.
 - **El DEM de 30 m no resuelve el intervalo vertical de 1 m.** El trazo de barreras es **preliminar** y debe validarse en campo con levantamiento topográfico o dron.
 - **La textura del suelo de OpenLandMap casi no varía en la zona** (todo es franco arcilloso). Un mapa edafológico de INEGI o de Pronatura mejoraría este criterio.
-- **Hay supuestos sin calibrar:** el coeficiente de escurrimiento, la capacidad de las barreras (1.44 m³/m), las fracciones del destino del agua retenida, los niveles de conectividad, los umbrales de cárcava (5 ha) y cauce (100 ha), y la retención por barrera (60 %). Son parámetros explícitos en el código.
+- **Hay supuestos sin calibrar:** el coeficiente de escurrimiento sólo se calibró con la cuenca de Cerro Prieto (sección 11); también son supuestos la capacidad de las barreras (1.44 m³/m), las fracciones del destino del agua retenida, los niveles de conectividad, los umbrales de cárcava (5 ha) y cauce (100 ha), y la retención por barrera (60 %). Son parámetros explícitos en el código.
 - **SMAP** tiene resolución gruesa (~9 km) y **MODIS** detecta área quemada a 500 m.
 - **El optimizador no excluye** caminos, construcciones ni cobertura dentro de la ventana, y no considera el acceso.
-- **No se verifican las restricciones de ANP** (Parque Nacional Cumbres de Monterrey). La ficha lo señala como riesgo a revisar.
+- **Áreas protegidas sin zonificación:** las celdas y sitios se intersectan con los polígonos de la WDPA, pero no con la zonificación del Parque Nacional Cumbres de Monterrey, cuyo programa de manejo no se encontró publicado. Las obras dentro del parque requieren autorización de la CONANP.
 
 ---
 

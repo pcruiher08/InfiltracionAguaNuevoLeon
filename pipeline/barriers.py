@@ -357,7 +357,7 @@ def optimize(lon, lat, budget_m=1500, window_m=1200):
             "check_dam_m": CHECK_DAM_M, "efficiency": EFFICIENCY,
         },
         "notes": [
-            "Trazo preliminar con DEM de 30 m — validar en campo con levantamiento topográfico o dron.",
+            "Trazo preliminar con DEM de 30 m: validar en campo con levantamiento topográfico o dron.",
             f"Curvas candidatas cada {interval} m de desnivel (el DEM de 30 m no resuelve el "
             f"intervalo nominal de 1 m; en campo, trazar líneas intermedias a ~{spacing_nominal:.0f} m).",
             "Valor = área ladera arriba cuyo escurrimiento cruza la obra (relativo, no volumen).",

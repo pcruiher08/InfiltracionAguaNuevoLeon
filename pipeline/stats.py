@@ -141,7 +141,7 @@ if __name__ == "__main__":
     layers.init()
     stats = {}
     for name, fn in [("ha_by_catchment", ha_by_catchment), ("criteria_by_class", criteria_by_class),
-                     ("robustness_hist", robustness_hist), ("water_curves", water_curves),
+                     ("robustness_hist", robustness_hist), ("burned_high", burned_high), ("class_percentiles", class_percentiles), ("water_curves", water_curves),
                      ("productivity_by_supply", productivity_by_supply),
                      ("barrier_budget_curves", barrier_budget_curves), ("storm_sites", storm_sites),
                      ("mcmf_vs_greedy", mcmf_vs_greedy)]:
