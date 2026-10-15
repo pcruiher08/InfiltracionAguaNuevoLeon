@@ -2,7 +2,7 @@
 
 **Reto 1 · Infiltración**, Grok Monterrey Build Day (14 oct 2026). Planteado por Antonio Hernández Ramírez (Pronatura Noreste).
 
-**Equipo:** Pablo César Ruíz Hernández · David Martin Oliva Zavala · Jesus Zaddkiel
+**Equipo:** Pablo César Ruíz Hernández · David Martin Oliva Zavala · Jesus Zaddkiel Martinez Alor
 
 > *¿Dónde restaurar suelos en partes altas para favorecer la infiltración?*
 
@@ -251,4 +251,4 @@ web/
 
 - Pablo César Ruíz Hernández
 - David Martin Oliva Zavala
-- Jesus Zaddkiel
+- Jesus Zaddkiel Martinez Alor
