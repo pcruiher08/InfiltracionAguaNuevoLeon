@@ -9,7 +9,7 @@ import random
 import ee
 
 from pipeline.config import (
-    AOI_BBOX, ASSET_ID, CATCHMENTS_FILE, CLASS_THRESHOLDS, CONNECTIVITY_TIERS, DATASETS, EE_PROJECT,
+    AOI_BBOX, ASSET_FALLBACKS, CATCHMENTS_FILE, CLASS_THRESHOLDS, CONNECTIVITY_TIERS, DATASETS, EE_PROJECT,
     HYBAS_LEVEL12, DEFAULT_WEIGHTS, DRY_SEASON_MONTHS, END, START,
 )
 
@@ -25,13 +25,16 @@ def init(use_asset=True):
     if not _initialized:
         ee.Initialize(project=EE_PROJECT)
         _initialized = True
-        if use_asset:
+        for asset_id in (ASSET_FALLBACKS if use_asset else []):
             try:
-                ee.data.getAsset(ASSET_ID)
-                _asset = ee.Image(ASSET_ID)
+                ee.data.getAsset(asset_id)
+                _asset = ee.Image(asset_id)
+                print(f"[layers] using {asset_id}")
+                break
             except ee.EEException:
-                print(f"[layers] {ASSET_ID} not found; computing live (slow). "
-                      "Run: python -m pipeline.export")
+                continue
+        if use_asset and _asset is None:
+            print("[layers] no precomputed asset; computing live (slow). Run: python -m pipeline.export")
 
 
 def landcover():

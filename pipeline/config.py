@@ -4,8 +4,9 @@ import os
 # Google Cloud project registered for Earth Engine (override with EE_PROJECT)
 EE_PROJECT = os.environ.get("EE_PROJECT", "infiltracionaguanuevoleon")
 
-# Precomputed layers (pipeline/export.py). Used automatically when it exists.
-ASSET_ID = f"projects/{EE_PROJECT}/assets/scores_v1"
+# Precomputed layers (pipeline/export.py). The first one that exists is used.
+ASSET_ID = f"projects/{EE_PROJECT}/assets/scores_v2"
+ASSET_FALLBACKS = [ASSET_ID, f"projects/{EE_PROJECT}/assets/scores_v1"]
 
 # Supply catchments, traced upstream through HydroBASINS level 12
 # (HYBAS_ID / NEXT_DOWN) from each supply point; IDs in catchments.json.
