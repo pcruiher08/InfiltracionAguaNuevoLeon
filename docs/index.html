@@ -68,7 +68,7 @@
 
   <h2>Sobre esta versión</h2>
   <div class="muted">Versión estática precalculada. La app completa —pesos ajustables, análisis de cualquier sitio y optimización en vivo— corre con Google Earth Engine; ver el
-    <a href="https://github.com/pcruiher08/InflitracionAguaNuevoLeon">repositorio</a>.</div>
+    <a href="https://github.com/pcruiher08/InflitracionAguaNuevoLeon">repositorio</a>. Documento completo: <a href="infiltracion-zmm.pdf">PDF</a>.</div>
 </aside>
 <div id="map"></div>
 <script>
@@ -159,8 +159,18 @@ function show(st, el) {
   });
   pri.setOpacity(.3);
   map.fitBounds(barGroup.getBounds(), { padding:[20, 20] });
-  const t = b.totals, p = b.params;
+  const t = b.totals, p = b.params, w = st.why || {};
+  const rob = Math.round(100 * (w.robustness || 0));
+  const robTxt = rob >= 50 ? "prioritario con casi cualquier ponderación de criterios"
+                           : "prioritario con los pesos por defecto, sensible a cómo se ponderen";
   document.getElementById("bar").innerHTML = `
+    <h2>¿Por qué este sitio?</h2>
+    <div class="stat"><span>Cuenca</span><b>${w.catchment || "—"}</b></div>
+    <div class="stat"><span>Prioridad</span><b>${st.stats.priority.toFixed(2)} (alta)</b></div>
+    <div class="stat"><span>Robustez</span><b>${rob}%</b></div>
+    <div class="note">Lo que más pesa: ${(w.drivers || []).map(d => d[0]).join(", ")}. ${robTxt}.
+      Elegido por un barrido reproducible: prioridad alta, ladera de 8–35°, obra de barreras y al menos ~12 km de otros sitios.</div>`
+    + `
     <h2>Barreras optimizadas</h2>
     <div class="stat"><span>Barreras en curva de nivel</span><b>${t.n_barriers} · ${fmt(t.length_m)} m</b></div>
     <div class="stat"><span>Escurrimiento interceptado (relativo)</span><b>~${Math.round(t.intercepted_pct)}%</b></div>
