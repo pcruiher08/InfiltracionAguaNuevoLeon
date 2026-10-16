@@ -328,6 +328,26 @@ V.update({"ks_base_p": pct(DE["factor"]["Acuífero Santa Catarina (pozos SADM)"]
           "vu_t1": n(SD["scenarios"]["rusle"]["years_to_fill"][2], 1), "vu_t10": n(SD["scenarios"]["rusle_10"]["years_to_fill"][2], 1),
           "vu_keep": pct(100 * SD["capacity_left"], 1), "vu_net0": n(SD["long_term"]["net_ls_nominal"]), "vu_net1": n(SD["long_term"]["net_ls"])})
 
+# ---------------------------------------------------------------- evapotranspiration of infiltrated water (evapotranspiracion.py)
+ET = json.loads((ROOT / "evapotranspiracion.json").read_text()); BK, EN = ET["bucket"], ET["net"]
+et_rows = []
+for name in ORDER:
+    r = ET["ratios"][name]
+    et_rows.append(f"{SHORT[name]} & {n(r['rain_mm'])} & " + " & ".join(f"{r[p]:.2f}" for p in ET["products"]) + " \\\\")
+sc_r = [ET["ratios"]["Acuífero Santa Catarina (pozos SADM)"][p] for p in ET["products"]]
+f_sc = DE["factor"]["Acuífero Santa Catarina (pozos SADM)"]; e_prior = (DE["e_min"] + DE["et"]["Acuífero Santa Catarina (pozos SADM)"]["ratio"]) / 2
+w_prior = SEL["neta_30000"]["net_mean"]
+et_net_rows = [
+    f"Base (a priori, $e\\sim\\mathcal U$) & {e_prior:.2f} & {f_sc['mean']:.2f} & {pct(f_sc['p_pos'])} & {n(w_prior)} \\\\",
+    f"Balance del suelo & {BK['e'][1]:.2f} & {EN['g_mean']:.2f} & {pct(EN['p_pos'])} & {n(EN['net_ls_30000'])} \\\\",
+    f"Balance del suelo y karst moderado & {BK['e'][1]:.2f} & {EN['karst_g_mean']:.2f} & {pct(EN['karst_p_pos'])} & {n(EN['karst_net_ls_30000'])} \\\\"]
+V.update({"et_rows": "\n".join(et_rows), "et_net_rows": "\n".join(et_net_rows), "et_y0": str(ET["years"][0]), "et_y1": str(ET["years"][1]),
+          "et_sc_min": f"{min(sc_r):.2f}", "et_sc_max": f"{max(sc_r):.2f}", "bk_n": n(BK["n"]),
+          "bk_e": pct(100 * BK["e"][1]), "bk_e_lo": pct(100 * BK["e"][0], 1), "bk_e_hi": pct(100 * BK["e"][2]),
+          "et_g0": f"{f_sc['mean']:.2f}", "et_g1": f"{EN['g_mean']:.2f}", "et_p1": pct(EN["p_pos"]), "et_pk": pct(EN["karst_p_pos"]),
+          "et_w0": n(w_prior), "et_w1": n(EN["net_ls_30000"]), "et_cost": n(EN["mxn_per_net_ls"] / 1e6, 1),
+          "et_comp": pct(EN["p_competitive"]["25000"], 1)})
+
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():
     BODY = BODY.replace(f"«{k}»", v)

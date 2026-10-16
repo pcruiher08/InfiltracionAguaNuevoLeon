@@ -285,6 +285,17 @@ Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y
 5. **En las presas,** sólo con objetivos de suelo y azolve.
 6. **Con autorización de la CONANP** y sólo especies nativas de cada ladera.
 
+### Evapotranspiración del agua infiltrada
+
+`informe/evapotranspiracion.py` estima *e*, la fracción del agua infiltrada detrás de las barreras que regresa a la atmósfera:
+
+1. **Satélites** (MODIS MOD16A2GF, PML, TerraClimate y FLDAS, 2015 a 2023): en las laderas de la cuenca del río Santa Catarina se evapotranspira de 77 a 113 % de la lluvia ordinaria. Los productos difieren mucho entre sí y los valores mayores que 1 sugieren que CHIRPS subestima la lluvia de la sierra. Es una cota superior de *e*.
+2. **Balance diario del suelo** detrás de la barrera (lluvia CHIRPS, evapotranspiración potencial TerraClimate, zona de raíces de 3 a 15 m de ancho y 50 a 400 mm de agua disponible): cada metro de barrera recibe el escurrimiento de ~600 m² de ladera, la zona de raíces se satura y sólo **~7 %** del agua retenida se evapotranspira; el resto drena por debajo de las raíces (recarga concentrada).
+
+Si se confirma, la ganancia neta con 30,000 ha en la cuenca del río Santa Catarina pasaría de ~26 a **~156 L/s**, con probabilidad cercana a 100 % (88 % con pérdidas moderadas por karst): el análisis base es conservador. El costo por L/s neto (~7 millones de pesos) sigue por encima del de El Cuchillo II.
+
+**Cómo medirla en campo:** lisímetros de drenaje detrás de las barreras y en laderas testigo; sensores de humedad del suelo a 30, 60 y 100 cm; flujo de savia en los árboles cercanos (qué tan lejos alcanzan las raíces el agua retenida); isótopos estables del agua (δ¹⁸O, δ²H) y balance de cloruro, que indican qué parte se evaporó antes de recargar; y covarianza de remolinos para calibrar los productos satelitales.
+
 ### Limitación principal
 
 No se sabe **a dónde va el agua infiltrada**. Con los supuestos base, la evapotranspiración del agua infiltrada explica ~47 % de la incertidumbre de la ganancia neta en la cuenca del río Santa Catarina, el escurrimiento que ya llegaba al acuífero ~38 % y la ruta subterránea al acuífero ~14 %. Si el karst desvía agua por fallas, la ruta subterránea pasa a dominar (~38 %) y puede volver negativa la ganancia; además es la más difícil de medir (trazadores). El azolve de las barreras le sigue, pero se resuelve con limpieza periódica. Lo demás son limitaciones de resolución y calibración.

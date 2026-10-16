@@ -22,6 +22,7 @@ En el momento más crítico de la crisis hídrica de 2022, las presas Cerro Prie
   \item \textbf{Permisos.} Casi toda la superficie seleccionada en la cuenca del río Santa Catarina («anp_cumbres3» de 3,000 ha) está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP.
   \item \textbf{Sitios y cálculo.} Los ocho sitios sugeridos se eligieron por ganancia neta: todos están en la cuenca del río Santa Catarina y siete dentro del Parque Nacional. El agua retenida se calcula con un flujo máximo (algoritmo de Dinic), equivalente al flujo de costo mínimo y unas «orac_speed_dinic» veces más rápido.
   \item \textbf{Cuándo escalar.} Empezar con un piloto en los ocho sitios y escalar sólo si la evapotranspiración medida del agua infiltrada queda por debajo del umbral de la sección~\ref{sec:escalar} y el intervalo de la ganancia neta queda por encima de cero.
+  \item \textbf{Evapotranspiración.} Un balance diario del suelo indica que sólo «bk_e» del agua concentrada detrás de las barreras se evapotranspira, mucho menos que la lluvia ordinaria (77 a 113\% según el producto satelital). Si se confirma en campo, la ganancia neta en la cuenca del río Santa Catarina sería de unos «et_w1» L/s con 30,000 ha y casi seguramente positiva; el análisis base es conservador.
   \item \textbf{Limitación principal.} No se sabe a dónde va el agua infiltrada: la evapotranspiración y, sobre todo si el karst desvía agua por fallas, la ruta subterránea hacia el acuífero son lo que más determina la ganancia neta. La ruta subterránea es la más difícil de medir (trazadores).
   \item \textbf{Supuestos frágiles.} La ganancia neta es condicional a supuestos no calibrados: si el karst desvía parte del agua infiltrada, su probabilidad baja a «ks_mod_p», y sin limpieza del sedimento las barreras pierden la mayor parte de su almacenamiento en meses o pocos años.
   \item \textbf{Qué medir primero.} La evapotranspiración del agua infiltrada en la cuenca del río Santa Catarina y la fracción del escurrimiento que ya llega a Cerro Prieto: son los parámetros que más cambian la ganancia neta.
@@ -386,6 +387,27 @@ v_{\text{sed}}=\frac{\bar A_{s}\,(\lambda/22.13)^{0.5}\,f_R\,(1-P_c)\,a_m}{\rho_
 \end{equation}
 con $\bar A_s$ la pérdida media de suelo de las celdas seleccionadas en la cuenca del río Santa Catarina con una ladera de 22 m (sección~\ref{sec:rusle}), $f_R$ el factor de incertidumbre de la erosividad, $(1-P_c)$ la fracción del suelo que retienen las obras y $a_m$ la superficie de ladera que drena a cada metro de barrera, calculada en los ocho sitios sugeridos como la fracción interceptada de la ventana de 144 ha dividida entre la longitud de barreras. Los parámetros se muestrean como en la sección~\ref{sec:rusle}. El almacenamiento encharcado, 0.9 m³/m, se llena en $t=0.9/v_{\text{sed}}$ años. Como la RUSLE probablemente sobrestima la erosión en la zona, se repite el cálculo con la erosión dividida entre 3 y entre 10. Sin limpieza del sedimento, sólo queda la infiltración a través de la franja, 0.54 m³/m, es decir, 37.5\% de la capacidad nominal; como la retención anual es proporcional a la capacidad por metro (sección~\ref{sec:incertidumbre}), el agua bruta y la neta se reducen en la misma proporción.
 
+\subsection{Estimación de la evapotranspiración del agua infiltrada}\label{sec:et}
+
+El parámetro $e_g$ es la fracción del agua infiltrada detrás de las barreras que regresa a la atmósfera, no la evapotranspiración del paisaje. Se estima de dos maneras.
+
+\textbf{Conjunto de productos satelitales.} Se calcula el cociente entre la evapotranspiración real anual media y la lluvia de CHIRPS en las laderas elegibles de cada cuenca, de «et_y0» a «et_y1», con cuatro productos independientes: MODIS MOD16A2GF \citap{mu2011}, PML \citap{zhang2019}, TerraClimate \citap{abatzoglou2018} y FLDAS \citap{mcnally2017}. Este cociente describe la lluvia ordinaria repartida sobre la ladera, por lo que es una cota superior de $e_g$: el agua encharcada se infiltra a mayor profundidad.
+
+\textbf{Balance diario del suelo detrás de la barrera.} La barrera concentra en una franja angosta el escurrimiento de una ladera mucho mayor. Se modela el almacenamiento de agua $S_d$ (mm) en la zona de raíces que alcanza esa agua, de ancho $w$, con la lluvia diaria $P_d$ de CHIRPS y la evapotranspiración potencial $\text{ETP}_d$ de TerraClimate en la cuenca del río Santa Catarina:
+\begin{equation}
+\begin{aligned}
+R_d&=\frac{1000}{w}\,\min\!\left\{\kappa,\ \frac{P_d\,C\,a_m}{1000}\right\}, &
+S_d'&=\min\{S_d+P_d+R_d,\ S_{\max}\},\\
+D_d&=\max\{0,\ S_d+P_d+R_d-S_{\max}\}, &
+\text{ET}_d&=K_c\,\text{ETP}_d\,\frac{S_d'}{S_{\max}},\qquad S_{d+1}=S_d'-\text{ET}_d,
+\end{aligned}
+\end{equation}
+donde $R_d$ es el escurrimiento que retiene la barrera, expresado en mm sobre la zona de raíces, $D_d$ el drenaje por debajo de las raíces, $K_c$ un coeficiente de cultivo \citap{allen1998}, $S_{\max}$ el agua disponible en la zona de raíces, $C$ el coeficiente de escurrimiento de las celdas seleccionadas y $a_m$ el área de ladera que drena a cada metro de barrera (sección~\ref{sec:vidautil}). El modelo se corre con y sin el escurrimiento retenido, y la fracción que se evapotranspira es
+\begin{equation}
+e=\frac{\sum_d \text{ET}_d^{\text{con}}-\sum_d \text{ET}_d^{\text{sin}}}{\sum_d R_d}.
+\end{equation}
+Con «bk_n» escenarios de Monte Carlo se muestrean $S_{\max}\sim\mathcal U(50,400)$ mm, desde suelos someros hasta raíces de árboles; $K_c\sim\mathcal U(0.6,1.1)$; $w\sim\mathcal U(3,15)$ m, desde la franja encharcada hasta la vegetación vecina y plantada cuyas raíces alcanzan el agua; $\kappa\sim\mathcal U(0.9,2.0)$ m³/m, y un factor de $C$ de $\mathcal U(0.7,1.3)$. La distribución resultante de $e$ sustituye a la a priori en un escenario alternativo de la ganancia neta en la cuenca del río Santa Catarina, con y sin pérdidas por karst.
+
 \subsection{Costo por litro por segundo}\label{sec:costo}
 
 El costo de restaurar una hectárea se trata como $c_{\text{ha}}\sim\mathcal U(25{,}000,\,50{,}000)$ pesos. Ninguna de las dos cotas es un costo medido de obra: la superior, 50,000 pesos por hectárea en cinco años, es el \emph{tope del subsidio} de CONAFOR para restauración forestal \citap{conafor2026}, y la inferior, 25,000 pesos, es un \emph{supuesto} de este trabajo, sin fuente. Deben sustituirse por los costos reales por hectárea y por tipo de obra de Pronatura Noreste. Para un presupuesto de $H$ hectáreas, el costo por L/s neto se estima como el cociente de esperanzas $\mathbb E[c_{\text{ha}}H]/\mathbb E[W_{\text{neta}}]$, y se compara con el costo de capital del acueducto El Cuchillo II, 14,680 millones de pesos por 5,000 L/s, es decir, unos 2.9 millones de pesos por L/s \citap{eluniversal2023}. También se estima la probabilidad de que la restauración sea más barata por L/s, $\Pr[W_{\text{neta}}>c_{\text{ha}}H/2.9\times10^6]$. La comparación es sólo de costo de capital: no incluye la energía de bombeo ni la operación del acueducto, ni los beneficios de la restauración distintos del agua.
@@ -515,6 +537,36 @@ Selección & Bruta & Neta, media & Neta, mediana & Intervalo 90\% & $\Pr[W_{\tex
 \lectura{El resultado depende de que el agua infiltrada llegue al acuífero explotado. Si en el karst parte de ella sale por fallas hacia otras cuencas, la probabilidad de ganancia neta positiva en la cuenca del río Santa Catarina baja de «ks_base_p» a «ks_mod_p» con pérdida moderada y a «ks_alto_p» con pérdida alta, y la ganancia neta esperada con 30,000 ha pasa de unos «ks_base_w» L/s a «ks_mod_w» y «ks_alto_w» L/s, respectivamente. La ganancia de 26 L/s es, por tanto, condicional a supuestos no calibrados sobre el destino del agua, y la conectividad del karst es una de las mediciones prioritarias.}
 
 \respuesta{Las obras no desvían el agua: la retienen unas horas para que se infiltre, y desde ahí sigue su curso por el subsuelo dentro de la misma cuenca. Para el abasto, el resultado depende de la fuente. En la cuenca del río Santa Catarina, el escurrimiento de tormenta sale del sistema a través de la ciudad, así que infiltrarlo en la sierra añade recarga al acuífero que explotan los pozos y galerías; la ganancia neta es positiva con probabilidad de «pg_sc» con las cotas base y de «pgo_sc» con las optimistas. En las cuencas de las presas, retener escurrimiento en la ladera no añade agua en volumen anual y probablemente la reduce: lo que se retiene ya llegaba en buena parte al embalse, y la evapotranspiración se lleva una fracción. Ahí el beneficio de las obras está en reducir el azolve, atenuar los picos de las avenidas y conservar el suelo, no en aumentar el volumen. Con 30,000 ha en la cuenca del río Santa Catarina, el agua neta esperada es del orden de «n30n_mean» L/s, una fracción pequeña del agua bruta retenida y del déficit de 2022.}
+
+\subsection{Evapotranspiración del agua infiltrada}\label{res:et}
+
+\begin{table}[H]\centering\small
+\caption{Evapotranspiración real anual entre lluvia en las laderas elegibles, «et_y0» a «et_y1»}\label{tab:et_sat}
+{\color{gris}Cociente adimensional; lluvia de CHIRPS. Es la fracción de la lluvia ordinaria que se evapotranspira, una cota superior de $e_g$.\par}\smallskip
+\begin{tabularx}{\linewidth}{Xrrrrr}
+\toprule
+Cuenca & Lluvia (mm) & MODIS & PML & TerraClimate & FLDAS \\
+\midrule
+«et_rows»
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]\centering\small
+\caption{Ganancia neta en la cuenca del río Santa Catarina según la estimación de $e$}\label{tab:et_net}
+{\color{gris}30,000 ha seleccionadas por ganancia neta. Medias de Monte Carlo.\par}\smallskip
+\begin{tabularx}{\linewidth}{Xrrrr}
+\toprule
+Escenario & $e$ medio & $G$ medio & $\Pr[G>0]$ & Agua neta (L/s) \\
+\midrule
+«et_net_rows»
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\lectura{Los cuatro productos satelitales coinciden en que la mayor parte de la lluvia ordinaria se evapotranspira, pero difieren entre sí: en la cuenca del río Santa Catarina el cociente va de «et_sc_min» a «et_sc_max». Los valores mayores que 1 son físicamente imposibles a largo plazo y sugieren que CHIRPS subestima la lluvia de la sierra o que el producto sobrestima la evapotranspiración. El balance del suelo da un resultado muy distinto para el agua que concentran las barreras: en promedio sólo «bk_e» de ella se evapotranspira (intervalo de 90\% de «bk_e_lo» a «bk_e_hi»), porque cada metro de barrera recibe el escurrimiento de unos «vu_area» m² de ladera y la zona de raíces se satura en cada tormenta, de modo que el excedente drena por debajo de las raíces. Con esa $e$, la ganancia neta media pasa de «et_g0» a «et_g1» y la probabilidad de que sea positiva de «pg_sc» a «et_p1»; aun con pérdidas moderadas por karst se mantiene en «et_pk».}
+
+\respuesta{La evapotranspiración del agua concentrada detrás de las barreras es probablemente mucho menor que la de la lluvia ordinaria, como predice la teoría de la recarga concentrada \citap{scanlon2006}. Si el modelo de balance es correcto, el análisis base es conservador: la ganancia neta con 30,000 ha sería de unos «et_w1» L/s en lugar de «et_w0», y la incertidumbre principal pasaría a ser la ruta subterránea del agua y el escurrimiento que ya llegaba al acuífero. Aun así, el costo por L/s neto, unos «et_cost» millones de pesos, sigue por encima del de El Cuchillo II, y sólo en «et_comp» de los escenarios la restauración resultaría más barata con el costo supuesto bajo. El modelo es simple: no representa el flujo lateral en el suelo, el agua que toman raíces profundas de las fracturas ni la evaporación del agua encharcada, por lo que debe verificarse en campo con los métodos del apéndice~\ref{sec:validacion}.}
 
 \subsection{P10 · Vegetación para acompañar las obras}\label{res:p10}
 
@@ -746,7 +798,7 @@ Llega al acuífero, $\phi$ & «esc_head» \\
 
 \textbf{Condición 2: que la evidencia sea suficiente.} Con el diseño del apéndice~\ref{sec:validacion} (al menos 16 pares de microcuencas y dos o tres temporadas de lluvia), escalar si el límite inferior del intervalo de 90\% de $G$ estimado en campo es mayor que cero, y detener la expansión si el límite superior es menor que cero.
 
-\textbf{Condición 3: no justificarlo como fuente de agua barata.} Para igualar el costo de capital por L/s de El Cuchillo II, cada hectárea debería aportar $c_{\text{ha}}\cdot 31{,}536/(2.9\times10^6)$ m³ netos al año. En la cuenca del río Santa Catarina, donde cada hectárea retiene unos «esc_R» m³ al año, eso exige $G\ge$ «esc_g25» con un costo de 25,000 pesos por hectárea y $G\ge$ «esc_g50» con 50,000 pesos, mientras que el valor máximo de $G$ dentro de las distribuciones a priori es «esc_gmax». Ninguna medición plausible hace que la restauración compita en costo con la infraestructura como fuente de agua, así que el escalamiento debe justificarse por la conservación del suelo, la vida útil de los embalses, la atenuación de avenidas y la biodiversidad, con la recarga como beneficio adicional.
+\textbf{Condición 3: no justificarlo como fuente de agua barata.} Para igualar el costo de capital por L/s de El Cuchillo II, cada hectárea debería aportar $c_{\text{ha}}\cdot 31{,}536/(2.9\times10^6)$ m³ netos al año. En la cuenca del río Santa Catarina, donde cada hectárea retiene unos «esc_R» m³ al año, eso exige $G\ge$ «esc_g25» con un costo de 25,000 pesos por hectárea y $G\ge$ «esc_g50» con 50,000 pesos, mientras que el valor máximo de $G$ dentro de las distribuciones a priori es «esc_gmax». Con la evapotranspiración estimada por el balance del suelo, $G$ supera el umbral sólo en «et_comp» de los escenarios con el costo bajo y en ninguno con el alto. Ninguna medición plausible hace que la restauración compita en costo con la infraestructura como fuente de agua, así que el escalamiento debe justificarse por la conservación del suelo, la vida útil de los embalses, la atenuación de avenidas y la biodiversidad, con la recarga como beneficio adicional.
 
 \textbf{Condición 4: en las cuencas de las presas, escalar sólo con objetivos de suelo.} En La Boca y Cerro Prieto la ganancia neta es negativa con alta probabilidad; la restauración ahí se justifica si se mide un azolve evitado relevante para la vida útil del embalse, no por el agua.
 
@@ -756,7 +808,7 @@ Llega al acuífero, $\phi$ & «esc_head» \\
 
 \section{Limitaciones}
 
-\textbf{Jerarquía de las limitaciones.} La limitación principal es no saber a dónde va el agua infiltrada. Con las distribuciones base, la evapotranspiración del agua infiltrada ($e_g$) explica «lim_e_b» de la varianza de la ganancia neta en la cuenca del río Santa Catarina, el escurrimiento que ya llegaba al acuífero ($\tau_g$) «lim_t_b» y la fracción que llega al acuífero por el subsuelo ($\phi_g$) «lim_p_b». Si el karst desvía agua por fallas, la ruta subterránea pasa a dominar («lim_p_k», frente a «lim_e_k» de la evapotranspiración y «lim_t_k» del escurrimiento) y puede volver negativa la ganancia. De las tres, la conectividad del karst es la más difícil y costosa de medir, porque requiere pruebas con trazadores, mientras que la evapotranspiración y el escurrimiento se miden con lisímetros y microcuencas aforadas. El azolve de las barreras le sigue en importancia, pero es un problema de operación con una solución conocida, la limpieza periódica, y no un vacío de conocimiento. Las demás limitaciones son de resolución y de calibración.
+\textbf{Jerarquía de las limitaciones.} La limitación principal es no saber a dónde va el agua infiltrada. Con las distribuciones base, la evapotranspiración del agua infiltrada ($e_g$) explica «lim_e_b» de la varianza de la ganancia neta en la cuenca del río Santa Catarina, el escurrimiento que ya llegaba al acuífero ($\tau_g$) «lim_t_b» y la fracción que llega al acuífero por el subsuelo ($\phi_g$) «lim_p_b». Si el karst desvía agua por fallas, la ruta subterránea pasa a dominar («lim_p_k», frente a «lim_e_k» de la evapotranspiración y «lim_t_k» del escurrimiento) y puede volver negativa la ganancia. De las tres, la conectividad del karst es la más difícil y costosa de medir, porque requiere pruebas con trazadores, mientras que la evapotranspiración y el escurrimiento se miden con lisímetros y microcuencas aforadas. Si la evapotranspiración del agua concentrada es tan baja como estima el balance del suelo (sección~\ref{res:et}), su peso disminuye y la ruta subterránea y el escurrimiento que ya llegaba pasan a ser las incertidumbres principales. El azolve de las barreras le sigue en importancia, pero es un problema de operación con una solución conocida, la limpieza periódica, y no un vacío de conocimiento. Las demás limitaciones son de resolución y de calibración.
 
 \begin{itemize}
   \item \textbf{Orden de magnitud.} El índice compara sitios; los volúmenes en m³ y L/s son estimaciones para comparar alternativas y no constituyen un balance hídrico. No se modela la mejora del suelo a largo plazo (mayor cobertura e infiltración en toda la ladera), que podría superar el efecto de la retención de las obras.
@@ -776,10 +828,12 @@ Llega al acuífero, $\phi$ & «esc_head» \\
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{section}{Referencias}
+\bibitem{abatzoglou2018} Abatzoglou, J. T., Dobrowski, S. Z., Parks, S. A. y Hegewisch, K. C. (2018). TerraClimate, a high-resolution global dataset of monthly climate and climatic water balance from 1958–2015. \emph{Scientific Data}, 5, 170191.
 \bibitem{ahuja1993} Ahuja, R. K., Magnanti, T. L. y Orlin, J. B. (1993). \emph{Network Flows: Theory, Algorithms, and Applications}. Prentice Hall.
 \bibitem{alanis2015a} Alanís-Rodríguez, E., Jiménez-Pérez, J., Mora-Olivo, A., Martínez-Ávalos, J. G., Mata-Balderas, J. M., Collantes Chávez-Costa, A. y Rubio-Camacho, E. A. (2015a). Estructura y diversidad del matorral submontano contiguo al área metropolitana de Monterrey, Nuevo León, México. \emph{Acta Botanica Mexicana}, 113, 1–19.
 \bibitem{alanis2015b} Alanís-Rodríguez, E., Mora-Olivo, A., Jiménez-Pérez, J., González-Tagle, M. A., Yerena Yamallel, J. I., Martínez-Ávalos, J. G. y González-Rodríguez, L. E. (2015b). Composición y diversidad del matorral desértico rosetófilo en dos tipos de suelo en el noreste de México. \emph{Acta Botanica Mexicana}, 110, 105–117.
 \bibitem{alanis2015c} Alanís-Rodríguez, E., Valdecantos-Dema, A., Jiménez-Pérez, J., Rubio-Camacho, E. A., Yerena-Yamallel, J. I. y González-Tagle, M. A. (2015c). Post-fire ecological restoration of a mixed Pinus-Quercus forest in northeastern Mexico. \emph{Revista Chapingo Serie Ciencias Forestales y del Ambiente}, 21(2), 157–170.
+\bibitem{allen1998} Allen, R. G., Pereira, L. S., Raes, D. y Smith, M. (1998). \emph{Crop Evapotranspiration: Guidelines for Computing Crop Water Requirements}. FAO Irrigation and Drainage Paper 56, FAO, Roma.
 \bibitem{barnes2014} Barnes, R., Lehman, C. y Mulla, D. (2014). Priority-flood: An optimal depression-filling and watershed-labeling algorithm for digital elevation models. \emph{Computers \& Geosciences}, 62, 117–127.
 \bibitem{bosch1982} Bosch, J. M. y Hewlett, J. D. (1982). A review of catchment experiments to determine the effect of vegetation changes on water yield and evapotranspiration. \emph{Journal of Hydrology}, 55(1–4), 3–23.
 \bibitem{bouma2011} Bouma, J. A., Biggs, T. W. y Bouwer, L. M. (2011). The downstream externalities of harvesting rainwater in semi-arid watersheds: An Indian case study. \emph{Agricultural Water Management}, 98(7), 1162–1170.
@@ -817,6 +871,8 @@ Llega al acuífero, $\phi$ & «esc_head» \\
 \bibitem{malczewski2006} Malczewski, J. (2006). GIS-based multicriteria decision analysis: a survey of the literature. \emph{International Journal of Geographical Information Science}, 20(7), 703–726.
 \bibitem{martinez2022} Martínez Chacón, M. (2022, 21 de junio). Monterrey suffers weeks-long water cutoff amid drought. \emph{Associated Press}.
 \bibitem{mccool1987} McCool, D. K., Brown, L. C., Foster, G. R., Mutchler, C. K. y Meyer, L. D. (1987). Revised slope steepness factor for the Universal Soil Loss Equation. \emph{Transactions of the ASAE}, 30(5), 1387–1396.
+\bibitem{mcnally2017} McNally, A. et al. (2017). A land data assimilation system for sub-Saharan Africa food and water security applications. \emph{Scientific Data}, 4, 170012.
+\bibitem{mu2011} Mu, Q., Zhao, M. y Running, S. W. (2011). Improvements to a MODIS global terrestrial evapotranspiration algorithm. \emph{Remote Sensing of Environment}, 115(8), 1781–1800.
 \bibitem{nemhauser1978} Nemhauser, G. L., Wolsey, L. A. y Fisher, M. L. (1978). An analysis of approximations for maximizing submodular set functions, I. \emph{Mathematical Programming}, 14, 265–294.
 \bibitem{ocallaghan1984} O'Callaghan, J. F. y Mark, D. M. (1984). The extraction of drainage networks from digital elevation data. \emph{Computer Vision, Graphics, and Image Processing}, 28(3), 323–344.
 \bibitem{orlin1997} Orlin, J. B. (1997). A polynomial time primal network simplex algorithm for minimum cost flows. \emph{Mathematical Programming}, 78(2), 109–129.
@@ -835,6 +891,7 @@ Llega al acuífero, $\phi$ & «esc_head» \\
 \bibitem{walling1983} Walling, D. E. (1983). The sediment delivery problem. \emph{Journal of Hydrology}, 65(1–3), 209–237.
 \bibitem{williams1995} Williams, J. R. (1995). The EPIC model. En V. P. Singh (ed.), \emph{Computer Models of Watershed Hydrology}, 909–1000. Water Resources Publications.
 \bibitem{wischmeier1978} Wischmeier, W. H. y Smith, D. D. (1978). \emph{Predicting Rainfall Erosion Losses: A Guide to Conservation Planning}. Agriculture Handbook 537, USDA.
+\bibitem{zhang2019} Zhang, Y. et al. (2019). Coupled estimation of 500 m and 8-day resolution global evapotranspiration and gross primary production in 2002–2017. \emph{Remote Sensing of Environment}, 222, 165–182.
 \end{thebibliography}
 
 \appendix
@@ -1012,6 +1069,16 @@ Los parámetros que más influyen en la ganancia neta (sección~\ref{res:p9}) pu
   \item \textbf{Evapotranspiración del agua infiltrada, $e_g$.} Lisímetros pareados detrás de las barreras y en las testigo, que miden directamente el agua que drena por debajo de la zona de raíces, y perfiles de humedad del suelo a 30, 60 y 100 cm. El agua que drena por debajo de la zona de raíces escapa a la evapotranspiración; la recarga puede estimarse también con el balance de masa de cloruro, el método más usado en zonas semiáridas \citap{scanlon2006}.
   \item \textbf{Fracción que llega al acuífero, $\phi_g$.} Pruebas con trazadores (colorantes o isótopos) inyectados detrás de las barreras y muestreados en manantiales, galerías y pozos, para saber si el agua llega al acuífero Campo Buenos Aires o sale por fallas hacia otras cuencas; piezómetros ladera abajo de los sitios y la serie de niveles de los pozos de SADM.
   \item \textbf{Azolve de las barreras.} Medición anual del espesor de sedimento en la franja encharcada, para calibrar la vida útil de la sección~\ref{res:vidautil} y programar la limpieza.
+\end{itemize}
+
+\textbf{Cómo medir la evapotranspiración del agua infiltrada.} Ningún producto satelital resuelve una franja de unos metros detrás de una barrera, por lo que $e_g$ sólo puede medirse en campo. Los métodos se complementan:
+\begin{itemize}
+  \item \textbf{Lisímetros de drenaje} enterrados detrás de las barreras y en las laderas testigo: miden directamente el agua que pasa por debajo de las raíces; $e_g$ es la diferencia entre el agua que entra y la que drena.
+  \item \textbf{Perfiles de humedad del suelo} con sensores de reflectometría a 30, 60 y 100 cm: el balance diario entre tormentas da la evapotranspiración y el drenaje, y sirve para calibrar el modelo de la sección~\ref{sec:et}.
+  \item \textbf{Flujo de savia} en árboles junto a las barreras y en testigo: mide la transpiración de la vegetación que alcanza el agua retenida, es decir, el ancho efectivo $w$ del modelo.
+  \item \textbf{Isótopos estables del agua} ($\delta^{18}$O y $\delta^2$H) en el agua del suelo, de los manantiales y de los pozos: la evaporación enriquece el agua en isótopos pesados, lo que permite estimar qué fracción se evaporó antes de recargar.
+  \item \textbf{Balance de masa de cloruro}: el cloruro de la lluvia se concentra cuando el agua se evapotranspira, y su concentración en el agua del suelo profundo da la tasa de recarga \citap{scanlon2006}.
+  \item \textbf{Covarianza de remolinos} (\emph{eddy covariance}): mide la evapotranspiración real de una ladera completa; es costosa, pero calibraría los productos satelitales del cuadro~\ref{tab:et_sat}.
 \end{itemize}
 
 El número de pares necesario se obtiene de una prueba de diferencia de medias. Para detectar una diferencia relativa $\delta$ entre sitios con y sin obras, con coeficiente de variación $\text{CV}$ entre sitios, nivel de significancia $\alpha$ y potencia $1-\beta$,
