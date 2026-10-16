@@ -33,6 +33,12 @@ def karst():
         G = (1 - e) * p - t
         out[name] = {"phi": phi, "g_mean": round(float(G.mean()), 3), "p_pos": round(100 * float((G > 0).mean()), 1),
                      "net_ls_30000": round(float(gross * G.mean()), 1)}
+    # share of the variance of G explained by each parameter (squared linear correlation), base and moderate karst
+    for name in ("base", "karst_moderado"):
+        phi = out[name]["phi"]
+        e = RNG.uniform(D["e_min"], et, N); p = RNG.uniform(*phi, N); t = RNG.uniform(*tau, N)
+        G = (1 - e) * p - t
+        out[name]["var_share"] = {k: round(float(np.corrcoef(v, G)[0, 1] ** 2), 2) for k, v in (("e", e), ("phi", p), ("tau", t))}
     return out
 
 

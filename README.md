@@ -285,6 +285,10 @@ Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y
 5. **En las presas,** sólo con objetivos de suelo y azolve.
 6. **Con autorización de la CONANP** y sólo especies nativas de cada ladera.
 
+### Limitación principal
+
+No se sabe **a dónde va el agua infiltrada**. Con los supuestos base, la evapotranspiración del agua infiltrada explica ~47 % de la incertidumbre de la ganancia neta en la cuenca del río Santa Catarina, el escurrimiento que ya llegaba al acuífero ~38 % y la ruta subterránea al acuífero ~14 %. Si el karst desvía agua por fallas, la ruta subterránea pasa a dominar (~38 %) y puede volver negativa la ganancia; además es la más difícil de medir (trazadores). El azolve de las barreras le sigue, pero se resuelve con limpieza periódica. Lo demás son limitaciones de resolución y calibración.
+
 ### Karst y azolve de las barreras (sensibilidad)
 
 `informe/sensibilidad.py`, a partir de resultados guardados:

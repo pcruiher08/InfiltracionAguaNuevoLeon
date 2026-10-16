@@ -7,7 +7,12 @@
    ],
    "g_mean": 0.073,
    "p_pos": 68.2,
-   "net_ls_30000": 28.5
+   "net_ls_30000": 28.5,
+   "var_share": {
+    "e": 0.47,
+    "phi": 0.14,
+    "tau": 0.38
+   }
   },
   "karst_moderado": {
    "phi": [
@@ -16,7 +21,12 @@
    ],
    "g_mean": 0.004,
    "p_pos": 48.4,
-   "net_ls_30000": 1.6
+   "net_ls_30000": 1.6,
+   "var_share": {
+    "e": 0.25,
+    "phi": 0.38,
+    "tau": 0.33
+   }
   },
   "karst_alto": {
    "phi": [
@@ -35,13 +45,13 @@
    "rusle": {
     "factor": 1.0,
     "m3_per_m_yr": [
-     1.89,
-     5.38,
+     1.9,
+     5.37,
      3.4
     ],
     "years_to_fill": [
      0.17,
-     0.48,
+     0.47,
      0.29
     ],
     "years_to_fill_median": 0.28
@@ -55,7 +65,7 @@
     ],
     "years_to_fill": [
      0.5,
-     1.43,
+     1.42,
      0.88
     ],
     "years_to_fill_median": 0.83
@@ -68,9 +78,9 @@
      0.34
     ],
     "years_to_fill": [
-     1.67,
-     4.76,
-     2.93
+     1.68,
+     4.74,
+     2.92
     ],
     "years_to_fill_median": 2.76
    }

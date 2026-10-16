@@ -322,7 +322,9 @@ w0 = SEL["neta_30000"]["net_mean"]; gb = KS["base"]["g_mean"]          # anchor 
 V.update({"ks_base_p": pct(DE["factor"]["Acuífero Santa Catarina (pozos SADM)"]["p_pos"]), "ks_mod_p": pct(KS["karst_moderado"]["p_pos"]),
           "ks_alto_p": pct(KS["karst_alto"]["p_pos"]),
           "ks_base_w": n(w0), "ks_mod_w": n(w0 * KS["karst_moderado"]["g_mean"] / gb), "ks_alto_w": n(w0 * KS["karst_alto"]["g_mean"] / gb),
-          "vu_rows": "\n".join(vu_rows), "vu_area": n(SD["area_m2_per_m"]),
+          "vu_rows": "\n".join(vu_rows), "lim_e_b": pct(100 * KS["base"]["var_share"]["e"]), "lim_t_b": pct(100 * KS["base"]["var_share"]["tau"]),
+          "lim_p_b": pct(100 * KS["base"]["var_share"]["phi"]), "lim_e_k": pct(100 * KS["karst_moderado"]["var_share"]["e"]),
+          "lim_t_k": pct(100 * KS["karst_moderado"]["var_share"]["tau"]), "lim_p_k": pct(100 * KS["karst_moderado"]["var_share"]["phi"]), "vu_area": n(SD["area_m2_per_m"]),
           "vu_t1": n(SD["scenarios"]["rusle"]["years_to_fill"][2], 1), "vu_t10": n(SD["scenarios"]["rusle_10"]["years_to_fill"][2], 1),
           "vu_keep": pct(100 * SD["capacity_left"], 1), "vu_net0": n(SD["long_term"]["net_ls_nominal"]), "vu_net1": n(SD["long_term"]["net_ls"])})
 

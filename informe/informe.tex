@@ -222,6 +222,7 @@ En el momento más crítico de la crisis hídrica de 2022, las presas Cerro Prie
   \item \textbf{Permisos.} Casi toda la superficie seleccionada en la cuenca del río Santa Catarina (2,933 de 3,000 ha) está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP.
   \item \textbf{Sitios y cálculo.} Los ocho sitios sugeridos se eligieron por ganancia neta: todos están en la cuenca del río Santa Catarina y siete dentro del Parque Nacional. El agua retenida se calcula con un flujo máximo (algoritmo de Dinic), equivalente al flujo de costo mínimo y unas 12.9 veces más rápido.
   \item \textbf{Cuándo escalar.} Empezar con un piloto en los ocho sitios y escalar sólo si la evapotranspiración medida del agua infiltrada queda por debajo del umbral de la sección~\ref{sec:escalar} y el intervalo de la ganancia neta queda por encima de cero.
+  \item \textbf{Limitación principal.} No se sabe a dónde va el agua infiltrada: la evapotranspiración y, sobre todo si el karst desvía agua por fallas, la ruta subterránea hacia el acuífero son lo que más determina la ganancia neta. La ruta subterránea es la más difícil de medir (trazadores).
   \item \textbf{Supuestos frágiles.} La ganancia neta es condicional a supuestos no calibrados: si el karst desvía parte del agua infiltrada, su probabilidad baja a 48\%, y sin limpieza del sedimento las barreras pierden la mayor parte de su almacenamiento en meses o pocos años.
   \item \textbf{Qué medir primero.} La evapotranspiración del agua infiltrada en la cuenca del río Santa Catarina y la fracción del escurrimiento que ya llega a Cerro Prieto: son los parámetros que más cambian la ganancia neta.
 \end{itemize}
@@ -802,7 +803,7 @@ Erosión supuesta & Sedimento (m³/m/año) & Años hasta llenarse & Intervalo 90
 \midrule
 RUSLE & 3.40 & 0.3 & 0.2 a 0.5 \\
 RUSLE / 3 & 1.13 & 0.9 & 0.5 a 1.4 \\
-RUSLE / 10 & 0.34 & 2.9 & 1.7 a 4.8 \\
+RUSLE / 10 & 0.34 & 2.9 & 1.7 a 4.7 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1001,6 +1002,8 @@ Llega al acuífero, $\phi$ & 0.10 & 0.25 & 0.40 \\
 \textbf{Condición 6: autorización y vegetación.} Siete de los ocho sitios están en el Parque Nacional Cumbres de Monterrey: escalar requiere la autorización de la CONANP y usar sólo especies nativas del tipo de vegetación de cada ladera, con material de procedencia local.
 
 \section{Limitaciones}
+
+\textbf{Jerarquía de las limitaciones.} La limitación principal es no saber a dónde va el agua infiltrada. Con las distribuciones base, la evapotranspiración del agua infiltrada ($e_g$) explica 47\% de la varianza de la ganancia neta en la cuenca del río Santa Catarina, el escurrimiento que ya llegaba al acuífero ($\tau_g$) 38\% y la fracción que llega al acuífero por el subsuelo ($\phi_g$) 14\%. Si el karst desvía agua por fallas, la ruta subterránea pasa a dominar (38\%, frente a 25\% de la evapotranspiración y 33\% del escurrimiento) y puede volver negativa la ganancia. De las tres, la conectividad del karst es la más difícil y costosa de medir, porque requiere pruebas con trazadores, mientras que la evapotranspiración y el escurrimiento se miden con lisímetros y microcuencas aforadas. El azolve de las barreras le sigue en importancia, pero es un problema de operación con una solución conocida, la limpieza periódica, y no un vacío de conocimiento. Las demás limitaciones son de resolución y de calibración.
 
 \begin{itemize}
   \item \textbf{Orden de magnitud.} El índice compara sitios; los volúmenes en m³ y L/s son estimaciones para comparar alternativas y no constituyen un balance hídrico. No se modela la mejora del suelo a largo plazo (mayor cobertura e infiltración en toda la ladera), que podría superar el efecto de la retención de las obras.
