@@ -23,6 +23,7 @@ if [[ "${1:-}" != "--pdf" ]]; then
   $PY informe/costo.py                    # cost per L/s
   $PY informe/sedimento.py                # RUSLE and dam sedimentation
   $PY informe/clima.py                    # protected areas and CMIP6 drought frequency
+  $PY informe/oraculos.py                 # MCMF vs Dinic vs topological fill (about 15 min)
 fi
 $PY informe/figuras.py
 $PY informe/mapas.py

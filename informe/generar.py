@@ -268,6 +268,40 @@ V.update({"aq_rech": n(AQ["recarga"], 1), "aq_conc": n(AQ["concesion"], 1), "aq_
           "aq_inc_mm": n(rech / 300 * 1000), "aq_net_u": n(net_u, 2), "aq_net_c": n(net_c, 2),
           "aq_net_pct": pct(100 * net_c / AQ["recarga"], 1), "aq_def_pct_u": pct(100 * net_u / deficit), "aq_def_pct_c": pct(100 * net_c / deficit)})
 
+# ---------------------------------------------------------------- retention oracles (oraculos.py)
+import statistics as _st
+OR = json.loads((ROOT / "oraculos.json").read_text())
+E, SL = OR["evals"], OR["selections"]
+med = lambda k: _st.median(e[f"{k}_ms"] for e in E)
+err = lambda k: [100 * (e[k] / e["mcmf"] - 1) for e in E if e["mcmf"] > 0]
+sel_t = {k: sum(x["seconds"] for x in SL if x["oracle"] == k) for k in ("mcmf", "dinic", "fill")}
+sel_r = {k: [] for k in ("dinic", "fill")}
+for x in SL:
+    if x["oracle"] != "mcmf":
+        ref = next(y["retained_exact"] for y in SL if y["oracle"] == "mcmf" and y["site"] == x["site"] and y["storm_mm"] == x["storm_mm"])
+        sel_r[x["oracle"]].append(100 * (x["retained_exact"] / ref - 1) if ref > 0 else 0.0)
+labels = {"mcmf": "\\emph{Minimum-cost maximum-flow} (\\emph{network simplex})", "dinic": "\\emph{Maximum flow} (Dinic)",
+          "fill": "Llenado voraz (orden topológico)"}
+orac_rows = []
+for k in ("mcmf", "dinic", "fill"):
+    e = err(k) if k != "mcmf" else [0.0]
+    sel = "referencia" if k == "mcmf" else f"{sg(_st.mean(sel_r[k]), 1)}\\%"
+    orac_rows.append(f"{labels[k]} & {n(med(k), 1)} & {n(med('mcmf') / med(k), 1)}× & {sg(_st.mean(e), 2)}\\% & {sg(min(e), 2)}\\% & {n(sel_t[k], 1)} & {sel} \\\\")
+fe = err("fill")
+by = lambda mm: _st.mean(100 * (e["fill"] / e["mcmf"] - 1) for e in E if e["storm_mm"] == mm and e["mcmf"] > 0)
+V.update({"orac_rows": "\n".join(orac_rows), "orac_nevals": n(len(E)), "orac_nsites": n(len(OR["sites"])),
+          "orac_nrand": n(OR["n_random"]), "orac_nsel": n(len(SL) // 3),
+          "orac_storms": ", ".join(str(m) for m in sorted({e["storm_mm"] for e in E})[:-1]) + f" y {max(e['storm_mm'] for e in E)}",
+          "orac_dinic_maxerr": n(max(abs(e["dinic"] - e["mcmf"]) for e in E), 2),
+          "orac_speed_dinic": n(med("mcmf") / med("dinic"), 1), "orac_speed_fill": n(med("mcmf") / med("fill"), 1),
+          "orac_fill_mean": pct(abs(_st.mean(fe)), 2), "orac_fill_max": pct(abs(min(fe)), 1),
+          "orac_fill_exact": pct(100 * sum(abs(x) < 0.01 for x in fe) / len(fe)),
+          "orac_fill_5": pct(abs(by(5)), 2), "orac_fill_40": pct(abs(by(40)), 2),
+          "orac_fill_opt": pct(abs(_st.mean(100 * (e["fill"] / e["mcmf"] - 1) for e in E if e["kind"] == "optimizado" and e["mcmf"] > 0)), 1),
+          "orac_fill_rand": pct(abs(_st.mean(100 * (e["fill"] / e["mcmf"] - 1) for e in E if e["kind"] == "aleatorio" and e["mcmf"] > 0)), 1),
+          "orac_sel_tiempo_dinic": pct(100 * sel_t["dinic"] / sel_t["mcmf"], 1),
+          "orac_sel_fill": f"{sg(_st.mean(sel_r['fill']), 1)}\\% en promedio"})
+
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():
     BODY = BODY.replace(f"«{k}»", v)

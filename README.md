@@ -14,9 +14,9 @@ En lo más crítico de 2022 (junio y julio), Cerro Prieto y La Boca bajaron a me
 
 **Demo en línea (versión estática):** https://pcruiher08.github.io/InflitracionAguaNuevoLeon/ : prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
 
-**Informe técnico en PDF (52 páginas con apéndices, trece preguntas de investigación):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Para regenerar todo desde los datos: `bash informe/regenerar.sh` (Earth Engine, 1 a 2 horas); sólo figuras y PDF desde los JSON guardados: `bash informe/regenerar.sh --pdf`.
+**Informe técnico en PDF (catorce preguntas de investigación, con apéndices):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Para regenerar todo desde los datos: `bash informe/regenerar.sh` (Earth Engine, 1 a 2 horas); sólo figuras y PDF desde los JSON guardados: `bash informe/regenerar.sh --pdf`.
 
-**Presentación para Pronatura (14 diapositivas, Beamer):** [`docs/presentacion-zmm.pdf`](docs/presentacion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/presentacion-zmm.pdf). Fuente: [`informe/presentacion_plantilla.tex`](informe/presentacion_plantilla.tex); las cifras se llenan con `informe/generar.py`, igual que el informe.
+**Presentación para Pronatura (15 diapositivas, Beamer):** [`docs/presentacion-zmm.pdf`](docs/presentacion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/presentacion-zmm.pdf). Fuente: [`informe/presentacion_plantilla.tex`](informe/presentacion_plantilla.tex); las cifras se llenan con `informe/generar.py`, igual que el informe.
 
 ---
 
@@ -262,7 +262,19 @@ Con 25,000 a 50,000 pesos por hectárea (tope de CONAFOR para restauración fore
 - **Parque Nacional Cumbres de Monterrey:** 2,933 de las 3,000 ha seleccionadas por ganancia neta están dentro del parque (WDPA). La restauración es compatible con un parque nacional (LGEEPA, art. 50), pero requiere autorización de la CONANP.
 - **Clima (NEX-GDDP-CMIP6, 8 modelos, 2041 a 2070):** un año tan seco como 2021 a 2022 (percentil 11 histórico) tendría una frecuencia mediana de 8 % en SSP2-4.5 y 10 % en SSP5-8.5, con mucha dispersión entre modelos (3 a 23 %). El agua bruta cambiaría entre -1.4 % y +1.8 %.
 
-### 15. Validación en campo
+### 15. Tres algoritmos para calcular el agua retenida
+
+La selección de barreras evalúa miles de veces cuánta agua retiene un conjunto de barreras. Se compararon tres oráculos (`informe/oraculos.py`, 620 evaluaciones en 5 sitios y 4 tormentas):
+
+| Oráculo | ms por evaluación (mediana) | Error frente al exacto | Selección completa (10 casos) |
+|---|---|---|---|
+| *Minimum-cost maximum-flow* (*network simplex*, OR-Tools) | 51 | exacto | 731 s |
+| *Maximum flow* con el algoritmo de Dinic | 4 | exacto (idéntico en todos los casos) | 5 s, mismas barreras |
+| Llenado voraz en orden topológico | 2 | −0.8 % en promedio, hasta −12.6 % | 22 s, −0.3 % de retención |
+
+Con los costos de este problema (−1 en los arcos de las barreras, 0 en los demás), el *minimum-cost maximum-flow* equivale a un flujo máximo en la red sin salidas, y el informe lo demuestra. Dinic da el mismo resultado ~13 veces más rápido por evaluación y ~135 veces más rápido en la selección completa. El *minimum-cost maximum-flow* sólo vuelve a ser necesario con costos diferenciados por barrera. El algoritmo húngaro no aplica: la ubicación de barreras no es una asignación uno a uno.
+
+### 16. Validación en campo
 
 El informe propone un diseño antes y después con control e impacto en los 8 sitios: microcuencas pareadas con vertedores (τ), perfiles de humedad del suelo y balance de cloruro (e) y piezómetros en el Santa Catarina (φ). Con CV = 0.5, α = 0.05 y potencia de 80 %, se necesitan ~16 pares para detectar una diferencia de 50 % y ~63 para una de 25 %.
 

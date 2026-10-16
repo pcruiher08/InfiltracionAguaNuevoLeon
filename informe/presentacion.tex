@@ -256,6 +256,25 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \nota{Material de procedencia local y densidad moderada: una cobertura densa eleva la evapotranspiración y reduce la ganancia neta. Inventarios: Alanís-Rodríguez et al. (2015a, b), Jiménez Pérez et al. (2013), Ramírez-Lozano et al. (2013).}
 \end{frame}
 
+\begin{frame}{Tres algoritmos para calcular el agua retenida}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\small
+\begin{itemize}
+  \item \textbf{\emph{Minimum-cost maximum-flow}} (\emph{network simplex}): exacto, admite costos por barrera.
+  \item \textbf{\emph{Maximum flow} (Dinic)}: con nuestros costos es equivalente; mismo resultado, unas 12.9 veces más rápido.
+  \item \textbf{Llenado voraz en orden topológico}: unas 24.4 veces más rápido por evaluación, pero subestima la retención hasta 12.6\%, sobre todo en conjuntos optimizados.
+  \item En la selección completa, Dinic elige las mismas barreras en 0.7\% del tiempo.
+  \item El algoritmo húngaro no aplica: no es una asignación uno a uno.
+\end{itemize}
+\end{column}
+\begin{column}{0.47\textwidth}
+\centering\includegraphics[width=\linewidth]{figuras/g16_oraculos_error.png}
+\nota{620 evaluaciones en 5 sitios y cuatro tormentas.}
+\end{column}
+\end{columns}
+\end{frame}
+
 \begin{frame}{Qué tan sólidos son los resultados}
 \begin{itemize}
   \item \textbf{Calibración:} contra el escurrimiento natural oficial de Cerro Prieto (CONAGUA), el modelo sobrestima el escurrimiento; calibrado, el agua bruta y la neta bajan alrededor de 18\%, sin cambiar la probabilidad de ganancia positiva.

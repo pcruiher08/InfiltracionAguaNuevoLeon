@@ -308,6 +308,39 @@ def fate_figs():
     save(fig, "g15_neto")
 
 
+def oracle_figs():
+    p = ROOT / "oraculos.json"
+    if not p.exists():
+        return
+    O = json.loads(p.read_text()); E = O["evals"]
+    storms = sorted({e["storm_mm"] for e in E})
+    cols = dict(zip(storms, ["#86b6ef", "#2a78d6", "#eb6834", "#8f3510"]))
+    fig, ax = plt.subplots(figsize=(7, 3.6))
+    for mm in storms:
+        sub = [e for e in E if e["storm_mm"] == mm]
+        ax.scatter([e["mcmf"] for e in sub], [100 * (e["fill"] / e["mcmf"] - 1) if e["mcmf"] > 0 else 0 for e in sub],
+                   s=10, color=cols[mm], label=f"{mm} mm", alpha=.8, edgecolor="white", linewidth=.3)
+    ax.axhline(0, color="#1d1b18", lw=1)
+    ax.set_xscale("log"); ax.set_xticks([500, 700, 1000, 1500, 2000]); ax.xaxis.set_minor_formatter(lambda v, _: "")
+    ax.xaxis.set_major_formatter(lambda v, _: fmt(v))
+    ax.set_xlabel("agua retenida exacta F(S), m³ (minimum-cost maximum-flow = Dinic)")
+    ax.set_ylabel("error del llenado voraz (%)")
+    top_legend(ax)
+    save(fig, "g16_oraculos_error")
+
+    fig, ax = plt.subplots(figsize=(7, 2.8))
+    names = [("mcmf", "Minimum-cost maximum-flow\n(network simplex)"), ("dinic", "Maximum flow\n(Dinic)"), ("fill", "Llenado voraz\n(orden topológico)")]
+    data = [[e[f"{k}_ms"] for e in E] for k, _ in names]
+    parts = ax.boxplot(data, vert=False, widths=.5, patch_artist=True, showfliers=False,
+                       medianprops=dict(color="#1d1b18"), whiskerprops=dict(color="#6b675f"), capprops=dict(color="#6b675f"))
+    for b, c in zip(parts["boxes"], ["#2a78d6", "#eb6834", "#1baf7a"]):
+        b.set_facecolor(c); b.set_alpha(.8); b.set_edgecolor("white")
+    ax.set_yticks([1, 2, 3], [lab for _, lab in names], fontsize=8)
+    ax.set_xscale("log"); ax.set_xticks([1, 2, 5, 10, 20, 50, 100]); ax.xaxis.set_minor_formatter(lambda v, _: "")
+    ax.xaxis.set_major_formatter(lambda v, _: fmt(v)); ax.set_xlabel("milisegundos por evaluación de F(S) (escala log)"); ax.grid(axis="y", visible=False)
+    save(fig, "g17_oraculos_tiempo")
+
+
 def maps(src):
     """Crop the app screenshots to the map area (drop the sidebar)."""
     for name, out in (("fig_cuencas", "m1_cuencas"), ("fig_optim", "m2_optimizacion"),
@@ -324,6 +357,6 @@ def maps(src):
 if __name__ == "__main__":
     OUT.mkdir(exist_ok=True)
     for fn in (ha_catchment, criteria, robustness, water, productivity, barriers, storm, mcmf,
-               uncertainty, duals, gumbel_fig, pareto_fig, supply_fig, fate_figs):
+               uncertainty, duals, gumbel_fig, pareto_fig, supply_fig, fate_figs, oracle_figs):
         fn()
     # map figures are rendered from data by informe/mapas.py

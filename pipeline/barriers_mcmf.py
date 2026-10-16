@@ -187,3 +187,161 @@ def optimize(lon, lat, budget_m=1500, window_m=1200, storm_mm=None):
         "_grid": {"z": z, "recv": recv, "acc": acc, "win": win, "to_ll": to_ll, "contour": contour,
                   "chosen": chosen_idx, "greedy": sorted(greedy_idx), "runoff": r},
     }
+
+
+# ---------------------------------------------------------------- alternative retention oracles
+def _graph_parts(recv, r, cands, chosen_idx):
+    """Integer capacities shared by the max-flow oracles (same scaling as the min-cost flow)."""
+    ri = np.round(r * SCALE).astype(np.int64)
+    chosen = sorted(chosen_idx)
+    caps = {j: int(cands[j]["cap_m3"] * SCALE) for j in chosen}
+    return ri, chosen, caps
+
+
+def retained_dinic(recv, r, cands, chosen_idx):
+    """Maximum retention as a pure maximum flow, solved with Dinic's algorithm.
+
+    Same network as the min-cost flow but without the cell → outlet arcs: the sink t is
+    reachable only through barriers, so the maximum s–t flow is the maximum water the
+    chosen barriers can retain while respecting drainage and capacity.
+    """
+    ri, chosen, caps = _graph_parts(recv, r, cands, chosen_idx)
+    n = recv.size
+    S, T = n, n + 1
+    N = n + 2 + len(chosen)
+    head, to, cap, nxt = [-1] * N, [], [], []
+
+    def add(u, v, c):
+        to.append(v); cap.append(c); nxt.append(head[u]); head[u] = len(to) - 1
+        to.append(u); cap.append(0); nxt.append(head[v]); head[v] = len(to) - 1
+
+    # only cells that can reach a chosen barrier matter
+    useful = np.zeros(n, bool)
+    for j in chosen:
+        useful[cands[j]["up"]] = True
+    for i in np.flatnonzero(useful & (ri > 0)):
+        add(S, int(i), int(ri[i]))
+    for i in np.flatnonzero(useful):
+        if recv[i] >= 0 and useful[recv[i]]:
+            add(int(i), int(recv[i]), BIG)
+    for k, j in enumerate(chosen):
+        b = n + 2 + k
+        for c in cands[j]["cells"]:
+            if useful[c]:
+                add(int(c), b, BIG)
+        add(b, T, caps[j])
+
+    flow = 0
+    while True:
+        level = [-1] * N; level[S] = 0; q = [S]
+        for u in q:                                   # BFS: level graph
+            e = head[u]
+            while e != -1:
+                if cap[e] > 0 and level[to[e]] < 0:
+                    level[to[e]] = level[u] + 1; q.append(to[e])
+                e = nxt[e]
+        if level[T] < 0:
+            break
+        it = head[:]
+        while True:                                   # blocking flow with iterative DFS
+            stack, path = [S], []
+            while stack:
+                u = stack[-1]
+                if u == T:
+                    break
+                e = it[u]
+                while e != -1 and not (cap[e] > 0 and level[to[e]] == level[u] + 1):
+                    e = nxt[e]
+                it[u] = e
+                if e == -1:
+                    stack.pop()
+                    if path:
+                        it[stack[-1]] = nxt[it[stack[-1]]]; path.pop()
+                    level[u] = -1
+                else:
+                    stack.append(to[e]); path.append(e)
+            if not stack:
+                break
+            push = min(cap[e] for e in path)
+            for e in path:
+                cap[e] -= push; cap[e ^ 1] += push
+            flow += push
+    return flow / SCALE
+
+
+def retained_fill(recv, r, cands, chosen_idx):
+    """Topological greedy fill: route runoff downslope once, from the ridges to the outlets, and let
+    each chosen barrier keep what reaches it until it is full. Linear time; no optimality guarantee."""
+    n = recv.size
+    rem = np.zeros(len(cands))
+    owners = {}
+    for j in chosen_idx:
+        rem[j] = cands[j]["cap_m3"]
+        for c in cands[j]["cells"]:
+            owners.setdefault(c, []).append(j)
+    indeg = np.zeros(n, np.int64)
+    has = recv >= 0
+    np.add.at(indeg, recv[has], 1)
+    q = r.astype(float).copy()
+    stack = list(np.flatnonzero(indeg == 0))
+    kept = 0.0
+    while stack:                                       # Kahn's order: every donor before its receiver
+        i = stack.pop()
+        for j in owners.get(i, ()):
+            take = min(q[i], rem[j])
+            q[i] -= take; rem[j] -= take; kept += take
+        d = recv[i]
+        if d >= 0:
+            q[d] += q[i]
+            indeg[d] -= 1
+            if indeg[d] == 0:
+                stack.append(d)
+    return kept
+
+
+def select_with(oracle, recv, r, cands, budget_m):
+    """Same lazy greedy (CELF) as select(), with any retention oracle; returns chosen ids and oracle calls."""
+    import heapq
+    lengths = np.array([cd["length_m"] for cd in cands])
+    caps = np.array([cd["cap_m3"] for cd in cands])
+    bound = np.minimum(caps, upstream_runoff(cands, r))
+    heap = [(-bound[j] / lengths[j], j, -1) for j in range(len(cands)) if lengths[j] <= budget_m]
+    heapq.heapify(heap)
+    chosen, spent, base, it, calls = [], 0.0, 0.0, 0, 0
+    while heap:
+        neg, j, seen = heapq.heappop(heap)
+        if spent + lengths[j] > budget_m:
+            continue
+        if seen == it:
+            if -neg * lengths[j] < 0.5:
+                break
+            chosen.append(j); spent += lengths[j]; base += -neg * lengths[j]; it += 1
+            continue
+        gain = oracle(recv, r, cands, set(chosen) | {j}) - base; calls += 1
+        heapq.heappush(heap, (-gain / lengths[j], j, it))
+    return chosen, calls
+
+
+def setup(lon, lat, window_m=1200, storm_mm=STORM_MM):
+    """Drainage network, contour candidates and design-storm runoff for one site (no optimization)."""
+    global STORM_MM
+    STORM_MM = storm_mm
+    margin_m = max(150, window_m * 0.25)
+    z, lon_g, lat_g = B.fetch_dem(lon, lat, window_m, margin_m)
+    m = int(round(margin_m / B.RES))
+    win = (m, z.shape[0] - m, m, z.shape[1] - m)
+    filled = B.fill_pits(z)
+    recv = B.flow_directions(filled)
+    acc = B.accumulation(filled, recv).reshape(z.shape)
+    donors = B.donors_of(recv)
+    zs = B.smooth3(z)
+    local_slope = B.slope_deg(zs)
+    r0, r1, c0, c1 = win
+    interval = B.vertical_interval(float(local_slope[r0:r1, c0:c1].mean()))
+    cands = B.candidates(zs, acc, local_slope, interval, win)
+    for cd in cands:
+        cd["up"] = B.upstream(cd["cells"], donors)
+    contour = [c for c in cands if c["type"] == "curva de nivel"]
+    for cd in contour:
+        cd["cap_m3"] = CAP_M3_PER_M * cd["length_m"]
+    return recv, runoff_m3(local_slope).ravel(), contour
