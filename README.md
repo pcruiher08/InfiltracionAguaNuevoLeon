@@ -474,7 +474,7 @@ web/
 
 ## Sobre Urora
 
-Este proyecto fue elaborado por [Urora](https://urora.mx), empresa de tecnología, desarrollo de software e innovación digital. Urora desarrolló el análisis geoespacial, los modelos de optimización y de flujo en redes, la aplicación web y el informe.
+Este proyecto fue elaborado por [Urora](https://urora.mx), empresa de tecnología, desarrollo de software e innovación digital. Urora desarrolló el análisis geoespacial, los modelos de optimización y de flujo en redes, la aplicación web y el informe, en colaboración con Zaddkiel de Jesus Martinez Alor.
 
 ## Equipo
 
