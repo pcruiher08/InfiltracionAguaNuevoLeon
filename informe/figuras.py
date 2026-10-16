@@ -117,6 +117,8 @@ def productivity():
         ax.axvline(P[k]["median"], color="#1d1b18", ls=(0, (3, 3)), lw=1)
         ax.set_title(f"{SHORT[k]} · mediana {fmt(P[k]['median'])}", fontsize=9, loc="left", color="#1d1b18")
         ax.grid(axis="x", visible=False)
+    last = max(x["to"] for k in SUP for x in P[k]["bins"] if x["ha"] > 0)
+    axs[0, 0].set_xlim(0, last); axs[0, 0].xaxis.set_major_formatter(lambda v, _: fmt(v))
     for ax in axs[1]: ax.set_xlabel("m³/ha/año de agua bruta")
     for ax in axs[:, 0]: ax.set_ylabel("% del área elegible")
     fig.tight_layout()
@@ -300,9 +302,11 @@ def fate_figs():
     save(fig, "g14_destino")
 
     fig, ax = plt.subplots(figsize=(7, 3.2))
+    allv = np.concatenate([D["selections"][k]["samples"] for k in ("bruta_30000", "neta_30000")])
+    lim = float(np.ceil(np.percentile(np.abs(allv), 99.5) / 100) * 100)
     for key, col, lab in (("bruta_30000", "#9c9890", "Selección por agua bruta"), ("neta_30000", "#eb6834", "Selección por ganancia neta esperada")):
         sm = D["selections"][key]["samples"]
-        ax.hist(sm, bins=60, color=col, alpha=0.7, label=lab, range=(-250, 250))
+        ax.hist(np.clip(sm, -lim, lim), bins=60, color=col, alpha=0.7, label=lab, range=(-lim, lim))
     ax.axvline(0, color="#1d1b18", lw=1)
     g = D["selections"]["bruta_30000"]["gross_ls"]
     ax.set_xlabel(f"L/s netos con 30,000 ha (el agua bruta retenida es de {g:,.0f} L/s)")
@@ -352,7 +356,7 @@ def iota_fig():
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(7, 2.8))
     for ax in (a1, a2):
         ax.axvspan(20, 60, color="#efece6", zorder=0)
-        ax.set_xlabel(r"$\iota$: agua drenada que toman las raíces ladera abajo (%)"); ax.set_xlim(0, 100)
+        ax.set_xlabel(r"$\iota$: tomada por raíces ladera abajo (%)"); ax.set_xlim(0, 100)
     a1.plot(io, [r["net_ls_30000"] for r in R], color="#eb6834", lw=2)
     a1.axhline(0, color="#1d1b18", lw=1); a1.set_ylabel("ganancia neta media (L/s)")
     a1.axvline(100 * F["iota_g0"], color="#6b675f", lw=1, ls=":")

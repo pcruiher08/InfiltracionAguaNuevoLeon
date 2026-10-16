@@ -99,7 +99,7 @@ def water_curves():
 
 def productivity_by_supply():
     cells = optimize.cell_table()
-    edges = list(range(0, 801, 25))
+    edges = list(range(0, 3201, 100))   # m³/ha/yr; the field treatment retains up to ~3,000
     out = {}
     for sid, name in SUPPLY_NAMES.items():
         v = np.array([r["delivered_m3"] / r["eligible_ha"] for r in cells if r["supply"] == sid])
