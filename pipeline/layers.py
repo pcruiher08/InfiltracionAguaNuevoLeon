@@ -9,7 +9,7 @@ import random
 import ee
 
 from pipeline.config import (
-    AOI_BBOX, ASSET_FALLBACKS, CATCHMENTS_FILE, CLASS_THRESHOLDS, CONNECTIVITY_TIERS, DATASETS, INDEX_CONNECTION, EE_PROJECT,
+    AOI_BBOX, ASSET_FALLBACKS, CATCHMENTS_FILE, CLASS_THRESHOLDS, CONNECTIVITY_TIERS, DATASETS, EE_PROJECT,
     HYBAS_LEVEL12, DEFAULT_WEIGHTS, DRY_SEASON_MONTHS, END, START,
 )
 
@@ -52,7 +52,7 @@ def catchments():
 def connectivity(tiers=None):
     """Tiered supply connectivity (0–1); painted lowest tier first so nested
     catchments (La Boca, Santa Catarina inside El Cuchillo) keep the higher tier.
-    Default: hydrological connectivity k; pass INDEX_CONNECTION for the priority criterion."""
+    Default: hydrological connectivity k."""
     img = ee.Image(0).float()
     for name, tier in sorted((tiers or CONNECTIVITY_TIERS).items(), key=lambda kv: kv[1]):
         img = img.paint(catchments()[name], tier)
@@ -144,7 +144,7 @@ def valid_mask():
 def scores():
     # Connectivity is cheap to paint, so it is always computed live
     base = _asset.select(SCORE_BANDS) if _asset is not None else live_scores()
-    return base.addBands(connectivity(INDEX_CONNECTION))
+    return base.addBands(connectivity())   # hydrological connectivity k: independent of the water-fate model
 
 
 def raw():

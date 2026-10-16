@@ -2,7 +2,7 @@
 
 **Reto 1 · Infiltración**, Grok Monterrey Build Day (14 oct 2026). Planteado por Antonio Hernández Ramírez (Pronatura Noreste).
 
-**Equipo:** Pablo César Ruíz Hernández¹ · David Martin Oliva Zavala¹ · Zaddkiel de Jesus Martinez Alor²  
+**Equipo:** Pablo César Ruíz Hernández¹ · David Martin Oliva Zavala¹ · Zaddkiel de Jesus Martinez Alor  
 ¹ **Urora** ([urora.mx](https://urora.mx)), Monterrey, Nuevo León
 
 > *¿Dónde restaurar suelos en partes altas para favorecer la infiltración?*
@@ -13,11 +13,11 @@ En lo más crítico de 2022 (junio y julio), Cerro Prieto y La Boca bajaron a me
 
 **Ver el flujo de agua:** en la app local, el botón **▶ Ver flujo de agua (demo)** carga un sitio y anima una tormenta sin y con barreras.
 
-**Demo en línea (versión estática):** https://pcruiher08.github.io/InflitracionAguaNuevoLeon/ : prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
+**Demo en línea (versión estática):** https://pcruiher08.github.io/InfiltracionAguaNuevoLeon/ : prioridad, robustez, cuencas de abasto y 8 sitios con barreras ya optimizadas. La versión completa e interactiva corre localmente (ver *Cómo correrlo*); la estática se regenera con `python -m pipeline.build_static`.
 
-**Informe técnico en PDF (catorce preguntas de investigación, con apéndices):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Para regenerar todo desde los datos: `bash informe/regenerar.sh` (Earth Engine, 1 a 2 horas); sólo figuras y PDF desde los JSON guardados: `bash informe/regenerar.sh --pdf`.
+**Informe técnico en PDF (catorce preguntas de investigación, con apéndices):** [`docs/infiltracion-zmm.pdf`](docs/infiltracion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InfiltracionAguaNuevoLeon/infiltracion-zmm.pdf). Fuente en LaTeX en [`informe/`](informe/); todas las cifras se llenan desde los datos con `python informe/generar.py`. Para regenerar todo desde los datos: `bash informe/regenerar.sh` (Earth Engine, 1 a 2 horas); sólo figuras y PDF desde los JSON guardados: `bash informe/regenerar.sh --pdf`.
 
-**Presentación para Pronatura (15 diapositivas, Beamer):** [`docs/presentacion-zmm.pdf`](docs/presentacion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InflitracionAguaNuevoLeon/presentacion-zmm.pdf). Fuente: [`informe/presentacion_plantilla.tex`](informe/presentacion_plantilla.tex); las cifras se llenan con `informe/generar.py`, igual que el informe.
+**Presentación para Pronatura (15 diapositivas, Beamer):** [`docs/presentacion-zmm.pdf`](docs/presentacion-zmm.pdf) · [en línea](https://pcruiher08.github.io/InfiltracionAguaNuevoLeon/presentacion-zmm.pdf). Fuente: [`informe/presentacion_plantilla.tex`](informe/presentacion_plantilla.tex); las cifras se llenan con `informe/generar.py`, igual que el informe.
 
 ---
 
@@ -45,14 +45,14 @@ En lugar de un rectángulo, el análisis cubre la **unión de las cuencas de aba
 - Se ubicaron las presas con datos de agua superficial (JRC): La Boca ≈ 3.8 km², Cerro Prieto ≈ 20 km², El Cuchillo ≈ 43 km².
 - Desde cada fuente se trazó la cuenca aguas arriba con **HydroBASINS nivel 12**, recorriendo los enlaces `HYBAS_ID → NEXT_DOWN`.
 
-| Cuenca | Área | Papel en el abasto | Conectividad hidrológica *k* | Conexión en el índice |
-|---|---|---|---|---|
-| Presa La Boca | 347 km² | Presa de abasto directo | **1.0** | 0.5 |
-| Presa Cerro Prieto (río Pablillo) | 1,758 km² | Presa de abasto directo | **1.0** | 0.5 |
-| Río Santa Catarina aguas arriba de Monterrey | 1,392 km² | Recarga de pozos y galerías de SADM | **1.0** | 1.0 |
-| Resto de la cuenca de El Cuchillo | 8,744 km² (incluye las anteriores salvo Cerro Prieto) | Abasto mayor, pero lejano | **0.6** | 0.3 |
+| Cuenca | Área | Papel en el abasto | Conectividad hidrológica *k* |
+|---|---|---|---|
+| Presa La Boca | 347 km² | Presa de abasto directo | **1.0** |
+| Presa Cerro Prieto (río Pablillo) | 1,758 km² | Presa de abasto directo | **1.0** |
+| Río Santa Catarina aguas arriba de Monterrey | 1,392 km² | Recarga de pozos y galerías de SADM | **1.0** |
+| Resto de la cuenca de El Cuchillo | 8,744 km² (incluye las anteriores salvo Cerro Prieto) | Abasto mayor, pero lejano | **0.6** |
 
-Los niveles de conectividad son un **supuesto explícito**, ajustable en `pipeline/config.py`. La conectividad hidrológica *k* se usa para los volúmenes de agua; la conexión en el índice (`INDEX_CONNECTION`) refleja la ganancia neta esperada de cada fuente (sección 9).
+Los niveles de conectividad son un **supuesto explícito**, ajustable en `pipeline/config.py`. *k* se usa para los volúmenes de agua y también como puntaje de conexión del índice de prioridad, que así queda independiente del modelo del destino del agua; la ganancia neta de cada fuente se aplica después, en la selección de sitios.
 
 ![Cuencas de abasto y prioridad de restauración](informe/figuras/m1_cuencas.png)
 
@@ -69,7 +69,7 @@ Se calculan siete criterios en Google Earth Engine. Cada uno se normaliza a 0–
 | Incendios | Área quemada entre 2019 y 2026: 1 si fue en los últimos 3 años, 0.5 si antes | 0.10 |
 | Suelo seco | Humedad superficial SMAP en temporada seca | 0.10 |
 | Lluvia | Precipitación media anual (CHIRPS): más agua por captar | 0.10 |
-| **Conexión con abasto** | Según la ganancia neta esperada de su fuente: río Santa Catarina 1.0, La Boca y Cerro Prieto 0.5 (la retención no añade volumen a las presas, pero reduce azolve y avenidas), resto de El Cuchillo 0.3 | 0.20 |
+| **Conexión con abasto** | Conectividad hidrológica *k* de la cuenca (tabla anterior) | 0.20 |
 
 - **Clases:** alta si el índice supera 0.55, media entre 0.45 y 0.55, baja por debajo. Los umbrales se calibraron con la distribución real en laderas de más de 8°: equivalen a la mediana (~p50) y a ~p80.
 - **Exclusiones:** zonas urbanas y cuerpos de agua (ESA WorldCover). El mapa muestra por defecto solo laderas de 8° o más.
@@ -94,9 +94,9 @@ Las tres cifras de resultados describen **lo mismo**: cuánto ganaría un terren
 
 | Clase | Regla | Superficie | Qué significa |
 |---|---|---|---|
-| **Prioridad alta** | Índice > 0.55 (~20 % superior de las laderas) | ~79,500 ha | Las mejores candidatas a restaurar |
-| **Prioridad media** | Índice entre 0.45 y 0.55 | ~126,700 ha | Vale la pena restaurarlas, pero van en segundo lugar |
-| **Alta y robusta** | Alta en ≥ 50 % de 40 ponderaciones aleatorias | ~56,500 ha (71 % de la alta) | Prioritarias **sin importar cómo se ponderen los criterios** |
+| **Prioridad alta** | Índice > 0.55 (~20 % superior de las laderas) | ~141,200 ha | Las mejores candidatas a restaurar |
+| **Prioridad media** | Índice entre 0.45 y 0.55 | ~175,500 ha | Vale la pena restaurarlas, pero van en segundo lugar |
+| **Alta y robusta** | Alta en ≥ 50 % de 40 ponderaciones aleatorias | ~90,600 ha (64 % de la alta) | Prioritarias **sin importar cómo se ponderen los criterios** |
 
 **Por qué importa la robustez:** los pesos de los criterios son una decisión de criterio experto; alguien podría darle más peso a los incendios o menos a la pendiente. Lo robusto se mantiene alto con casi cualquier ponderación, así que es **el lugar más seguro para empezar**.
 
@@ -201,7 +201,7 @@ Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terr
 
     Además hay un hidrograma del agua que sale de la ventana (sin y con barreras) y un balance en m³. En la app local, el botón **▶ Ver flujo de agua (demo)** lo muestra en un clic.
 
-En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~11 %** el escurrimiento que sale de la ventana y **~12 %** el pico, y suman de 4,900 a 5,605 m³ infiltrados por tormenta.
+En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~9 %** el escurrimiento que sale de la ventana y **~9 %** el pico (cifra sólo indicativa: la simulación usa una velocidad uniforme), y suman de 3,700 a 4,200 m³ infiltrados por tormenta. El almacenamiento por metro de barrera es el mismo que en el modelo de flujo (0.9 m³/m); la diferencia con la retención de MCMF para barreras solas se debe sobre todo a las presas en cárcava, que MCMF no incluye.
 
 
 ![Simulación de una tormenta de 40 mm](informe/figuras/m4_simulacion.png)
@@ -252,7 +252,7 @@ El escurrimiento natural de la cuenca de Cerro Prieto según CONAGUA (cuencas R�
 
 ### 12. Azolve evitado en las presas (RUSLE)
 
-Con la ecuación universal de pérdida de suelo revisada (`informe/sedimento.py`), 30,000 ha en la cuenca de Cerro Prieto evitarían que lleguen en promedio ~481 mil m³/año de sedimento a la presa (**~24.0 hm³ en 50 años**, ~8.0 % de su capacidad), pero reducirían el agua que le llega en ~4.0 hm³/año. En las presas, el azolve evitado no compensa el agua retenida.
+Con la ecuación universal de pérdida de suelo revisada (`informe/sedimento.py`), 30,000 ha en la cuenca de Cerro Prieto evitarían que lleguen de ~48 a ~481 mil m³/año de sedimento a la presa (**de ~2.4 a ~24 hm³ en 50 años**, hasta ~8 % de su capacidad; la cota baja supone que la RUSLE sobrestima la erosión diez veces), pero reducirían el agua que le llega en ~4.0 hm³/año. En las presas, el azolve evitado no compensa el agua retenida.
 
 ### 13. Costo
 
@@ -293,7 +293,7 @@ Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y
 1. **Satélites** (MODIS MOD16A2GF, PML, TerraClimate y FLDAS, 2015 a 2023): en las laderas de la cuenca del río Santa Catarina se evapotranspira de 77 a 113 % de la lluvia ordinaria. Los productos difieren mucho entre sí y los valores mayores que 1 sugieren que CHIRPS subestima la lluvia de la sierra. Es una cota superior de *e*.
 2. **Balance diario del suelo** detrás de la barrera (lluvia CHIRPS, evapotranspiración potencial TerraClimate, zona de raíces de 3 a 15 m de ancho y 50 a 400 mm de agua disponible): cada metro de barrera recibe el escurrimiento de ~600 m² de ladera, la zona de raíces se satura y sólo **~7 %** del agua retenida se evapotranspira; el resto drena por debajo de las raíces (recarga concentrada).
 
-Si se confirma, la ganancia neta con 30,000 ha en la cuenca del río Santa Catarina pasaría de ~26 a **~156 L/s**, con probabilidad cercana a 100 % (88 % con pérdidas moderadas por karst): el análisis base es conservador. El costo por L/s neto (~7 millones de pesos) sigue por encima del de El Cuchillo II.
+Si se confirma, la ganancia neta con 30,000 ha en la cuenca del río Santa Catarina pasaría de ~26 a **~156 L/s**, con probabilidad cercana a 100 % (88 % con pérdidas moderadas por karst): el análisis base es conservador. El modelo probablemente subestima *e*: en laderas calizas de suelo somero, parte del agua drenada se mueve ladera abajo como flujo subsuperficial dentro de la zona de raíces, y los encinos toman agua de las fracturas del epikarst. Si entre 20 y 60 % del agua drenada sigue ese camino, *e* sube a ~38 % y la ganancia neta baja a **~72 L/s** (probabilidad positiva ~92 %). El costo por L/s neto (~7 millones de pesos) sigue por encima del de El Cuchillo II.
 
 **Cómo medirla en campo:** lisímetros de drenaje detrás de las barreras y en laderas testigo; sensores de humedad del suelo a 30, 60 y 100 cm; flujo de savia en los árboles cercanos (qué tan lejos alcanzan las raíces el agua retenida); isótopos estables del agua (δ¹⁸O, δ²H) y balance de cloruro, que indican qué parte se evaporó antes de recargar; y covarianza de remolinos para calibrar los productos satelitales.
 
@@ -383,10 +383,10 @@ En cada sitio, el optimizador elige las barreras así:
 
 Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en laderas de 8° o más.
 
-1. **La prioridad se concentra en las laderas de la Sierra Madre, sobre todo en la cuenca del río Santa Catarina.** Hay ~**79,500 ha de prioridad alta** (~74,400 ha entre 8° y 35°, aptas para obras, y ~5,200 ha de más de 35°, para regeneración natural) (~61,100 ha en la cuenca del río Santa Catarina) y ~126,700 ha de prioridad media.
-2. **La conexión con el abasto pesa según la ganancia neta.** La cuenca del río Santa Catarina, donde la recarga es agua nueva para los pozos de SADM, puntúa 1.0; las cuencas de las presas, 0.5. ~**66,100 ha (83 %)** de la prioridad alta están en las cuencas de La Boca, Cerro Prieto o el río Santa Catarina.
-3. **La prioridad es robusta.** ~**56,500 ha (71 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
-4. **Los incendios abren una ventana de acción.** ~**14,800 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
+1. **La prioridad se concentra en las laderas de la Sierra Madre, sobre todo en la cuenca del río Santa Catarina.** Hay ~**141,200 ha de prioridad alta** (~135,500 ha entre 8° y 35°, aptas para obras, y ~5,700 ha de más de 35°, para regeneración natural; ~61,100 ha en la cuenca del río Santa Catarina) y ~175,500 ha de prioridad media.
+2. **La mayor parte de la prioridad alta drena directo a una fuente de abasto:** ~99,600 ha (71 %) en las cuencas de La Boca, Cerro Prieto o el río Santa Catarina. El índice usa la conectividad hidrológica, no la ganancia neta, para no anticipar el resultado del modelo del destino del agua.
+3. **La prioridad es robusta.** ~**90,600 ha (64 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
+4. **Los incendios abren una ventana de acción.** ~**17,100 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
 5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero Campo Buenos Aires** (~26 L/s con 30,000 ha y supuestos conservadores; ~156 L/s si se confirma en campo la baja evapotranspiración del agua concentrada detrás de las barreras); en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
     - Para maximizar agua: **la cuenca del río Santa Catarina**, que además es donde la ganancia neta es más probable.

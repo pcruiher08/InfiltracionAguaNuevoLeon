@@ -31,6 +31,12 @@ INF_DAM = 0.3
 CELL_M2 = B.RES * B.RES
 
 
+def barrier_cell_factor(cd):
+    """CAP_BARRIER and INF_BARRIER assume 30 m of barrier per cell; scale by the barrier length that actually crosses
+    each cell, so storage and infiltration per metre match the min-cost flow model (0.9 and 0.54 m³ per metre)."""
+    return (cd["length_m"] / max(len(cd["cells"]), 1)) / B.RES
+
+
 def _setup(lon, lat, budget_m, window_m):
     margin_m = max(150, window_m * 0.25)
     z, lon_g, lat_g = B.fetch_dem(lon, lat, window_m, margin_m)
@@ -113,8 +119,9 @@ def simulate(lon, lat, budget_m=1500, window_m=1200):
     cap = np.zeros(n)
     inf = np.full(n, INF_HILL)
     for cd in chosen:
-        cap[cd["cells"]] = CAP_BARRIER
-        inf[cd["cells"]] = INF_BARRIER
+        f = barrier_cell_factor(cd)
+        cap[cd["cells"]] = CAP_BARRIER * f
+        inf[cd["cells"]] = INF_BARRIER * f
     for cd in dams:
         cap[cd["cells"]] = CAP_DAM
         inf[cd["cells"]] = INF_DAM

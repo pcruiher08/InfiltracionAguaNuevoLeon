@@ -42,7 +42,7 @@
 \setbeamercolor{bloque}{bg=crema,fg=tinta}
 
 \title{¿Dónde restaurar suelos en las partes altas de las cuencas de Monterrey para favorecer la infiltración, y cuánta agua gana el abasto?}
-\author{M.Sc. Pablo César Ruíz Hernández\textsuperscript{1,*} · B.Sc. David Martin Oliva Zavala\textsuperscript{1} · Zaddkiel de Jesus Martinez Alor\textsuperscript{2}}
+\author{M.Sc. Pablo César Ruíz Hernández\textsuperscript{1,*} · B.Sc. David Martin Oliva Zavala\textsuperscript{1} · Zaddkiel de Jesus Martinez Alor}
 \date{Reto planteado por Pronatura Noreste · Grok Monterrey Build Day · octubre de 2026}
 
 \begin{document}
@@ -69,7 +69,7 @@
 \end{column}
 \end{columns}
 \vfill
-{\scriptsize\color{gris}Datos abiertos procesados en Google Earth Engine · Código e informe: \url{https://github.com/pcruiher08/InflitracionAguaNuevoLeon}}
+{\scriptsize\color{gris}Datos abiertos procesados en Google Earth Engine · Código e informe: \url{https://github.com/pcruiher08/InfiltracionAguaNuevoLeon}}
 \end{frame}
 
 \begin{frame}{El punto de partida: la crisis de 2022}
@@ -198,14 +198,14 @@ El Cuchillo & «g_ec» & «pg_ec» \\
 \begin{columns}[T]
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-  \item Con la RUSLE, 30,000 ha en Cerro Prieto evitarían que lleguen unos \textbf{«sed30_50» hm³ de sedimento en 50 años}, del orden de «sed30_pct» de la capacidad de la presa.
+  \item Con la RUSLE, 30,000 ha en Cerro Prieto evitarían que lleguen de \textbf{«sed30_50_10» a «sed30_50» hm³ de sedimento en 50 años}, del orden de «sed30_pct» de la capacidad de la presa.
   \item Pero reducirían el agua que le llega en unos \textbf{«sed30_wabs» hm³ por año}.
   \item En las cuencas de las presas, las obras se justifican por la conservación del suelo, la vida útil del embalse y la atenuación de avenidas.
 \end{itemize}
 \end{column}
 \begin{column}{0.46\textwidth}
 \centering
-\cifra{«sed30_50» hm³}{de azolve evitado en 50 años}
+\cifra{«sed30_50_10» a «sed30_50» hm³}{de azolve evitado en 50 años (RUSLE/10 a RUSLE)}
 \vspace{0.5cm}
 
 \cifra{−«sed30_wabs» hm³/año}{de agua que deja de llegar a Cerro Prieto}
@@ -291,6 +291,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
   \item \textbf{Satélites} (MODIS, PML, TerraClimate, FLDAS): «et_sc_min» a «et_sc_max» de la lluvia ordinaria se evapotranspira en la cuenca del río Santa Catarina. Es una cota superior.
   \item \textbf{Balance diario del suelo:} la barrera concentra el escurrimiento de ~«vu_area» m² por metro; la zona de raíces se satura y sólo «bk_e» del agua retenida se evapotranspira.
   \item Si se confirma, la ganancia neta con 30,000 ha pasa de «et_w0» a «et_w1» L/s (probabilidad positiva «et_p1»; con karst moderado, «et_pk»). El costo por L/s neto, «et_cost» M\$, sigue arriba de El Cuchillo II.
+  \item Si parte del agua drenada se mueve ladera abajo dentro de la zona de raíces (flujo subsuperficial, raíces en el epikarst), $e\approx$ «if_e» y la ganancia baja a ~«if_w» L/s.
 \end{itemize}
 \end{column}
 \begin{column}{0.45\textwidth}
@@ -359,8 +360,8 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 {\color{naranja}\Large\bfseries Gracias\par}
 \vspace{0.6cm}
 {\small Informe completo, aplicación y código:\par}
-{\small\color{verde}\url{https://github.com/pcruiher08/InflitracionAguaNuevoLeon}\par}
-{\small\color{verde}\url{https://pcruiher08.github.io/InflitracionAguaNuevoLeon/}\par}
+{\small\color{verde}\url{https://github.com/pcruiher08/InfiltracionAguaNuevoLeon}\par}
+{\small\color{verde}\url{https://pcruiher08.github.io/InfiltracionAguaNuevoLeon/}\par}
 \vspace{0.8cm}
 {\scriptsize\color{gris}M.Sc. Pablo César Ruíz Hernández · B.Sc. David Martin Oliva Zavala · Zaddkiel de Jesus Martinez Alor\par}
 \vspace{0.5cm}

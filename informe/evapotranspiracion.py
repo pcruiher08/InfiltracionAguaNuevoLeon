@@ -137,12 +137,21 @@ def main():
     e_s = RNG.choice(es, n); ph = RNG.uniform(*D["phi"][SC], n); ta = RNG.uniform(*D["tau"][SC], n)
     G = (1 - e_s) * ph - ta
     ph_k = RNG.uniform(0.2, 0.9, n); G_k = (1 - e_s) * ph_k - ta
+    # lateral interflow and epikarst uptake: a share of the water drained below the strip moves downslope within the
+    # rooting zone and evaporates like ordinary rain (satellite ET/P of the basin, excluding values above 1)
+    sat = [v for k_, v in ratios[SC].items() if k_ != "rain_mm" and v <= 1]
+    iota = RNG.uniform(0.2, 0.6, n); rr = RNG.uniform(min(sat), max(sat), n)
+    e_i = e_s + (1 - e_s) * iota * rr
+    G_i = (1 - e_i) * ph - ta
     gross = D["selections"]["neta_30000"]["gross_ls"]; w0 = D["selections"]["neta_30000"]["net_mean"]
     g_prior = D["factor"][SC]["mean"]
     out["net"] = {"g_mean": round(float(G.mean()), 3), "p_pos": round(100 * float((G > 0).mean()), 1),
                   "net_ls_30000": round(float(w0 * G.mean() / g_prior), 1),
                   "karst_g_mean": round(float(G_k.mean()), 3), "karst_p_pos": round(100 * float((G_k > 0).mean()), 1),
-                  "karst_net_ls_30000": round(float(w0 * G_k.mean() / g_prior), 1)}
+                  "karst_net_ls_30000": round(float(w0 * G_k.mean() / g_prior), 1),
+                  "interflow_e": round(float(e_i.mean()), 3), "interflow_g_mean": round(float(G_i.mean()), 3),
+                  "interflow_p_pos": round(100 * float((G_i > 0).mean()), 1),
+                  "interflow_net_ls_30000": round(float(w0 * G_i.mean() / g_prior), 1)}
     # cost competitiveness with El Cuchillo II (2.9 M pesos per L/s of capital): G needed per cost per hectare
     R_ha = gross * 31_536_000 / 1000 / 30_000
     need = {c: c * 31_536 / (14_680e6 / 5_000) / R_ha for c in (25_000, 50_000)}

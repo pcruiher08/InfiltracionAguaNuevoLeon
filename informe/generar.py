@@ -340,14 +340,22 @@ w_prior = SEL["neta_30000"]["net_mean"]
 et_net_rows = [
     f"Base (a priori, $e\\sim\\mathcal U$) & {e_prior:.2f} & {f_sc['mean']:.2f} & {pct(f_sc['p_pos'])} & {n(w_prior)} \\\\",
     f"Balance del suelo & {BK['e'][1]:.2f} & {EN['g_mean']:.2f} & {pct(EN['p_pos'])} & {n(EN['net_ls_30000'])} \\\\",
-    f"Balance del suelo y karst moderado & {BK['e'][1]:.2f} & {EN['karst_g_mean']:.2f} & {pct(EN['karst_p_pos'])} & {n(EN['karst_net_ls_30000'])} \\\\"]
+    f"Balance del suelo y karst moderado & {BK['e'][1]:.2f} & {EN['karst_g_mean']:.2f} & {pct(EN['karst_p_pos'])} & {n(EN['karst_net_ls_30000'])} \\\\",
+    f"Balance del suelo con flujo subsuperficial & {EN['interflow_e']:.2f} & {EN['interflow_g_mean']:.2f} & {pct(EN['interflow_p_pos'])} & {n(EN['interflow_net_ls_30000'])} \\\\"]
 V.update({"et_rows": "\n".join(et_rows), "et_net_rows": "\n".join(et_net_rows), "et_y0": str(ET["years"][0]), "et_y1": str(ET["years"][1]),
           "et_sc_min": f"{min(sc_r):.2f}", "et_sc_max": f"{max(sc_r):.2f}", "bk_n": n(BK["n"]),
           "bk_e": pct(100 * BK["e"][1]), "bk_e_lo": pct(100 * BK["e"][0], 1), "bk_e_hi": pct(100 * BK["e"][2]),
           "et_g0": f"{f_sc['mean']:.2f}", "et_g1": f"{EN['g_mean']:.2f}", "et_p1": pct(EN["p_pos"]), "et_pk": pct(EN["karst_p_pos"]),
           "et_w0": n(w_prior), "et_w1": n(EN["net_ls_30000"]), "et_cost": n(EN["mxn_per_net_ls"] / 1e6, 1),
-          "et_comp": pct(EN["p_competitive"]["25000"], 1),
+          "et_comp": pct(EN["p_competitive"]["25000"], 1), "if_e": f"{EN['interflow_e']:.2f}", "if_w": n(EN["interflow_net_ls_30000"]), "if_p": pct(EN["interflow_p_pos"]),
           "et_w1_3": n(SEL["neta_3000"]["net_mean"] * EN["g_mean"] / f_sc["mean"], 1)})
+
+# ---------------------------------------------------------------- simulation vs MCMF (conciliacion.py) and RUSLE range
+CC = json.loads((ROOT / "conciliacion.json").read_text())
+ret = lambda k: CC[k]["t1"]["infiltrated_works"] + CC[k]["t1"]["still_ponded"]
+V.update({"cc_bar": n(ret("barreras")), "cc_dam": n(ret("presas")), "cc_mcmf": n(CC["mcmf"]["retained_m3"]),
+          "sed30_50_10": n(SE["selections"]["sedimento_30000"]["m3_50yr"][1] * 0.1 / 1e6, 1),
+          "sed3_50_10": n(SE["selections"]["sedimento_3000"]["m3_50yr"][1] * 0.1 / 1e6, 1)})
 
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():
