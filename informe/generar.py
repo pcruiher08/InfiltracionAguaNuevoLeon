@@ -302,6 +302,17 @@ V.update({"orac_rows": "\n".join(orac_rows), "orac_nevals": n(len(E)), "orac_nsi
           "orac_sel_tiempo_dinic": pct(100 * sel_t["dinic"] / sel_t["mcmf"], 1),
           "orac_sel_fill": f"{sg(_st.mean(sel_r['fill']), 1)}\\% en promedio"})
 
+# ---------------------------------------------------------------- conditions for scaling up
+TAUS, PHIS = (0.1, 0.25, 0.4), (0.5, 0.7, 0.9)
+R_ha = SEL["neta_30000"]["gross_ls"] * SEC_Y / 1000 / 30000                 # m³ retained per ha and year (Santa Catarina)
+g_need = lambda c: c * SEC_Y / 1000 / (CO["cuchillo_mxn_per_ls"]) / R_ha
+sc_tau = DE["tau"]["Acuífero Santa Catarina (pozos SADM)"]; sc_phi = DE["phi"]["Acuífero Santa Catarina (pozos SADM)"]
+V.update({"esc_head": " & ".join(f"{t:.2f}" for t in TAUS),
+          "esc_rows": "\n".join(f"{p:.2f} & " + " & ".join(f"{max(0, 1 - t / p):.2f}" for t in TAUS) + " \\\\" for p in PHIS),
+          "esc_R": n(R_ha), "esc_g25": f"{g_need(25000):.2f}", "esc_g50": f"{g_need(50000):.2f}",
+          "esc_gmax": f"{(1 - DE['e_min']) * sc_phi[1] - sc_tau[0]:.2f}",
+          "et_sc_dec": f"{DE['et']['Acuífero Santa Catarina (pozos SADM)']['ratio']:.2f}"})
+
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():
     BODY = BODY.replace(f"«{k}»", v)

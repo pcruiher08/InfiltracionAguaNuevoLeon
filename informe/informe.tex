@@ -220,6 +220,7 @@ En el momento más crítico de la crisis hídrica de 2022, las presas Cerro Prie
   \item \textbf{Cómo construir.} En tormentas grandes manda la capacidad de las obras, no su posición; MCMF mejora el trazo en tormentas pequeñas. Cada obra se acompaña sólo con especies nativas de su tipo de vegetación según el INEGI, de procedencia local y a densidad moderada.
   \item \textbf{Permisos.} Casi toda la superficie seleccionada en el Santa Catarina (2,933 de 3,000 ha) está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP.
   \item \textbf{Sitios y cálculo.} Los ocho sitios sugeridos se eligieron por ganancia neta: todos están en el Santa Catarina y siete dentro del Parque Nacional. El agua retenida se calcula con un flujo máximo (algoritmo de Dinic), equivalente al flujo de costo mínimo y unas 12.9 veces más rápido.
+  \item \textbf{Cuándo escalar.} Empezar con un piloto en los ocho sitios y escalar sólo si la evapotranspiración medida del agua infiltrada queda por debajo del umbral de la sección~\ref{sec:escalar} y el intervalo de la ganancia neta queda por encima de cero.
   \item \textbf{Qué medir primero.} La evapotranspiración del agua infiltrada en el Santa Catarina y la fracción del escurrimiento que ya llega a Cerro Prieto: son los parámetros que más cambian la ganancia neta.
 \end{itemize}
 
@@ -926,6 +927,39 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
   \item \textbf{La capacidad de las obras limita más que su posición}: una tormenta que las llena ocurre casi cada año (periodo de retorno de 1.0 a 1.7 años para 40 mm); el almacenamiento adicional rinde más como metros nuevos que como ampliación de las barreras, y MCMF mejora el trazo cuando la capacidad no se satura.
   \item \textbf{Las laderas muy pronunciadas no son aptas para obras}: por encima de 35° se recomienda la exclusión y la regeneración natural.
 \end{enumerate}
+
+\section{Condiciones para escalar el programa}\label{sec:escalar}
+
+Los resultados no permiten decidir todavía si la restauración en el Santa Catarina aumenta el agua disponible: la probabilidad de ganancia neta positiva es de 67\%, porque dependen de tres fracciones no medidas. Por eso se recomienda empezar con un piloto en los ocho sitios sugeridos, con las mediciones del apéndice~\ref{sec:validacion}, y escalar sólo si se cumplen las condiciones siguientes. Todas se derivan del modelo de la sección~\ref{sec:destino}.
+
+\textbf{Condición 1: que el acuífero gane agua.} La ganancia neta por m³ retenido es positiva si
+\begin{equation}
+G=(1-e)\,\phi-\tau>0 \quad\Longleftrightarrow\quad e<e^\ast=1-\frac{\tau}{\phi},
+\end{equation}
+es decir, si la fracción del agua infiltrada que se evapotranspira, $e$, es menor que el umbral $e^\ast$, que depende de la fracción que llega al acuífero, $\phi$, y de la fracción del escurrimiento que ya llegaba sin obras, $\tau$. El cuadro~\ref{tab:escalar} da el umbral para valores dentro de las distribuciones a priori del Santa Catarina.
+
+\begin{table}[H]\centering\small
+\caption{Evapotranspiración máxima $e^\ast$ que permite una ganancia neta positiva en el Santa Catarina}\label{tab:escalar}
+{\color{gris}Si la evapotranspiración medida del agua infiltrada supera este umbral, la restauración no añade agua al acuífero. La cota superior a priori de $e$ (MODIS) es 0.78.\par}\smallskip
+\begin{tabular}{lrrr}
+\toprule
+ & \multicolumn{3}{c}{Escurrimiento que ya llegaba, $\tau$} \\
+Llega al acuífero, $\phi$ & 0.10 & 0.25 & 0.40 \\
+\midrule
+0.50 & 0.80 & 0.50 & 0.20 \\
+0.70 & 0.86 & 0.64 & 0.43 \\
+0.90 & 0.89 & 0.72 & 0.56 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Condición 2: que la evidencia sea suficiente.} Con el diseño del apéndice~\ref{sec:validacion} (al menos 16 pares de microcuencas y dos o tres temporadas de lluvia), escalar si el límite inferior del intervalo de 90\% de $G$ estimado en campo es mayor que cero, y detener la expansión si el límite superior es menor que cero.
+
+\textbf{Condición 3: no justificarlo como fuente de agua barata.} Para igualar el costo de capital por L/s de El Cuchillo II, cada hectárea debería aportar $c_{\text{ha}}\cdot 31{,}536/(2.9\times10^6)$ m³ netos al año. En el Santa Catarina, donde cada hectárea retiene unos 407 m³ al año, eso exige $G\ge$ 0.66 con un costo de 25,000 pesos por hectárea y $G\ge$ 1.32 con 50,000 pesos, mientras que el valor máximo de $G$ dentro de las distribuciones a priori es 0.53. Ninguna medición plausible hace que la restauración compita en costo con la infraestructura como fuente de agua, así que el escalamiento debe justificarse por la conservación del suelo, la vida útil de los embalses, la atenuación de avenidas y la biodiversidad, con la recarga como beneficio adicional.
+
+\textbf{Condición 4: en las cuencas de las presas, escalar sólo con objetivos de suelo.} En La Boca y Cerro Prieto la ganancia neta es negativa con alta probabilidad; la restauración ahí se justifica si se mide un azolve evitado relevante para la vida útil del embalse, no por el agua.
+
+\textbf{Condición 5: autorización y vegetación.} Siete de los ocho sitios están en el Parque Nacional Cumbres de Monterrey: escalar requiere la autorización de la CONANP y usar sólo especies nativas del tipo de vegetación de cada ladera, con material de procedencia local.
 
 \section{Limitaciones}
 

@@ -274,6 +274,16 @@ La selección de barreras evalúa miles de veces cuánta agua retiene un conjunt
 
 Con los costos de este problema (−1 en los arcos de las barreras, 0 en los demás), el *minimum-cost maximum-flow* equivale a un flujo máximo en la red sin salidas, y el informe lo demuestra. Dinic da el mismo resultado ~13 veces más rápido por evaluación y ~135 veces más rápido en la selección completa. El *minimum-cost maximum-flow* sólo vuelve a ser necesario con costos diferenciados por barrera.
 
+### Condiciones para escalar
+
+Empezar con un **piloto en los 8 sitios del Santa Catarina** y escalar sólo si:
+
+1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ).
+2. **La evidencia alcanza:** el intervalo de 90 % de la ganancia neta medida en campo queda por encima de cero (al menos 16 pares de microcuencas, dos o tres temporadas).
+3. **No se justifica como agua barata:** igualar el costo por L/s de El Cuchillo II exigiría una ganancia neta de 0.66 a 1.32 m³ por m³ retenido; el máximo plausible es 0.53. El escalamiento se justifica por el suelo, los embalses, las avenidas y la biodiversidad.
+4. **En las presas,** sólo con objetivos de suelo y azolve.
+5. **Con autorización de la CONANP** y sólo especies nativas de cada ladera.
+
 **Convención estadística:** los resultados de Monte Carlo se reportan como **media** (valor esperado, que se suma entre celdas y años y es el que corresponde a costos) con su intervalo de 90 %. La mediana sólo se usa para describir distribuciones y para tiempos de cómputo.
 
 ### 16. Validación en campo
