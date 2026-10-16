@@ -84,7 +84,6 @@
 \defcita{dinic1970}{Dinic}{1970}
 \defcita{edmonds1972}{Edmonds y Karp}{1972}
 \defcita{kahn1962}{Kahn}{1962}
-\defcita{kuhn1955}{Kuhn}{1955}
 \defcita{orlin1997}{Orlin}{1997}
 \defcita{conagua_disp}{CONAGUA}{s. f.b}
 \defcita{conagua_cba}{CONAGUA}{s. f.a}
@@ -130,7 +129,7 @@
 \title{¿Dónde restaurar suelos en las partes altas de las cuencas de Monterrey para favorecer la infiltración, y cuánta agua gana el abasto?}
 \author[1,*]{M.Sc. Pablo César Ruíz Hernández}
 \author[1]{B.Sc. David Martin Oliva Zavala}
-\author[1]{Jesus Zaddkiel Martinez Alor}
+\author[1]{Zaddkiel de Jesus Martinez Alor}
 \affil[1]{Monterrey, Nuevo León, México}
 \affil[*]{Autor de correspondencia: \href{mailto:pablo@urora.mx}{pablo@urora.mx}}
 \date{15 de octubre de 2026}
@@ -141,7 +140,7 @@
 \renewcommand\Authands{ y }
 \setlength{\affilsep}{0.8em}
 \hypersetup{pdftitle={¿Dónde restaurar suelos en las partes altas de las cuencas de Monterrey para favorecer la infiltración, y cuánta agua gana el abasto?},
-  pdfauthor={M.Sc. Pablo César Ruíz Hernández, B.Sc. David Martin Oliva Zavala, Jesus Zaddkiel Martinez Alor}, pdflang={es-MX},
+  pdfauthor={M.Sc. Pablo César Ruíz Hernández, B.Sc. David Martin Oliva Zavala, Zaddkiel de Jesus Martinez Alor}, pdflang={es-MX},
   pdfsubject={Reto 1 · Infiltración. Grok Monterrey Build Day, Pronatura Noreste}}
 
 % ---------------------------------------------------------------- encabezado y pie
@@ -150,11 +149,13 @@
 \fancypagestyle{cuerpo}{\fancyhf{}
   \fancyhead[L]{\small\color{gris}\truncate{0.44\headwidth}{Infiltración en las cuencas de abasto de la ZMM}}
   \fancyhead[R]{\small\color{gris}\truncate{0.53\headwidth}{\nouppercase{\rightmark}}}
-  \fancyfoot[L]{\small\color{gris}Reto 1 · Grok Monterrey Build Day}
+  \fancyfoot[L]{\small\color{gris}P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A. · Reto 1 · Grok Monterrey Build Day}
   \fancyfoot[R]{\small\color{gris}Página \thepage\ de \pageref*{LastPage}}}
 \fancypagestyle{frente}{\fancyhf{}\fancyhead[L]{\small\color{gris}\truncate{0.44\headwidth}{Infiltración en las cuencas de abasto de la ZMM}}
+  \fancyfoot[L]{\small\color{gris}P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A.}
   \fancyfoot[R]{\small\color{gris}\thepage}}
-\fancypagestyle{plain}{\fancyhf{}\fancyfoot[R]{\small\color{gris}\thepage}\renewcommand{\headrulewidth}{0pt}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[L]{\small\color{gris}P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A.}\fancyfoot[R]{\small\color{gris}\thepage}\renewcommand{\headrulewidth}{0pt}}
+\fancypagestyle{portada}{\fancyhf{}\fancyfoot[L]{\small\color{gris}P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A.}\renewcommand{\headrulewidth}{0pt}}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 \renewcommand{\headrule}{\hbox to\headwidth{\color{naranja}\leaders\hrule height \headrulewidth\hfill}}
@@ -168,6 +169,7 @@
 \pagenumbering{Alph}
 % ---------------------------------------------------------------- portada
 \begin{titlepage}
+\thispagestyle{portada}
 \centering
 {\color{naranja}\rule{\linewidth}{1.2pt}}\par\vspace{0.6em}
 {\large\color{gris}INFORME TÉCNICO · AGUA Y RESTAURACIÓN DE CUENCAS}\par\vspace{0.4em}
@@ -217,6 +219,7 @@ En el momento más crítico de la crisis hídrica de 2022, las presas Cerro Prie
   \item \textbf{Costo.} Cada L/s neto cuesta unos 43 millones de pesos, más de diez veces el costo de capital por L/s de El Cuchillo II. Como fuente de agua la restauración es cara; su valor está en el suelo, la vida útil de los embalses, las avenidas y la biodiversidad.
   \item \textbf{Cómo construir.} En tormentas grandes manda la capacidad de las obras, no su posición; MCMF mejora el trazo en tormentas pequeñas. Cada obra se acompaña sólo con especies nativas de su tipo de vegetación según el INEGI, de procedencia local y a densidad moderada.
   \item \textbf{Permisos.} Casi toda la superficie seleccionada en el Santa Catarina (2,933 de 3,000 ha) está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP.
+  \item \textbf{Sitios y cálculo.} Los ocho sitios sugeridos se eligieron por ganancia neta: todos están en el Santa Catarina y siete dentro del Parque Nacional. El agua retenida se calcula con un flujo máximo (algoritmo de Dinic), equivalente al flujo de costo mínimo y unas 12.9 veces más rápido.
   \item \textbf{Qué medir primero.} La evapotranspiración del agua infiltrada en el Santa Catarina y la fracción del escurrimiento que ya llega a Cerro Prieto: son los parámetros que más cambian la ganancia neta.
 \end{itemize}
 
@@ -260,12 +263,12 @@ Pronatura Noreste planteó el reto en el Grok Monterrey Build Day a partir de do
 \hyperref[res:p1]{P1} & ¿Dónde están las laderas cuya restauración más favorece la infiltración para el abasto de la ZMM? & \ref{fig:m1_cuencas}, \ref{fig:g1_ha_cuenca} \\
 \hyperref[res:p2]{P2} & ¿Qué características distinguen a los sitios prioritarios? & \ref{fig:g2_criterios} \\
 \hyperref[res:p3]{P3} & ¿Qué tan robusta es la prioridad ante el desacuerdo sobre los pesos de los criterios? & \ref{fig:g3_robustez} \\
-\hyperref[res:p4]{P4} & ¿Cuánta agua adicional llegaría a las fuentes de abasto y dónde conviene restaurar cada hectárea? & \ref{fig:m2_optimizacion}, \ref{fig:g4_agua_hectareas}, \ref{fig:g5_productividad}, \ref{fig:g9_incertidumbre}, \ref{fig:g10_duales}, \ref{fig:g12_pareto} \\
+\hyperref[res:p4]{P4} & ¿Cuánta agua adicional llegaría a las fuentes de abasto y dónde conviene restaurar cada hectárea? & \ref{fig:m2_optimizacion}, \ref{fig:g4_agua_hectareas}, \ref{fig:g5_productividad}, \ref{fig:g9_incertidumbre}, \ref{fig:g10_duales}, \ref{fig:g12_pareto}, cuadro~\ref{tab:optim} \\
 \hyperref[res:p5]{P5} & ¿Resiste esa selección una sequía como la que precedió a la crisis de 2022, y qué tan frecuentes son las tormentas que la ponen a prueba? & \ref{fig:g4_agua_hectareas}, \ref{fig:g11_gumbel} \\
 \hyperref[res:p6]{P6} & ¿Dónde colocar las barreras dentro de un sitio, y qué importa más: su posición o su capacidad? & \ref{fig:m3_barreras}, \ref{fig:g6_barreras_presupuesto}, \ref{fig:g8_mcmf}, \ref{fig:g10_duales} \\
 \hyperref[res:p7]{P7} & ¿Qué efecto tienen las barreras durante una tormenta? & \ref{fig:m4_simulacion}, \ref{fig:g7_tormenta_sitios} \\
-\hyperref[res:p8]{P8} & ¿Cuánto aumentaría el abasto de la ZMM a escala de programa y qué fracción del déficit de 2022 habría cubierto? & \ref{fig:g13_abasto} \\
-\hyperref[res:p9]{P9} & ¿A dónde va el agua retenida y cuánta aumenta realmente el abasto de cada fuente? & \ref{fig:g14_destino}, \ref{fig:g15_neto} \\
+\hyperref[res:p8]{P8} & ¿Cuánto aumentaría el abasto de la ZMM a escala de programa y qué fracción del déficit de 2022 habría cubierto? & figura~\ref{fig:g13_abasto}, cuadro~\ref{tab:abasto} \\
+\hyperref[res:p9]{P9} & ¿A dónde va el agua retenida y cuánta aumenta realmente el abasto de cada fuente? & figuras~\ref{fig:g14_destino} y \ref{fig:g15_neto}, cuadro~\ref{tab:neta} \\
 \hyperref[res:p10]{P10} & ¿Qué vegetación nativa debe acompañar a cada tipo de obra según el tipo de vegetación de la ladera? & cuadros~\ref{tab:pisos} y \ref{tab:especies} \\
 \hyperref[res:p11]{P11} & ¿Cuánto azolve evitan las obras en las presas, y compensa la reducción del agua que les llega? & cuadro~\ref{tab:azolve} \\
 \hyperref[res:p12]{P12} & ¿Cuánto cuesta cada L/s que aporta la restauración, frente a otras fuentes? & cuadro~\ref{tab:costo} \\
@@ -299,15 +302,14 @@ Un problema de flujo en redes busca enviar flujo de un nodo fuente $s$ a un nodo
 
 Cuando además hay que decidir qué arcos \emph{construir}, con un costo fijo por arco, el problema es de flujo con costo fijo (\emph{fixed-charge network flow}) y es \emph{NP-hard}; una heurística conocida, \emph{dynamic slope scaling}, linealiza el costo fijo en cada iteración \citap{kim1999}. Una función de conjuntos $F$ es monótona si agregar elementos no la reduce, y submodular si la ganancia de agregar un elemento no aumenta conforme crece el conjunto (rendimientos decrecientes). Para maximizar una función monótona y submodular, el algoritmo \emph{greedy} garantiza al menos una fracción $1-1/e\approx0.63$ del óptimo con restricción de cardinalidad \citap{nemhauser1978}, y una variante con enumeración parcial ofrece una garantía constante con restricción de presupuesto \citap{khuller1999}. La evaluación perezosa (\emph{lazy evaluation}) de \emph{lazy greedy}, también llamada CELF, evita recalcular las ganancias de los elementos que, por submodularidad, no pueden superar al mejor candidato actual \citap{leskovec2007}.
 
-\subsection{Algoritmos de flujo máximo, de costo mínimo y de asignación}\label{sec:teoria_alg}
+\subsection{Algoritmos de flujo máximo y de costo mínimo}\label{sec:teoria_alg}
 
 El \emph{maximum flow} puede resolverse con caminos de aumento: el método de Ford y Fulkerson envía flujo por un camino de la fuente al sumidero con capacidad residual positiva hasta que no queda ninguno, y el teorema de flujo máximo y corte mínimo garantiza que entonces el flujo es máximo \citap{ford1956}. Si cada camino de aumento es el más corto en número de arcos, el algoritmo de Edmonds y Karp termina en $O(|V|\,|E|^2)$ operaciones \citap{edmonds1972}. El algoritmo de Dinic agrupa los caminos más cortos: en cada fase construye, con una búsqueda en amplitud (\emph{breadth-first search}), el grafo de niveles, en el que sólo se conservan los arcos que avanzan un nivel, y satura todos sus caminos con un flujo de bloqueo (\emph{blocking flow}) mediante búsquedas en profundidad; como la distancia de la fuente al sumidero crece en cada fase, el número de fases es a lo más $|V|$ y el costo total es $O(|V|^2|E|)$ \citap{dinic1970}.
 
 El \emph{minimum-cost maximum-flow} se resuelve con \emph{successive shortest paths} o con \emph{network simplex}, la especialización del método símplex a redes, en la que cada base es un árbol generador y cada pivote intercambia un arco del árbol por uno de costo reducido negativo; existe una variante de pivoteo con tiempo polinomial \citap{orlin1997}, \citap{ahuja1993}. Cuando los costos son triviales, un \emph{minimum-cost maximum-flow} puede reducirse a un \emph{maximum flow}, lo que permite usar algoritmos más simples.
 
-En un grafo dirigido acíclico, como la red D8, un orden topológico (\emph{topological sort}) lista cada nodo antes que todos los nodos a los que apunta; el algoritmo de Kahn lo obtiene en tiempo lineal retirando sucesivamente los nodos sin arcos de entrada \citap{kahn1962}. Recorrer la red en ese orden permite acumular el escurrimiento de las laderas hacia las salidas en una sola pasada.
+En un grafo dirigido acíclico, como la red D8, un orden topológico (\emph{topological sort}) lista cada nodo antes que todos los nodos a los que apunta; el algoritmo de Kahn lo obtiene en tiempo lineal retirando sucesivamente los nodos sin arcos de entrada \citap{kahn1962}. Recorrer la red en ese orden permite acumular el escurrimiento de las laderas hacia las salidas en una sola pasada. Sobre ese recorrido se define el \emph{topological greedy fill}: cada nodo con capacidad, en este caso una barrera, toma del flujo que le llega todo lo que cabe, en el orden en que llega. Es una regla voraz que decide localmente y en una sola pasada, por lo que su costo es lineal, pero, a diferencia de los algoritmos de flujo máximo, no revisa sus decisiones: no puede ceder a otro nodo capacidad ya ocupada, y por eso no garantiza el óptimo cuando un nodo recibe flujo de varios orígenes.
 
-El problema de asignación busca emparejar $n$ agentes con $n$ tareas, uno a uno, con costo total mínimo; el algoritmo húngaro (\emph{Hungarian algorithm}) lo resuelve en $O(n^3)$ \citap{kuhn1955}. No se aplica a la ubicación de barreras: una barrera recibe agua de muchas celdas, tiene una capacidad en volumen y el agua puede atravesar varias barreras en secuencia. Reducirlo a una asignación exigiría dividir el escurrimiento y las capacidades en unidades de volumen, lo que produce un problema de transporte, es decir, el mismo problema de flujo con costo mínimo pero con un tamaño proporcional al volumen.
 
 \subsection{Destino del agua infiltrada y efectos aguas abajo}
 
@@ -483,7 +485,7 @@ que corresponde a la máxima retención posible respetando simultáneamente la t
 \begin{equation}
 \max_{S}\ F(S)\quad\text{s.a.}\quad \sum_{j\in S}L_j\le \bar L ,
 \end{equation}
-que es un problema de flujo con costo fijo (\emph{fixed-charge network flow}), pues construir la barrera $j$ cuesta $L_j$ metros, y es \emph{NP-hard} en general. Se resuelve con \emph{lazy greedy} (CELF: \emph{Cost-Effective Lazy Forward}, \citar{leskovec2007}), que emplea MCMF como oráculo exacto: en cada iteración se agrega la barrera con mayor ganancia marginal por metro,
+que es un problema de flujo con costo fijo (\emph{fixed-charge network flow}), pues construir la barrera $j$ cuesta $L_j$ metros, y es \emph{NP-hard} en general. Se resuelve con \emph{lazy greedy} (CELF: \emph{Cost-Effective Lazy Forward}, \citar{leskovec2007}), que emplea como oráculo exacto el flujo máximo de Dinic, equivalente a MCMF con estos costos (sección~\ref{sec:oraculos}): en cada iteración se agrega la barrera con mayor ganancia marginal por metro,
 \begin{equation}
 j^\ast=\arg\max_{j\notin S}\ \frac{F(S\cup\{j\})-F(S)}{L_j},
 \end{equation}
@@ -503,7 +505,7 @@ La selección de barreras evalúa $F(S)$ miles de veces, por lo que el algoritmo
 
 El flujo máximo en $N'_S$ se calcula con el algoritmo de Dinic, implementado en Python; sólo se incluyen las celdas aguas arriba de alguna barrera elegida, porque las demás no pueden enviar agua al sumidero.
 
-\textbf{(3) Llenado voraz en orden topológico.} Se recorren las celdas en un orden topológico de la red D8; cada celda suma su escurrimiento y el que recibe de sus donantes, y si pertenece a una barrera elegida con capacidad disponible, la barrera retiene lo que puede y el resto continúa hacia el receptor. El costo es $O(|V|+\sum_j|\Gamma_j|)$. El resultado es un flujo factible de $N'_S$, así que $F_{\text{voraz}}(S)\le F(S)$, pero no es óptimo en general: una barrera puede llenarse con agua que otra barrera aguas abajo también habría retenido, y quedarse sin espacio para agua que llega después por otra de sus celdas y que ninguna otra barrera alcanza.
+\textbf{(3) \emph{Topological greedy fill}.} Se recorren las celdas en un orden topológico de la red D8; cada celda suma su escurrimiento y el que recibe de sus donantes, y si pertenece a una barrera elegida con capacidad disponible, la barrera retiene lo que puede y el resto continúa hacia el receptor. El costo es $O(|V|+\sum_j|\Gamma_j|)$. El resultado es un flujo factible de $N'_S$, así que $F_{\text{fill}}(S)\le F(S)$, pero no es óptimo en general: una barrera puede llenarse con agua que otra barrera aguas abajo también habría retenido, y quedarse sin espacio para agua que llega después por otra de sus celdas y que ninguna otra barrera alcanza.
 
 \textbf{Diseño del experimento.} En 5 sitios y tormentas de 5, 10, 20 y 40 mm, los tres oráculos evalúan los mismos conjuntos de barreras de 1,500 m: el seleccionado con \emph{minimum-cost maximum-flow} y 30 conjuntos aleatorios, 620 evaluaciones en total. Se registran el agua retenida, el error relativo respecto de \emph{minimum-cost maximum-flow}, $\varepsilon=(F_{\text{m}}-F)/F$, y el tiempo por llamada. Además, para las tormentas de 10 y 40 mm se ejecuta la selección completa (\emph{lazy greedy}) con cada oráculo y el conjunto resultante se evalúa con el oráculo exacto. Los tiempos son de una sola ejecución en la misma computadora; la implementación de Dinic en Python se beneficia de podar las celdas que no alcanzan ninguna barrera, mientras que la de OR-Tools recibe la red completa.
 
@@ -657,31 +659,6 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{1.0} & \multicolumn{2}{r}
 
 \respuesta{En las posiciones que intercepten más escurrimiento por metro, cruzando los flujos principales y distribuidas a lo largo de la ladera. No obstante, en tormentas grandes la capacidad es más determinante que la posición: 1,500 m de barreras retienen 27 a 31\% de una tormenta de 5 mm y sólo 3.4 a 4.2\% de una de 40 mm. Para aumentar la retención conviene agregar almacenamiento, que rinde ligeramente más como metros nuevos bien ubicados (1.00 m³ por m³) que como ampliación de las barreras existentes (0.84).}
 
-\subsection{P14 · Algoritmos para calcular la retención}\label{res:p14}
-
-\begin{table}[H]\centering\small
-\caption{Comparación de los tres oráculos de retención}\label{tab:oraculos}
-{\color{gris}Tiempo: mediana por evaluación de $F(S)$ en 620 evaluaciones. Error relativo respecto de \emph{minimum-cost maximum-flow}. Selección completa: \emph{lazy greedy} con 1,500 m en 10 casos (sitio y tormenta); la retención de cada selección se evalúa con el oráculo exacto.\par}\smallskip
-\begin{tabularx}{\linewidth}{Xrrrrrr}
-\toprule
- & \multicolumn{4}{c}{Evaluación de $F(S)$} & \multicolumn{2}{c}{Selección completa} \\
-Oráculo & ms & Aceleración & Error medio & Error máximo & Tiempo (s) & Retención \\
-\midrule
-\emph{Minimum-cost maximum-flow} (\emph{network simplex}) & 51.0 & 1.0× & 0.00\% & 0.00\% & 730.8 & referencia \\
-\emph{Maximum flow} (Dinic) & 4.0 & 12.9× & 0.00\% & 0.00\% & 5.4 & 0.0\% \\
-Llenado voraz (orden topológico) & 2.1 & 24.4× & −0.80\% & −12.64\% & 21.8 & −0.3\% \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\grafica{g16_oraculos_error}{Error del llenado voraz respecto del óptimo}{Diferencia relativa entre el agua retenida que calcula el llenado voraz en orden topológico y la retención exacta, en cada conjunto de barreras evaluado, según el tamaño de la tormenta. El \emph{minimum-cost maximum-flow} y el \emph{maximum flow} de Dinic coinciden en todos los casos. Fuente: elaboración propia.}
-
-\grafica{g17_oraculos_tiempo}{Tiempo por evaluación de cada oráculo}{Distribución del tiempo de cómputo por evaluación de $F(S)$ en los tres oráculos. Fuente: elaboración propia.}
-
-\lectura{El algoritmo de Dinic da exactamente la misma retención que el \emph{minimum-cost maximum-flow} en las 620 evaluaciones (diferencia máxima de 0.00 m³), como establece la proposición de la sección~\ref{sec:oraculos}, y es unas 12.9 veces más rápido en la mediana. El llenado voraz es unas 24.4 veces más rápido, pero subestima la retención: en promedio 0.80\%, con un máximo de 12.6\%, y sólo es exacto en 4\% de las evaluaciones. El error no crece con la tormenta: es de 1.02\% en promedio con 5 mm y de 0.25\% con 40 mm, porque en las tormentas grandes todas las barreras se llenan con cualquier reparto del agua. Es mayor en los conjuntos optimizados (3.5\% en promedio) que en los aleatorios (0.7\%), porque la optimización coloca barreras en secuencia sobre los mismos flujos, donde importa qué agua retiene cada una. En la selección completa, Dinic produce exactamente las mismas barreras que el \emph{minimum-cost maximum-flow} en 0.7\% del tiempo, porque las primeras iteraciones evalúan conjuntos pequeños y la poda reduce la red a unas cuantas celdas. Con el llenado voraz, la selección retiene −0.3\% en promedio respecto de la exacta, con casos por encima y por debajo de ella, porque el \emph{lazy greedy} tampoco garantiza el óptimo global.}
-
-\respuesta{Para los costos de este problema, el \emph{minimum-cost maximum-flow} equivale a un \emph{maximum flow} sobre la red sin salidas, y el algoritmo de Dinic lo resuelve con el mismo resultado y en menos tiempo; conviene usarlo como oráculo en la selección de barreras. El llenado voraz es rápido y simple, pero introduce un error que llega a 12.6\% en los conjuntos optimizados, justo los que interesan. El \emph{minimum-cost maximum-flow} sigue siendo necesario si se agregan costos diferenciados por barrera, como el costo de construcción o la distancia a caminos. El algoritmo húngaro no se aplica, porque la ubicación de barreras no es un problema de asignación uno a uno.}
-
 \subsection{P8 · Contribución al sistema de abasto de la ZMM}\label{res:p8}
 
 \begin{table}[H]\centering\small
@@ -705,7 +682,7 @@ Hectáreas & L/s & L/s & Intervalo 90\% & del consumo & del déficit 2022 \\
 
 \lectura{El agua bruta crece de forma casi proporcional a la superficie: 41 L/s con 3,000 ha, 128 con 10,000, 361 con 30,000 y 683 con 60,000 ha en el año seco, es decir, 1\%, 4\%, 12\% y 23\% del déficit de 2022. La totalidad de las 192,040 ha elegibles, que representa un límite teórico más que un programa factible, retendría 1,567 L/s brutos (intervalo de 90\% de 885 a 2,449 L/s), equivalentes a 52\% del déficit. Con un déficit de 3,500 L/s, todas las proporciones serían 14\% menores. Hasta 60,000 ha el agua bruta se concentra en el acuífero del Santa Catarina (398 L/s en el año seco) y en Cerro Prieto (268 L/s); El Cuchillo sólo se incorpora cuando se agotan las celdas de las cuencas de conexión directa.}
 
-\respuesta{En términos de agua retenida bruta, la restauración con barreras aumentaría el abasto de la ZMM en decenas de L/s con algunos miles de hectáreas y en algunos cientos de L/s con decenas de miles. Con 30,000 ha, en un año como el previo a la crisis se habrían recibido unos 361 L/s, del orden de 12\% del déficit de 3,000 L/s estimado para el momento más crítico y de 2.2\% del consumo regular. Por sí sola, la restauración no habría evitado la crisis de 2022; su valor reside en ser una fuente complementaria que se mantiene en años secos, que recarga el acuífero del Santa Catarina, del que dependieron los pozos cuando las presas se vaciaron, y que reduce el azolve de las presas. Estas cifras suponen que toda el agua retenida llega a la fuente; la sección~\ref{res:p9} muestra que la ganancia neta es mucho menor.}
+\respuesta{En términos de agua retenida bruta, la restauración con barreras aumentaría el abasto de la ZMM en decenas de L/s con algunos miles de hectáreas y en algunos cientos de L/s con decenas de miles. Con 30,000 ha, en un año como el previo a la crisis se habrían recibido unos 361 L/s, del orden de 12\% del déficit de 3,000 L/s estimado para el momento más crítico y de 2.2\% del consumo regular, ambos con la lluvia del año seco. Por sí sola, la restauración no habría evitado la crisis de 2022; su valor reside en ser una fuente complementaria que se mantiene en años secos, que recarga el acuífero del Santa Catarina, del que dependieron los pozos cuando las presas se vaciaron, y que reduce el azolve de las presas. Estas cifras suponen que toda el agua retenida llega a la fuente; la sección~\ref{res:p9} muestra que la ganancia neta es mucho menor.}
 
 \subsection{P9 · Destino del agua retenida y ganancia neta para el abasto}\label{res:p9}
 
@@ -874,11 +851,36 @@ Cambio del agua bruta con 3,000 ha & +1.8\% & −1.4\% \\
 
 \respuesta{La superficie más valiosa para el abasto está dentro del Parque Nacional Cumbres de Monterrey: 2,933 de las 3,000 ha y 27,155 de las 30,000 ha seleccionadas por ganancia neta. La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP. En cuanto al clima, la frecuencia proyectada de un año tan seco como el previo a la crisis es de 8\% en SSP2-4.5 y de 10\% en SSP5-8.5 (mediana de los modelos), frente a 11\% histórico, y el cambio de la lluvia media modificaría el agua bruta retenida en +1.8\% y −1.4\%, respectivamente. Como la selección de sitios resiste la sequía (sección~\ref{res:p5}), los mismos sitios siguen siendo prioritarios en el clima proyectado.}
 
+\subsection{P14 · Algoritmos para calcular la retención}\label{res:p14}
+
+\begin{table}[H]\centering\small
+\caption{Comparación de los tres oráculos de retención}\label{tab:oraculos}
+{\color{gris}Tiempo: mediana por evaluación de $F(S)$ en 620 evaluaciones. Error relativo respecto de \emph{minimum-cost maximum-flow}. Selección completa: \emph{lazy greedy} con 1,500 m en 10 casos (sitio y tormenta); la retención de cada selección se evalúa con el oráculo exacto.\par}\smallskip
+\begin{tabularx}{\linewidth}{Xrrrrrr}
+\toprule
+ & \multicolumn{4}{c}{Evaluación de $F(S)$} & \multicolumn{2}{c}{Selección completa} \\
+Oráculo & ms & Aceleración & Error medio & Error máximo & Tiempo (s) & Retención \\
+\midrule
+\emph{Minimum-cost maximum-flow} (\emph{network simplex}) & 51.0 & 1.0× & 0.00\% & 0.00\% & 730.8 & referencia \\
+\emph{Maximum flow} (Dinic) & 4.0 & 12.9× & 0.00\% & 0.00\% & 5.4 & 0.0\% \\
+\emph{Topological greedy fill} & 2.1 & 24.4× & −0.80\% & −12.64\% & 21.8 & −0.3\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\grafica{g16_oraculos_error}{Error del \emph{topological greedy fill} respecto del óptimo}{Diferencia relativa entre el agua retenida que calcula el \emph{topological greedy fill} y la retención exacta, en cada conjunto de barreras evaluado, según el tamaño de la tormenta. El \emph{minimum-cost maximum-flow} y el \emph{maximum flow} de Dinic coinciden en todos los casos. Fuente: elaboración propia.}
+
+\grafica{g17_oraculos_tiempo}{Tiempo por evaluación de cada oráculo}{Distribución del tiempo de cómputo por evaluación de $F(S)$ en los tres oráculos. Fuente: elaboración propia.}
+
+\lectura{El algoritmo de Dinic da exactamente la misma retención que el \emph{minimum-cost maximum-flow} en las 620 evaluaciones (diferencia máxima de 0.00 m³), como establece la proposición de la sección~\ref{sec:oraculos}, y es unas 12.9 veces más rápido en la mediana. El \emph{topological greedy fill} es unas 24.4 veces más rápido, pero subestima la retención: en promedio 0.80\%, con un máximo de 12.6\%, y sólo es exacto en 4\% de las evaluaciones. El error no crece con la tormenta: es de 1.02\% en promedio con 5 mm y de 0.25\% con 40 mm, porque en las tormentas grandes todas las barreras se llenan con cualquier reparto del agua. Es mayor en los conjuntos optimizados (3.5\% en promedio) que en los aleatorios (0.7\%), porque la optimización coloca barreras en secuencia sobre los mismos flujos, donde importa qué agua retiene cada una. En la selección completa, Dinic produce exactamente las mismas barreras que el \emph{minimum-cost maximum-flow} en 0.7\% del tiempo, porque las primeras iteraciones evalúan conjuntos pequeños y la poda reduce la red a unas cuantas celdas. Con el \emph{topological greedy fill}, la selección retiene −0.3\% en promedio respecto de la exacta, con casos por encima y por debajo de ella, porque el \emph{lazy greedy} tampoco garantiza el óptimo global.}
+
+\respuesta{Para los costos de este problema, el \emph{minimum-cost maximum-flow} equivale a un \emph{maximum flow} sobre la red sin salidas, y el algoritmo de Dinic lo resuelve con el mismo resultado y en menos tiempo; conviene usarlo como oráculo en la selección de barreras. El \emph{topological greedy fill} es rápido y simple, pero introduce un error que llega a 12.6\% en los conjuntos optimizados, justo los que interesan. El \emph{minimum-cost maximum-flow} sigue siendo necesario si se agregan costos diferenciados por barrera, como el costo de construcción o la distancia a caminos.}
+
 \subsection{Contraste con el balance del acuífero Campo Buenos Aires}\label{res:acuifero}
 
 Los pozos del cañón del Santa Catarina extraen del acuífero Campo Buenos Aires. Según CONAGUA, su cuenca tributaria hasta la galería Huasteca tiene 1,120 km², de los que unos 450 km² son afloramientos de calizas que funcionan como zona de recarga; la recarga media anual es de 57.0 hm³ y el volumen concesionado de 62.8 hm³, por lo que el acuífero tiene un déficit de 5.8 hm³ al año y no hay disponibilidad para nuevas concesiones \citap{conagua_cba}.
 
-\lectura{Con 30,000 ha seleccionadas por ganancia neta, las obras retendrían unos 12.2 hm³ al año. Con las medias de las distribuciones a priori, la recarga adicional sería de unos 3.9 hm³ al año, 6.9\% de la recarga natural, equivalente a 13 mm al año sobre la superficie restaurada, del orden de una décima parte de la recarga natural por unidad de área en los afloramientos de calizas (127 mm al año). La ganancia neta, que descuenta lo que ya llegaba al acuífero por el lecho del río, es de 0.82 hm³ al año sin calibrar y de 0.66 hm³ calibrada, 1.2\% de la recarga natural, y cubriría de 11\% a 14\% del déficit del acuífero. Las cifras son físicamente plausibles: el aumento de recarga por hectárea es una fracción pequeña de la recarga natural. Pero no permiten acotar mejor $\phi_g$: el propio estudio de CONAGUA advierte que la recarga podría ser mayor y que los registros piezométricos son escasos, por lo que la calibración de $\phi_g$ requiere los piezómetros propuestos en la sección~\ref{sec:validacion}.}
+\lectura{Con 30,000 ha seleccionadas por ganancia neta, las obras retendrían unos 12.2 hm³ al año. Con las medias de las distribuciones a priori, la recarga adicional sería de unos 3.9 hm³ al año, 6.9\% de la recarga natural, equivalente a 13 mm al año sobre la superficie restaurada, del orden de una décima parte de la recarga natural por unidad de área en los afloramientos de calizas (127 mm al año). La ganancia neta, que descuenta lo que ya llegaba al acuífero por el lecho del río, es de 0.82 hm³ al año sin calibrar y de 0.66 hm³ calibrada, 1.2 a 1.4\% de la recarga natural, y cubriría de 11\% a 14\% del déficit del acuífero. Las cifras son físicamente plausibles: el aumento de recarga por hectárea es una fracción pequeña de la recarga natural. Pero no permiten acotar mejor $\phi_g$: el propio estudio de CONAGUA advierte que la recarga podría ser mayor y que los registros piezométricos son escasos, por lo que la calibración de $\phi_g$ requiere los piezómetros propuestos en la sección~\ref{sec:validacion}.}
 
 \subsection{Sitios sugeridos}
 
@@ -915,12 +917,12 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
   \item \textbf{En las presas, el azolve evitado no compensa el agua retenida}: 30,000 ha en Cerro Prieto conservarían unos 22.4 hm³ de capacidad en 50 años, pero reducirían el agua que llega a la presa en unos 4.1 hm³ por año; ahí la restauración se justifica por el suelo, la vegetación y las avenidas.
   \item \textbf{Como fuente de agua, la restauración es cara}: cada L/s neto cuesta unos 43 millones de pesos, más de diez veces el costo de capital por L/s de El Cuchillo II; su valor está en el suelo, los embalses y la biodiversidad.
   \item \textbf{La prioridad para el abasto está dentro del Parque Nacional Cumbres de Monterrey}: 2,933 de las 3,000 ha seleccionadas por ganancia neta; la restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
-  \item \textbf{En el acuífero del Santa Catarina la ganancia es plausible pero modesta}: con 30,000 ha, la ganancia neta sería de 0.66 a 0.82 hm³ al año, 1.2\% de la recarga natural del acuífero Campo Buenos Aires, y cubriría de 11\% a 14\% de su déficit.
+  \item \textbf{En el acuífero del Santa Catarina la ganancia es plausible pero modesta}: con 30,000 ha, la ganancia neta sería de 0.66 a 0.82 hm³ al año, 1.2 a 1.4\% de la recarga natural del acuífero Campo Buenos Aires, y cubriría de 11\% a 14\% de su déficit.
   \item \textbf{Lo que más conviene medir} es la evapotranspiración del agua infiltrada y la fracción del escurrimiento que ya llega a las presas: son los parámetros con mayor influencia en la ganancia neta.
   \item \textbf{Cada obra se acompaña con la vegetación de su propio tipo según el INEGI}: matorral submontano, desértico, encino o pino-encino, con especies de inventarios publicados, procedencia local y densidad moderada.
   \item \textbf{La selección resiste la sequía}: con la lluvia previa a la crisis se conservan 92\% del agua y 82\% de los sitios.
   \item \textbf{La equidad entre fuentes tiene un costo reducido en agua bruta}: repartir entre las cuatro fuentes eleva el índice de Jain de 0.31 a 0.98 y reduce el agua bruta de 44.6 a 40.1 L/s; en ganancia neta, en cambio, el reparto es negativo porque asigna superficie a las cuencas de las presas.
-  \item \textbf{Para calcular la retención basta un \emph{maximum flow}}: con los costos de este problema, el \emph{minimum-cost maximum-flow} equivale a un flujo máximo en la red sin salidas; el algoritmo de Dinic da el mismo resultado unas 12.9 veces más rápido, mientras que el llenado voraz en orden topológico, también rápido, subestima la retención hasta 12.6\%.
+  \item \textbf{Para calcular la retención basta un \emph{maximum flow}}: con los costos de este problema, el \emph{minimum-cost maximum-flow} equivale a un flujo máximo en la red sin salidas; el algoritmo de Dinic da el mismo resultado unas 12.9 veces más rápido, mientras que el \emph{topological greedy fill}, también rápido, subestima la retención hasta 12.6\%.
   \item \textbf{La capacidad de las obras limita más que su posición}: una tormenta que las llena ocurre casi cada año (periodo de retorno de 1.0 a 1.7 años para 40 mm); el almacenamiento adicional rinde más como metros nuevos que como ampliación de las barreras, y MCMF mejora el trazo cuando la capacidad no se satura.
   \item \textbf{Las laderas muy pronunciadas no son aptas para obras}: por encima de 35° se recomienda la exclusión y la regeneración natural.
 \end{enumerate}
@@ -977,7 +979,6 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
 \bibitem{khuller1999} Khuller, S., Moss, A. y Naor, J. (1999). The budgeted maximum coverage problem. \emph{Information Processing Letters}, 70(1), 39–45.
 \bibitem{kim1999} Kim, D. y Pardalos, P. M. (1999). A solution approach to the fixed charge network flow problem using a dynamic slope scaling procedure. \emph{Operations Research Letters}, 24(4), 195–203.
 \bibitem{vanderknijff2000} van der Knijff, J. M., Jones, R. J. A. y Montanarella, L. (2000). \emph{Soil Erosion Risk Assessment in Europe}. EUR 19044 EN, European Soil Bureau, Joint Research Centre.
-\bibitem{kuhn1955} Kuhn, H. W. (1955). The Hungarian method for the assignment problem. \emph{Naval Research Logistics Quarterly}, 2(1–2), 83–97.
 \bibitem{lehner2013} Lehner, B. y Grill, G. (2013). Global river hydrography and network routing: baseline data and new approaches to study the world's large river systems. \emph{Hydrological Processes}, 27(15), 2171–2186.
 \bibitem{leskovec2007} Leskovec, J. et al. (2007). Cost-effective outbreak detection in networks. En \emph{Proceedings of the 13th ACM SIGKDD}, 420–429.
 \bibitem{lgdfs2018} Ley General de Desarrollo Forestal Sustentable (2018). \emph{Diario Oficial de la Federación}, 5 de junio de 2018, artículo 127.
@@ -1141,7 +1142,7 @@ que vale 1 cuando todas reciben lo mismo y $1/4$ cuando una sola recibe toda el 
 
 \grafica{g9_incertidumbre}{Incertidumbre del agua bruta retenida}{Distribución del agua retenida con 3,000 ha en 2,000 escenarios de parámetros (sección~\ref{sec:incertidumbre}). Fuente: elaboración propia.}
 
-\lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen 44 L/s (intervalo de 90\% de 26 a 68 L/s); con el reparto entre fuentes, 39 L/s (de 23 a 62 L/s). La selección es estable: 91\% de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
+\lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen una mediana de 44 L/s (intervalo de 90\% de 26 a 68 L/s); con el reparto entre fuentes, 39 L/s (de 23 a 62 L/s). La selección es estable: 91\% de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
 
 \grafica{g10_duales}{Precios sombra}{Izquierda: variable dual $\lambda^\ast$ de la restricción de presupuesto, en L/s por cada 1,000 ha adicionales, según el presupuesto. Derecha: m³ retenidos por cada m³ de almacenamiento agregado como capacidad o como metros nuevos, con tormentas de 10 y de 40 mm, en el sitio de la figura~\ref{fig:m3_barreras}. Fuente: elaboración propia.}
 
@@ -1191,11 +1192,11 @@ donde $z_q$ es el cuantil $q$ de la distribución normal estándar. Con $\alpha=
 \section*{Disponibilidad de datos y código}
 \addcontentsline{toc}{section}{Disponibilidad de datos y código}
 
-El código y una versión estática del mapa están en \url{https://github.com/pcruiher08/InflitracionAguaNuevoLeon} y \url{https://pcruiher08.github.io/InflitracionAguaNuevoLeon/}. La versión completa (pesos ajustables, análisis de cualquier sitio, optimización, barreras y simulación) corre localmente con Google Earth Engine. Los flujos máximos de costo mínimo se resuelven con Google OR-Tools.
+El código y una versión estática del mapa están en \url{https://github.com/pcruiher08/InflitracionAguaNuevoLeon} y \url{https://pcruiher08.github.io/InflitracionAguaNuevoLeon/}. La versión completa (pesos ajustables, análisis de cualquier sitio, optimización, barreras y simulación) corre localmente con Google Earth Engine. Los flujos máximos de costo mínimo se resuelven con Google OR-Tools, y el oráculo de la selección de barreras, con el algoritmo de Dinic implementado en Python.
 
 \section*{Equipo}
 \addcontentsline{toc}{section}{Equipo}
 
-M.Sc. Pablo César Ruíz Hernández, B.Sc. David Martin Oliva Zavala y Jesus Zaddkiel Martinez Alor. Reto planteado por Antonio Hernández Ramírez (Pronatura Noreste).
+M.Sc. Pablo César Ruíz Hernández, B.Sc. David Martin Oliva Zavala y Zaddkiel de Jesus Martinez Alor. Reto planteado por Antonio Hernández Ramírez (Pronatura Noreste).
 
 \end{document}

@@ -46,6 +46,10 @@
       <div class="bp-presets">${PRESETS.map(p =>
         `<button type="button" data-p="${p}" class="${p === budget ? "on" : ""}">${app.fmt(p)} m</button>`).join("")}</div>
       <label class="bp-budget">Presupuesto <input id="bp-budget" type="number" min="50" max="20000" step="50" value="${budget}"> m lineales</label>
+      <div class="seg" style="margin-top:6px">
+        <label><input type="radio" name="bp-method" value="area" ${(app.state.barrierMethod || "area") === "area" ? "checked" : ""}><span>Área interceptada</span></label>
+        <label><input type="radio" name="bp-method" value="flujo" ${app.state.barrierMethod === "flujo" ? "checked" : ""}><span>Con capacidad (flujo máximo)</span></label>
+      </div>
       <button id="bp-run" type="button">Optimizar ubicación de barreras</button>
       <div id="bp-out"></div></div>`;
     const input = panel.querySelector("#bp-budget");
@@ -69,7 +73,9 @@
     btn.disabled = true; out.innerHTML = `<div class="muted bp-note">Calculando flujo y curvas de nivel…</div>`;
     app.setStatus("Optimizando barreras…");
     try {
-      const r = await app.post("/api/barriers", { lon:s.lon, lat:s.lat, budget_m:budget });
+      const method = (panel.querySelector("input[name=bp-method]:checked") || {}).value || "area";
+      app.state.barrierMethod = method;
+      const r = await app.post("/api/barriers", { lon:s.lon, lat:s.lat, budget_m:budget, method });
       if (s !== site) return;  // a newer site was clicked meanwhile
       clear(); last = r; draw(r); summarize(r, out);
     } catch (e) {
@@ -86,9 +92,10 @@
     L.geoJSON(r.selected, {
       filter:f => f.properties.type === "curva de nivel", bubblingMouseEvents:false,
       style:{ color:DARK, weight:4, opacity:.95, lineCap:"round" },
-      onEachFeature:(f, l) => l.bindTooltip(
-        `#${f.properties.rank} · barrera en curva de nivel<br>${f.properties.length_m} m · cota ${f.properties.elev_m} m<br>` +
-        `intercepta ~${f.properties.value_ha} ha ladera arriba (nuevo)`, { sticky:true }),
+      onEachFeature:(f, l) => l.bindTooltip(f.properties.retained_m3 !== undefined
+        ? `#${f.properties.rank} · barrera en curva de nivel<br>${f.properties.length_m} m · retiene ${f.properties.retained_m3} de ${f.properties.capacity_m3} m³${f.properties.full ? " (llena)" : ""}`
+        : `#${f.properties.rank} · barrera en curva de nivel<br>${f.properties.length_m} m · cota ${f.properties.elev_m} m<br>` +
+          `intercepta ~${f.properties.value_ha} ha ladera arriba (nuevo)`, { sticky:true }),
     }).addTo(group);
     L.geoJSON(r.selected, {
       filter:f => f.properties.type === "cárcava",
@@ -104,6 +111,17 @@
 
   function summarize(r, out) {
     const t = r.totals, p = r.params;
+    if (t.retained_m3 !== undefined) {
+      out.innerHTML = `
+      <div class="bp-sum"><b>${t.n_barriers} barreras · ${app.fmt(Math.round(t.length_m))} m · retienen ${app.fmt(t.retained_m3)} m³ (${t.retained_pct}% de una tormenta de ${p.storm_mm} mm)</b></div>
+      <div class="muted">${t.full_barriers} de ${t.n_barriers} barreras quedan llenas · curvas cada ${p.vertical_interval_m} m de desnivel · ${app.fmt(p.candidates)} segmentos candidatos.
+        Frente al trazo por área interceptada: ${r.comparison.gain_pct >= 0 ? "+" : ""}${r.comparison.gain_pct}% de agua retenida.</div>
+      <div class="muted bp-note">Trazo preliminar con DEM de 30 m: validar en campo con levantamiento topográfico o dron.</div>
+      <details><summary>Supuestos del cálculo</summary><ul class="muted">${r.notes.slice(1).map(n => `<li>${n}</li>`).join("")}</ul></details>
+      <button id="bp-dl" class="bp-dl" type="button">Descargar barreras (GeoJSON)</button>`;
+      out.querySelector("#bp-dl").onclick = download;
+      return;
+    }
     out.innerHTML = `
       <div class="bp-sum"><b>${t.n_barriers} barreras · ${app.fmt(Math.round(t.length_m))} m · intercepta ~${Math.round(t.intercepted_pct)}% del escurrimiento de la ventana (relativo)</b></div>
       <div class="muted">${t.n_check_dams} presas en cárcavas${t.n_check_dams_total > t.n_check_dams ? ` (de ${t.n_check_dams_total} cruces detectados)` : ""} ·

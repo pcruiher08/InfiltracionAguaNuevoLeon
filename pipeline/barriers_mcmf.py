@@ -95,11 +95,14 @@ def upstream_runoff(cands, r):
 
 
 def select(recv, r, cands, budget_m):
-    """Lazy greedy (CELF) with the min-cost flow as exact oracle.
+    """Lazy greedy (CELF) with an exact retention oracle.
 
     Each step adds the barrier with the largest marginal retained volume per
     meter, f(S ∪ {j}) − f(S), where f is the capacity-respecting maximum
-    retention computed by min-cost flow. Retention is monotone and close to
+    retention. With these costs the min-cost flow equals a maximum flow on the
+    network without outlets, so the oracle is Dinic's algorithm (same values,
+    about two orders of magnitude faster in the full selection; informe, P14).
+    The final per-barrier flows still come from one min-cost flow solve. Retention is monotone and close to
     submodular, so stale gains are valid upper bounds and only the top of the
     queue needs re-evaluation.
     """
@@ -119,7 +122,7 @@ def select(recv, r, cands, budget_m):
                 break
             chosen.append(j); spent += lengths[j]; base += -neg * lengths[j]; it += 1
             continue
-        gain = retained(recv, r, cands, set(chosen) | {j}) - base
+        gain = retained_dinic(recv, r, cands, set(chosen) | {j}) - base
         heapq.heappush(heap, (-gain / lengths[j], j, it))
     unit = [(-COST_SCALE // SCALE if j in chosen else None) for j in range(len(cands))]
     f = _solve(recv, r, cands, unit)
@@ -170,7 +173,7 @@ def optimize(lon, lat, budget_m=1500, window_m=1200, storm_mm=None):
     corners = to_ll(np.array([c0, c1, c1, c0, c0]) - 0.5, np.array([r0, r0, r1, r1, r0]) - 0.5)
     used_len = sum(contour[j]["length_m"] for j in chosen_idx)
     return {
-        "method": "greedy perezoso con flujo de costo mínimo (CELF)",
+        "method": "lazy greedy (CELF) con flujo máximo de Dinic como oráculo",
         "selected": {"type": "FeatureCollection", "features": feats},
         "drainage": B.drainage_lines(acc, recv, to_ll, win),
         "window": {"type": "Feature", "properties": {},

@@ -84,7 +84,6 @@
 \defcita{dinic1970}{Dinic}{1970}
 \defcita{edmonds1972}{Edmonds y Karp}{1972}
 \defcita{kahn1962}{Kahn}{1962}
-\defcita{kuhn1955}{Kuhn}{1955}
 \defcita{orlin1997}{Orlin}{1997}
 \defcita{conagua_disp}{CONAGUA}{s. f.b}
 \defcita{conagua_cba}{CONAGUA}{s. f.a}
@@ -130,7 +129,7 @@
 \title{¿Dónde restaurar suelos en las partes altas de las cuencas de Monterrey para favorecer la infiltración, y cuánta agua gana el abasto?}
 \author[1,*]{M.Sc. Pablo César Ruíz Hernández}
 \author[1]{B.Sc. David Martin Oliva Zavala}
-\author[1]{Jesus Zaddkiel Martinez Alor}
+\author[1]{Zaddkiel de Jesus Martinez Alor}
 \affil[1]{Monterrey, Nuevo León, México}
 \affil[*]{Autor de correspondencia: \href{mailto:pablo@urora.mx}{pablo@urora.mx}}
 \date{15 de octubre de 2026}
@@ -141,7 +140,7 @@
 \renewcommand\Authands{ y }
 \setlength{\affilsep}{0.8em}
 \hypersetup{pdftitle={¿Dónde restaurar suelos en las partes altas de las cuencas de Monterrey para favorecer la infiltración, y cuánta agua gana el abasto?},
-  pdfauthor={M.Sc. Pablo César Ruíz Hernández, B.Sc. David Martin Oliva Zavala, Jesus Zaddkiel Martinez Alor}, pdflang={es-MX},
+  pdfauthor={M.Sc. Pablo César Ruíz Hernández, B.Sc. David Martin Oliva Zavala, Zaddkiel de Jesus Martinez Alor}, pdflang={es-MX},
   pdfsubject={Reto 1 · Infiltración. Grok Monterrey Build Day, Pronatura Noreste}}
 
 % ---------------------------------------------------------------- encabezado y pie
@@ -150,11 +149,13 @@
 \fancypagestyle{cuerpo}{\fancyhf{}
   \fancyhead[L]{\small\color{gris}\truncate{0.44\headwidth}{Infiltración en las cuencas de abasto de la ZMM}}
   \fancyhead[R]{\small\color{gris}\truncate{0.53\headwidth}{\nouppercase{\rightmark}}}
-  \fancyfoot[L]{\small\color{gris}Reto 1 · Grok Monterrey Build Day}
+  \fancyfoot[L]{\small\color{gris}P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A. · Reto 1 · Grok Monterrey Build Day}
   \fancyfoot[R]{\small\color{gris}Página \thepage\ de \pageref*{LastPage}}}
 \fancypagestyle{frente}{\fancyhf{}\fancyhead[L]{\small\color{gris}\truncate{0.44\headwidth}{Infiltración en las cuencas de abasto de la ZMM}}
+  \fancyfoot[L]{\small\color{gris}P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A.}
   \fancyfoot[R]{\small\color{gris}\thepage}}
-\fancypagestyle{plain}{\fancyhf{}\fancyfoot[R]{\small\color{gris}\thepage}\renewcommand{\headrulewidth}{0pt}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[L]{\small\color{gris}P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A.}\fancyfoot[R]{\small\color{gris}\thepage}\renewcommand{\headrulewidth}{0pt}}
+\fancypagestyle{portada}{\fancyhf{}\fancyfoot[L]{\small\color{gris}P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A.}\renewcommand{\headrulewidth}{0pt}}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 \renewcommand{\headrule}{\hbox to\headwidth{\color{naranja}\leaders\hrule height \headrulewidth\hfill}}
@@ -168,6 +169,7 @@
 \pagenumbering{Alph}
 % ---------------------------------------------------------------- portada
 \begin{titlepage}
+\thispagestyle{portada}
 \centering
 {\color{naranja}\rule{\linewidth}{1.2pt}}\par\vspace{0.6em}
 {\large\color{gris}INFORME TÉCNICO · AGUA Y RESTAURACIÓN DE CUENCAS}\par\vspace{0.4em}

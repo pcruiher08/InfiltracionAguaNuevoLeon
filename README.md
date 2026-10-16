@@ -2,7 +2,7 @@
 
 **Reto 1 · Infiltración**, Grok Monterrey Build Day (14 oct 2026). Planteado por Antonio Hernández Ramírez (Pronatura Noreste).
 
-**Equipo:** Pablo César Ruíz Hernández · David Martin Oliva Zavala · Jesus Zaddkiel Martinez Alor
+**Equipo:** Pablo César Ruíz Hernández · David Martin Oliva Zavala · Zaddkiel de Jesus Martinez Alor
 
 > *¿Dónde restaurar suelos en partes altas para favorecer la infiltración?*
 
@@ -129,7 +129,7 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
     - Fórmula: *lluvia media × coeficiente de escurrimiento × hectáreas elegibles × ρ*, donde ρ es la fracción del escurrimiento anual que retienen las barreras.
     - El coeficiente sube con la pendiente y con el suelo desnudo: más agua escurre y hay más que frenar.
     - ρ sale del modelo de flujo de costo mínimo de las barreras con capacidad, ponderado por la lluvia diaria de CHIRPS: 16 % donde llueven 420 mm, 13 % con 640 mm y 7.8 % con 1,190 mm (en sitios lluviosos más agua cae en tormentas grandes que desbordan las barreras).
-4. **Agua que llega al abasto:** el agua retenida se multiplica por la conexión con la fuente (1.0 si drena directo a La Boca, Cerro Prieto o Santa Catarina; 0.6 en el resto de El Cuchillo). Cada celda se asigna a su fuente de abasto.
+4. **Agua que llega al abasto:** el agua retenida se multiplica por la conectividad hidrológica *k* con la fuente (1.0 si drena directo a La Boca, Cerro Prieto o Santa Catarina; 0.6 en el resto de El Cuchillo). Cada celda se asigna a su fuente de abasto.
 5. **Optimización:** dado un presupuesto de hectáreas, se eligen las celdas con más **m³ entregados por hectárea**. Es un programa lineal con una sola restricción de presupuesto; ordenar por rendimiento por hectárea es **óptimo** cuando las celdas se pueden tratar parcialmente. Hay dos modos:
     - **Máxima agua total:** el óptimo puro.
     - **Repartir entre fuentes:** el presupuesto se divide en partes iguales entre las 4 fuentes y se optimiza dentro de cada una.
@@ -152,7 +152,7 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 **Rendimientos decrecientes** (modo de máxima agua): 1,000 ha → 15 L/s · 3,000 ha → 45 L/s · 10,000 ha → 141 L/s · 20,000 ha → 273 L/s · 50,000 ha → 645 L/s.
 
 - **Santa Catarina rinde más por hectárea:** La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las barreras.
-- **El Cuchillo rinde menos:** su conexión con el abasto vale 0.6.
+- **El Cuchillo rinde menos:** su conectividad hidrológica *k* vale 0.6.
 - **Repartir cuesta poco:** cubrir las 4 fuentes da ~10 % menos agua total que el óptimo puro.
 - **Máxima ganancia neta** (nuevo modo en la app y en la versión estática): selecciona sólo celdas donde la fuente gana agua en promedio. Con 3,000 ha, todas en el Santa Catarina: 44 L/s brutos y **+3 L/s netos esperados**. Con los otros dos modos la ganancia neta es de +1 L/s (máxima agua) y −8 L/s (repartir entre fuentes), porque incluyen cuencas de presas.
 
@@ -177,7 +177,7 @@ Dentro de una ventana de ~1.2 km alrededor del sitio (`pipeline/barriers.py`):
 
 Duplicar el presupuesto rinde cada vez menos (61 % → 77 %), que es el comportamiento esperado de una buena optimización: los primeros metros van a donde más se intercepta.
 
-**Con capacidad: minimum-cost maximum-flow (MCMF).** El trazo voraz por área ignora cuánta agua cabe en cada barrera. `pipeline/barriers_mcmf.py` modela la ladera como una red de flujo (un nodo por celda D8 y uno por barrera, con capacidad de 1.44 m³ por metro) y resuelve con *network simplex* de OR-Tools el flujo máximo de costo mínimo, que da el agua retenida respetando drenaje y capacidad. Las barreras se eligen con *lazy greedy* (CELF) usando MCMF como oráculo. Resultado: en tormentas pequeñas MCMF retiene hasta 2.6 % más que el trazo por área; en tormentas de 40 mm todas las barreras se llenan y ambos empatan. **En tormentas grandes limita la capacidad, no la posición**: 1,500 m de barreras retienen 27 a 31 % de una tormenta de 5 mm y sólo 3.4 a 4.2 % de una de 40 mm, que ocurre casi cada año.
+**Con capacidad: minimum-cost maximum-flow (MCMF).** El trazo voraz por área ignora cuánta agua cabe en cada barrera. `pipeline/barriers_mcmf.py` modela la ladera como una red de flujo (un nodo por celda D8 y uno por barrera, con capacidad de 1.44 m³ por metro) y resuelve con *network simplex* de OR-Tools el flujo máximo de costo mínimo, que da el agua retenida respetando drenaje y capacidad. Las barreras se eligen con *lazy greedy* (CELF) usando como oráculo el flujo máximo de Dinic, equivalente a MCMF con estos costos (sección 15). En la app, el panel de barreras ofrece este método como «Con capacidad (flujo máximo)»; el trazo por área interceptada sigue disponible. Resultado: en tormentas pequeñas MCMF retiene hasta 2.6 % más que el trazo por área; en tormentas de 40 mm todas las barreras se llenan y ambos empatan. **En tormentas grandes limita la capacidad, no la posición**: 1,500 m de barreras retienen 27 a 31 % de una tormenta de 5 mm y sólo 3.4 a 4.2 % de una de 40 mm, que ocurre casi cada año.
 
 ![Barreras trazadas por greedy y por MCMF](informe/figuras/m3_barreras.png)
 
@@ -270,9 +270,9 @@ La selección de barreras evalúa miles de veces cuánta agua retiene un conjunt
 |---|---|---|---|
 | *Minimum-cost maximum-flow* (*network simplex*, OR-Tools) | 51 | exacto | 731 s |
 | *Maximum flow* con el algoritmo de Dinic | 4 | exacto (idéntico en todos los casos) | 5 s, mismas barreras |
-| Llenado voraz en orden topológico | 2 | −0.8 % en promedio, hasta −12.6 % | 22 s, −0.3 % de retención |
+| *Topological greedy fill* | 2 | −0.8 % en promedio, hasta −12.6 % | 22 s, −0.3 % de retención |
 
-Con los costos de este problema (−1 en los arcos de las barreras, 0 en los demás), el *minimum-cost maximum-flow* equivale a un flujo máximo en la red sin salidas, y el informe lo demuestra. Dinic da el mismo resultado ~13 veces más rápido por evaluación y ~135 veces más rápido en la selección completa. El *minimum-cost maximum-flow* sólo vuelve a ser necesario con costos diferenciados por barrera. El algoritmo húngaro no aplica: la ubicación de barreras no es una asignación uno a uno.
+Con los costos de este problema (−1 en los arcos de las barreras, 0 en los demás), el *minimum-cost maximum-flow* equivale a un flujo máximo en la red sin salidas, y el informe lo demuestra. Dinic da el mismo resultado ~13 veces más rápido por evaluación y ~135 veces más rápido en la selección completa. El *minimum-cost maximum-flow* sólo vuelve a ser necesario con costos diferenciados por barrera.
 
 ### 16. Validación en campo
 
@@ -438,4 +438,4 @@ web/
 
 - Pablo César Ruíz Hernández
 - David Martin Oliva Zavala
-- Jesus Zaddkiel Martinez Alor
+- Zaddkiel de Jesus Martinez Alor

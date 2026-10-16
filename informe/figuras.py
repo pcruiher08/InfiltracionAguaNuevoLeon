@@ -324,12 +324,12 @@ def oracle_figs():
     ax.set_xscale("log"); ax.set_xticks([500, 700, 1000, 1500, 2000]); ax.xaxis.set_minor_formatter(lambda v, _: "")
     ax.xaxis.set_major_formatter(lambda v, _: fmt(v))
     ax.set_xlabel("agua retenida exacta F(S), m³ (minimum-cost maximum-flow = Dinic)")
-    ax.set_ylabel("error del llenado voraz (%)")
+    ax.set_ylabel("error del topological greedy fill (%)")
     top_legend(ax)
     save(fig, "g16_oraculos_error")
 
     fig, ax = plt.subplots(figsize=(7, 2.8))
-    names = [("mcmf", "Minimum-cost maximum-flow\n(network simplex)"), ("dinic", "Maximum flow\n(Dinic)"), ("fill", "Llenado voraz\n(orden topológico)")]
+    names = [("mcmf", "Minimum-cost maximum-flow\n(network simplex)"), ("dinic", "Maximum flow\n(Dinic)"), ("fill", "Topological\ngreedy fill")]
     data = [[e[f"{k}_ms"] for e in E] for k, _ in names]
     parts = ax.boxplot(data, vert=False, widths=.5, patch_artist=True, showfliers=False,
                        medianprops=dict(color="#1d1b18"), whiskerprops=dict(color="#6b675f"), capprops=dict(color="#6b675f"))

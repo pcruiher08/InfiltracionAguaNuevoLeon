@@ -32,7 +32,7 @@
 \setbeamertemplate{itemize items}[circle]
 \setbeamertemplate{frametitle}{\vspace{6pt}\insertframetitle\par\vspace{2pt}{\color{naranja}\rule{\linewidth}{0.6pt}}}
 \setbeamertemplate{footline}{%
-  \hspace{1em}{\color{gris}\tiny Reto 1 · Infiltración · Grok Monterrey Build Day}\hfill
+  \hspace{1em}{\color{gris}\tiny P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A. · Reto 1 · Infiltración · Grok Monterrey Build Day}\hfill
   {\color{gris}\tiny\insertframenumber\,/\,\inserttotalframenumber}\hspace{1em}\vspace{6pt}}
 \newcommand{\cifra}[2]{{\color{naranja}\fontsize{26}{28}\selectfont\bfseries #1}\\[2pt]{\small\color{gris}#2}}
 \newcommand{\nota}[1]{\par\vspace{4pt}{\scriptsize\color{gris}#1}}
@@ -40,12 +40,12 @@
 \setbeamercolor{bloque}{bg=crema,fg=tinta}
 
 \title{¿Dónde restaurar suelos en las partes altas de las cuencas de Monterrey para favorecer la infiltración, y cuánta agua gana el abasto?}
-\author{M.Sc. Pablo César Ruíz Hernández · B.Sc. David Martin Oliva Zavala · Jesus Zaddkiel Martinez Alor}
+\author{M.Sc. Pablo César Ruíz Hernández · B.Sc. David Martin Oliva Zavala · Zaddkiel de Jesus Martinez Alor}
 \date{Reto planteado por Pronatura Noreste · Grok Monterrey Build Day · octubre de 2026}
 
 \begin{document}
 
-\begin{frame}[plain]
+\begin{frame}
 \vspace{1.2cm}
 {\color{naranja}\Large\bfseries\inserttitle\par}
 \vspace{0.6cm}
@@ -233,7 +233,7 @@ El Cuchillo & −0.20 & 4\% \\
 \begin{column}{0.48\textwidth}
 \begin{itemize}
   \item Las celdas óptimas por ganancia neta están todas en el Santa Catarina; \textbf{2,933 de 3,000 ha} están en el Parque Nacional Cumbres de Monterrey: se requiere autorización de la CONANP.
-  \item Ocho sitios sugeridos, separados al menos 3 km, con barreras trazadas por MCMF.
+  \item Ocho sitios sugeridos por ganancia neta, todos en el Santa Catarina y siete dentro del Parque Nacional, separados al menos 3 km.
   \item En tormentas grandes manda la \textbf{capacidad} de las obras: 1,500 m de barreras retienen 27 a 31\% de una tormenta de 5 mm y sólo 3.4 a 4.2\% de una de 40 mm.
 \end{itemize}
 \end{column}
@@ -263,9 +263,8 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \begin{itemize}
   \item \textbf{\emph{Minimum-cost maximum-flow}} (\emph{network simplex}): exacto, admite costos por barrera.
   \item \textbf{\emph{Maximum flow} (Dinic)}: con nuestros costos es equivalente; mismo resultado, unas 12.9 veces más rápido.
-  \item \textbf{Llenado voraz en orden topológico}: unas 24.4 veces más rápido por evaluación, pero subestima la retención hasta 12.6\%, sobre todo en conjuntos optimizados.
+  \item \textbf{\emph{Topological greedy fill}}: unas 24.4 veces más rápido por evaluación, pero subestima la retención hasta 12.6\%, sobre todo en conjuntos optimizados.
   \item En la selección completa, Dinic elige las mismas barreras en 0.7\% del tiempo.
-  \item El algoritmo húngaro no aplica: no es una asignación uno a uno.
 \end{itemize}
 \end{column}
 \begin{column}{0.47\textwidth}
@@ -278,7 +277,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \begin{frame}{Qué tan sólidos son los resultados}
 \begin{itemize}
   \item \textbf{Calibración:} contra el escurrimiento natural oficial de Cerro Prieto (CONAGUA), el modelo sobrestima el escurrimiento; calibrado, el agua bruta y la neta bajan alrededor de 18\%, sin cambiar la probabilidad de ganancia positiva.
-  \item \textbf{Acuífero:} la recarga adicional en el Santa Catarina es 1.2\% de la recarga natural del acuífero Campo Buenos Aires: físicamente plausible.
+  \item \textbf{Acuífero:} la ganancia neta en el Santa Catarina es 1.2 a 1.4\% de la recarga natural del acuífero Campo Buenos Aires: físicamente plausible.
   \item \textbf{Sequía:} con la lluvia de 2021 a 2022 se conserva 92\% del agua bruta y 82\% de los sitios.
   \item \textbf{Clima 2041 a 2070:} la frecuencia de un año tan seco como 2021 a 2022 sería de 8\% (SSP2-4.5) y 10\% (SSP5-8.5), con mucha dispersión entre modelos.
   \item \textbf{Lo más incierto:} la evapotranspiración del agua infiltrada y la fracción del escurrimiento que ya llega a las presas. No están calibradas.
@@ -295,7 +294,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[plain]
+\begin{frame}
 \vspace{1.5cm}
 \centering
 {\color{naranja}\Large\bfseries Gracias\par}
@@ -304,7 +303,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 {\small\color{verde}\url{https://github.com/pcruiher08/InflitracionAguaNuevoLeon}\par}
 {\small\color{verde}\url{https://pcruiher08.github.io/InflitracionAguaNuevoLeon/}\par}
 \vspace{0.8cm}
-{\scriptsize\color{gris}M.Sc. Pablo César Ruíz Hernández · B.Sc. David Martin Oliva Zavala · Jesus Zaddkiel Martinez Alor\par}
+{\scriptsize\color{gris}M.Sc. Pablo César Ruíz Hernández · B.Sc. David Martin Oliva Zavala · Zaddkiel de Jesus Martinez Alor\par}
 \end{frame}
 
 \end{document}

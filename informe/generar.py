@@ -266,7 +266,7 @@ V.update({"aq_rech": n(AQ["recarga"], 1), "aq_conc": n(AQ["concesion"], 1), "aq_
           "aq_trib": n(AQ["area_trib"]), "aq_area": n(AQ["area_recarga"]), "aq_mm": n(AQ["recarga"] / AQ["area_recarga"] * 1000),
           "aq_R": n(R_sc, 1), "aq_inc": n(rech, 1), "aq_inc_pct": pct(100 * rech / AQ["recarga"], 1),
           "aq_inc_mm": n(rech / 300 * 1000), "aq_net_u": n(net_u, 2), "aq_net_c": n(net_c, 2),
-          "aq_net_pct": pct(100 * net_c / AQ["recarga"], 1), "aq_def_pct_u": pct(100 * net_u / deficit), "aq_def_pct_c": pct(100 * net_c / deficit)})
+          "aq_net_pct": f"{100 * net_c / AQ['recarga']:.1f} a {pct(100 * net_u / AQ['recarga'], 1)}", "aq_def_pct_u": pct(100 * net_u / deficit), "aq_def_pct_c": pct(100 * net_c / deficit)})
 
 # ---------------------------------------------------------------- retention oracles (oraculos.py)
 import statistics as _st
@@ -281,7 +281,7 @@ for x in SL:
         ref = next(y["retained_exact"] for y in SL if y["oracle"] == "mcmf" and y["site"] == x["site"] and y["storm_mm"] == x["storm_mm"])
         sel_r[x["oracle"]].append(100 * (x["retained_exact"] / ref - 1) if ref > 0 else 0.0)
 labels = {"mcmf": "\\emph{Minimum-cost maximum-flow} (\\emph{network simplex})", "dinic": "\\emph{Maximum flow} (Dinic)",
-          "fill": "Llenado voraz (orden topológico)"}
+          "fill": "\\emph{Topological greedy fill}"}
 orac_rows = []
 for k in ("mcmf", "dinic", "fill"):
     e = err(k) if k != "mcmf" else [0.0]
