@@ -280,9 +280,19 @@ Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y
 
 1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ).
 2. **La evidencia alcanza:** el intervalo de 90 % de la ganancia neta medida en campo queda por encima de cero (al menos 16 pares de microcuencas, dos o tres temporadas).
-3. **No se justifica como agua barata:** igualar el costo por L/s de El Cuchillo II exigiría una ganancia neta de 0.66 a 1.32 m³ por m³ retenido; el máximo plausible es 0.53. El escalamiento se justifica por el suelo, los embalses, las avenidas y la biodiversidad.
-4. **En las presas,** sólo con objetivos de suelo y azolve.
-5. **Con autorización de la CONANP** y sólo especies nativas de cada ladera.
+3. **El agua llega y las obras duran:** trazadores que confirmen que el agua infiltrada llega al acuífero Campo Buenos Aires y limpieza periódica del sedimento.
+4. **No se justifica como agua barata:** igualar el costo por L/s de El Cuchillo II exigiría una ganancia neta de 0.66 a 1.32 m³ por m³ retenido; el máximo plausible es 0.53. El escalamiento se justifica por el suelo, los embalses, las avenidas y la biodiversidad.
+5. **En las presas,** sólo con objetivos de suelo y azolve.
+6. **Con autorización de la CONANP** y sólo especies nativas de cada ladera.
+
+### Karst y azolve de las barreras (sensibilidad)
+
+`informe/sensibilidad.py`, a partir de resultados guardados:
+
+- **Karst:** si parte del agua infiltrada sale por fallas hacia otras cuencas (fracción que llega al acuífero entre 0.2 y 0.9), la probabilidad de ganancia neta en la cuenca del río Santa Catarina baja de 67 % a 48 %, y la ganancia esperada con 30,000 ha de ~26 a ~1 L/s; con pérdida alta (0.1 a 0.5), la ganancia es negativa. La conectividad debe medirse con trazadores.
+- **Azolve de las barreras:** cada metro de barrera drena ~600 m² de ladera. Con la erosión de la RUSLE, el almacenamiento encharcado (0.9 m³/m) se llena en ~0.3 años; aun con erosión diez veces menor, en ~3 años. Sin limpieza sólo queda la infiltración (37.5 % de la capacidad) y la ganancia neta bajaría de ~26 a ~10 L/s. El costo de mantenimiento no está en el costo por L/s.
+
+Los trazos de barreras son **pruebas de concepto** con un DEM de 30 m, no planos de construcción: requieren LiDAR o levantamiento con dron.
 
 **Convención estadística:** los resultados de Monte Carlo se reportan como **media** (valor esperado, que se suma entre celdas y años y es el que corresponde a costos) con su intervalo de 90 %. La mediana sólo se usa para describir distribuciones y para tiempos de cómputo.
 

@@ -313,6 +313,19 @@ V.update({"esc_head": " & ".join(f"{t:.2f}" for t in TAUS),
           "esc_gmax": f"{(1 - DE['e_min']) * sc_phi[1] - sc_tau[0]:.2f}",
           "et_sc_dec": f"{DE['et']['Acuífero Santa Catarina (pozos SADM)']['ratio']:.2f}"})
 
+# ---------------------------------------------------------------- karst and barrier siltation (sensibilidad.py)
+SB = json.loads((ROOT / "sensibilidad.json").read_text()); KS, SD = SB["karst"], SB["sediment"]
+lbl_e = {"rusle": "RUSLE", "rusle_3": "RUSLE / 3", "rusle_10": "RUSLE / 10"}
+vu_rows = [f"{lbl_e[k]} & {n(v['m3_per_m_yr'][2], 2)} & {n(v['years_to_fill'][2], 1)} & {n(v['years_to_fill'][0], 1)} a {n(v['years_to_fill'][1], 1)} \\\\"
+           for k, v in SD["scenarios"].items()]
+w0 = SEL["neta_30000"]["net_mean"]; gb = KS["base"]["g_mean"]          # anchor the karst scenarios to the main analysis
+V.update({"ks_base_p": pct(DE["factor"]["Acuífero Santa Catarina (pozos SADM)"]["p_pos"]), "ks_mod_p": pct(KS["karst_moderado"]["p_pos"]),
+          "ks_alto_p": pct(KS["karst_alto"]["p_pos"]),
+          "ks_base_w": n(w0), "ks_mod_w": n(w0 * KS["karst_moderado"]["g_mean"] / gb), "ks_alto_w": n(w0 * KS["karst_alto"]["g_mean"] / gb),
+          "vu_rows": "\n".join(vu_rows), "vu_area": n(SD["area_m2_per_m"]),
+          "vu_t1": n(SD["scenarios"]["rusle"]["years_to_fill"][2], 1), "vu_t10": n(SD["scenarios"]["rusle_10"]["years_to_fill"][2], 1),
+          "vu_keep": pct(100 * SD["capacity_left"], 1), "vu_net0": n(SD["long_term"]["net_ls_nominal"]), "vu_net1": n(SD["long_term"]["net_ls"])})
+
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():
     BODY = BODY.replace(f"«{k}»", v)

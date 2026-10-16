@@ -22,6 +22,7 @@ if [[ "${1:-}" != "--pdf" ]]; then
   $PY informe/calibracion.py --posterior  # Bayesian reweighting of the destino.py samples
   $PY informe/costo.py                    # cost per L/s
   $PY informe/sedimento.py                # RUSLE and dam sedimentation
+  $PY informe/sensibilidad.py             # karst and barrier siltation (after destino and sedimento)
   $PY informe/clima.py                    # protected areas and CMIP6 drought frequency
   $PY informe/oraculos.py                 # MCMF vs Dinic vs topological fill (about 15 min)
 fi

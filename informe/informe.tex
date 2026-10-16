@@ -82,6 +82,7 @@
 \defcita{thrasher2022}{Thrasher et al.}{2022}
 \defcita{wdpa}{UNEP-WCMC y UICN}{2026}
 \defcita{dinic1970}{Dinic}{1970}
+\defcita{ford2007}{Ford y Williams}{2007}
 \defcita{edmonds1972}{Edmonds y Karp}{1972}
 \defcita{kahn1962}{Kahn}{1962}
 \defcita{orlin1997}{Orlin}{1997}
@@ -221,6 +222,7 @@ En el momento más crítico de la crisis hídrica de 2022, las presas Cerro Prie
   \item \textbf{Permisos.} Casi toda la superficie seleccionada en la cuenca del río Santa Catarina (2,933 de 3,000 ha) está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP.
   \item \textbf{Sitios y cálculo.} Los ocho sitios sugeridos se eligieron por ganancia neta: todos están en la cuenca del río Santa Catarina y siete dentro del Parque Nacional. El agua retenida se calcula con un flujo máximo (algoritmo de Dinic), equivalente al flujo de costo mínimo y unas 12.9 veces más rápido.
   \item \textbf{Cuándo escalar.} Empezar con un piloto en los ocho sitios y escalar sólo si la evapotranspiración medida del agua infiltrada queda por debajo del umbral de la sección~\ref{sec:escalar} y el intervalo de la ganancia neta queda por encima de cero.
+  \item \textbf{Supuestos frágiles.} La ganancia neta es condicional a supuestos no calibrados: si el karst desvía parte del agua infiltrada, su probabilidad baja a 48\%, y sin limpieza del sedimento las barreras pierden la mayor parte de su almacenamiento en meses o pocos años.
   \item \textbf{Qué medir primero.} La evapotranspiración del agua infiltrada en la cuenca del río Santa Catarina y la fracción del escurrimiento que ya llega a Cerro Prieto: son los parámetros que más cambian la ganancia neta.
 \end{itemize}
 
@@ -317,6 +319,10 @@ En un grafo dirigido acíclico, como la red D8, un orden topológico (\emph{topo
 El agua que retiene una obra no desaparece ni se desvía a otra cuenca: se infiltra y continúa su recorrido por el subsuelo. Una parte regresa a la atmósfera por evapotranspiración, otra percola hasta el acuífero y otra alimenta el flujo base de los cauces semanas o meses después. En regiones semiáridas, la recarga difusa a partir de la lluvia es de apenas 0.1 a 5\% de la precipitación de largo plazo, mientras que la recarga concentrada, bajo cauces efímeros o depresiones donde el agua se encharca, alcanza tasas mucho mayores \citap{scanlon2006}. Por ello, encharcar el escurrimiento detrás de una barrera puede aumentar la recarga, pero no toda el agua infiltrada llega a una fuente de abasto.
 
 El balance relevante para el abasto es la diferencia entre el agua que la obra hace llegar a la fuente y la que habría llegado sin ella. En los cauces efímeros, parte del escurrimiento se pierde por infiltración en el lecho (pérdidas por transmisión, \emph{transmission losses}) antes de llegar aguas abajo \citap{shanafield2014}, pero otra parte sí llega a las presas. Retener ese escurrimiento en la ladera puede reducir el volumen que entra a un embalse: en cuencas semiáridas de la India, la captación de agua de lluvia aguas arriba redujo el agua disponible para los sistemas de riego de aguas abajo \citap{bouma2011}, \citap{glendenning2012}. La vegetación también interviene: los experimentos en cuencas muestran que aumentar la cobertura forestal reduce el rendimiento hídrico por mayor evapotranspiración \citap{bosch1982}, aunque en el trópico estacionalmente seco una cobertura arbórea intermedia puede maximizar la recarga, porque mejora la infiltración sin elevar en exceso la transpiración \citap{ilstedt2016}.
+
+En la Sierra Madre Oriental el agua subterránea circula por calizas plegadas y fracturadas. En los acuíferos kársticos, el agua infiltrada se concentra en fracturas y conductos de disolución y puede viajar rápidamente a lo largo de fallas regionales, de modo que la divisoria de aguas superficial no coincide necesariamente con la subterránea \citap{ford2007}. En la cuenca del río Santa Catarina, la recarga del acuífero Campo Buenos Aires ocurre en los afloramientos de calizas de las formaciones Cupido y Aurora, que más abajo quedan confinadas \citap{conagua_cba}; parte del agua infiltrada en las laderas puede, por tanto, alimentar otras cuencas en lugar del acuífero explotado.
+
+Las barreras retienen suelo además de agua: el sedimento que arrastra el escurrimiento se deposita en la franja encharcada y, con el tiempo, la rellena y forma una pequeña terraza \citap{conafor2023}. Al rellenarse se pierde el almacenamiento superficial, aunque se conserva la infiltración a través de la franja.
 
 \subsection{Restauración con vegetación nativa}
 
@@ -480,7 +486,7 @@ donde $\delta^{+}(v)$ y $\delta^{-}(v)$ son los conjuntos de arcos que salen de 
 \begin{equation}
 F(S)=\sum_{j\in S} f^\ast_{B_j t}=-\sum_e c_e f^\ast_e ,
 \end{equation}
-que corresponde a la máxima retención posible respetando simultáneamente la topología del drenaje (el agua sólo puede descender) y la capacidad de cada barrera, ya que una barrera llena transfiere el excedente a las inferiores. En el dual, un potencial $\eta_v$ por nodo mide el valor marginal de un metro cúbico en ese punto de la ladera; las barreras con costo reducido $c_e+\eta_u-\eta_v<0$ en su arco $e=(u,v)=(B_j,t)$ quedan saturadas, lo que indica que una mayor capacidad en ellas incrementaría la retención. Las capacidades y costos se escalan a enteros y el problema se resuelve con \emph{network simplex} de OR-Tools.
+que corresponde a la máxima retención posible respetando simultáneamente la topología del drenaje (el agua sólo puede descender) y la capacidad de cada barrera, ya que una barrera llena transfiere el excedente a las inferiores. En el dual, un potencial $\eta_v$ por nodo mide el valor marginal de un metro cúbico en ese punto de la ladera; las barreras con costo reducido $c_e+\eta_u-\eta_v<0$ en su arco $e=(u,v)=(B_j,t)$ quedan saturadas, lo que indica que una mayor capacidad en ellas incrementaría la retención. Los trazos resultantes son conceptuales: con un DEM de 30 m no se resuelven el intervalo vertical de 1 m ni las cárcavas pequeñas, así que sirven para comparar métodos y ubicar zonas de obra, no como planos de construcción, que requieren LiDAR o levantamiento con dron. Las capacidades y costos se escalan a enteros y el problema se resuelve con \emph{network simplex} de OR-Tools.
 
 \textbf{Selección de barreras.} Con un presupuesto de $\bar L$ metros se busca
 \begin{equation}
@@ -550,7 +556,7 @@ Con 4,000 escenarios de Monte Carlo, que incluyen también los parámetros de la
 \begin{equation}
 \Pr[G_g>0]=\int \mathbf 1\!\left[(1-e)\phi-\tau>0\right]\,f(e)\,f(\phi)\,f(\tau)\;de\,d\phi\,d\tau\;\approx\;\frac1N\sum_{n=1}^N \mathbf 1\!\left[G_g^{(n)}>0\right],
 \end{equation}
-y la distribución de $W_{\text{neta}}$ para dos selecciones: la de la sección~\ref{sec:optim}, que maximiza el agua bruta $\sum_i x_iR_ik_i$, y una que maximiza la ganancia neta esperada $\sum_i x_iR_i\,\mathbb E[G_{g(i)}]$ y excluye las celdas con $\mathbb E[G_{g(i)}]<0$. La importancia de cada parámetro se mide con el coeficiente de correlación de rangos de Spearman entre el parámetro y $W_{\text{neta}}$. Para evaluar si el signo de $G_g$ depende de las cotas elegidas, se repite el cálculo con cotas optimistas: $e_g\sim\mathcal U(0.2,\,\text{ET}/P)$, $\phi_g\sim\mathcal U(0.6,0.95)$ y $\tau_g\sim\mathcal U(0.1,0.5)$ en las presas, y $\phi_g\sim\mathcal U(0.7,0.95)$ y $\tau_g\sim\mathcal U(0,0.2)$ en la cuenca del río Santa Catarina.
+y la distribución de $W_{\text{neta}}$ para dos selecciones: la de la sección~\ref{sec:optim}, que maximiza el agua bruta $\sum_i x_iR_ik_i$, y una que maximiza la ganancia neta esperada $\sum_i x_iR_i\,\mathbb E[G_{g(i)}]$ y excluye las celdas con $\mathbb E[G_{g(i)}]<0$. La importancia de cada parámetro se mide con el coeficiente de correlación de rangos de Spearman entre el parámetro y $W_{\text{neta}}$. Para evaluar si el signo de $G_g$ depende de las cotas elegidas, se repite el cálculo con cotas optimistas: $e_g\sim\mathcal U(0.2,\,\text{ET}/P)$, $\phi_g\sim\mathcal U(0.6,0.95)$ y $\tau_g\sim\mathcal U(0.1,0.5)$ en las presas, y $\phi_g\sim\mathcal U(0.7,0.95)$ y $\tau_g\sim\mathcal U(0,0.2)$ en la cuenca del río Santa Catarina. Para el karst se agregan dos escenarios en la cuenca del río Santa Catarina en los que parte del agua infiltrada sale por fallas hacia otras cuencas: $\phi_g\sim\mathcal U(0.2,0.9)$, pérdida moderada, y $\phi_g\sim\mathcal U(0.1,0.5)$, pérdida alta.
 
 \subsection{Selección de vegetación por tipo de vegetación}\label{sec:vegetacion}
 
@@ -573,6 +579,14 @@ donde $R$ es la erosividad de la lluvia (MJ mm ha$^{-1}$ h$^{-1}$ año$^{-1}$), 
 \Delta V_{\text{sed}}=\frac{\text{SDR}}{\rho_b}\sum_{i\in\text{presas}} x_i\,A_i\,\bar A_{s,i}\,(1-P_c)\quad(\text{m}^3\,\text{año}^{-1}),
 \end{equation}
 con $\bar A_{s,i}$ la pérdida media de suelo sin obras en el área elegible de la celda $i$ y $\rho_b$ la densidad aparente del sedimento depositado (t/m³). Las cotas de los parámetros inciertos son $\lambda\sim\mathcal U(30,100)$ m, $P_c\sim\mathcal U(0.2,0.6)$, el intervalo de las prácticas de surcado en contorno y terrazas \citap{wischmeier1978}, $\text{SDR}\sim\mathcal U(0.1,0.4)$, $\rho_b\sim\mathcal U(1.1,1.5)$ t/m³ y un factor de $R$ de $\mathcal U(0.8,1.2)$; se propagan con 4,000 escenarios de Monte Carlo junto con los parámetros del destino del agua, para comparar el azolve evitado con el cambio neto del agua que llega a cada presa. Se evalúan la selección por agua bruta, de la que sólo cuentan sus celdas en La Boca y Cerro Prieto, y una selección que maximiza el suelo retenido en esas dos cuencas. El volumen evitado se compara con la capacidad al NAMO de Cerro Prieto (unos 300 hm³) y de La Boca (39.5 hm³) \citap{sadm2023}.
+
+\subsection{Azolve de las barreras y vida útil}\label{sec:vidautil}
+
+El suelo que las barreras retienen se deposita en la franja encharcada. El volumen que recibe cada metro de barrera por año es
+\begin{equation}
+v_{\text{sed}}=\frac{\bar A_{s}\,(\lambda/22.13)^{0.5}\,f_R\,(1-P_c)\,a_m}{\rho_b}\quad(\text{m}^3\,\text{m}^{-1}\,\text{año}^{-1}),
+\end{equation}
+con $\bar A_s$ la pérdida media de suelo de las celdas seleccionadas en la cuenca del río Santa Catarina con una ladera de 22 m (sección~\ref{sec:rusle}), $f_R$ el factor de incertidumbre de la erosividad, $(1-P_c)$ la fracción del suelo que retienen las obras y $a_m$ la superficie de ladera que drena a cada metro de barrera, calculada en los ocho sitios sugeridos como la fracción interceptada de la ventana de 144 ha dividida entre la longitud de barreras. Los parámetros se muestrean como en la sección~\ref{sec:rusle}. El almacenamiento encharcado, 0.9 m³/m, se llena en $t=0.9/v_{\text{sed}}$ años. Como la RUSLE probablemente sobrestima la erosión en la zona, se repite el cálculo con la erosión dividida entre 3 y entre 10. Sin limpieza del sedimento, sólo queda la infiltración a través de la franja, 0.54 m³/m, es decir, 37.5\% de la capacidad nominal; como la retención anual es proporcional a la capacidad por metro (sección~\ref{sec:incertidumbre}), el agua bruta y la neta se reducen en la misma proporción.
 
 \subsection{Costo por litro por segundo}\label{sec:costo}
 
@@ -710,6 +724,8 @@ Máxima ganancia neta esperada, 30,000 ha & 388 & 26.1 & 23 & −61 a 126 & 67\%
 
 \lectura{Con la selección que maximiza el agua bruta, 30,000 ha retienen 401 L/s, pero el agua neta para el abasto tiene una media de −44 L/s y probabilidad de ser positiva de sólo 17\%, porque 11,981 de esas hectáreas drenan a Cerro Prieto, donde la retención resta escurrimiento a la presa. Al maximizar la ganancia neta esperada, la selección se concentra por completo en la cuenca del río Santa Catarina y el agua neta tiene una media de 26 L/s (intervalo de 90\% de −61 a 126 L/s), con probabilidad de ser positiva de 67\%. Los parámetros que más influyen en el resultado son, en orden, el escurrimiento que ya llegaba en Cerro Prieto ($r_s=-0.49$), la evapotranspiración en Río Santa Catarina ($r_s=-0.48$), el escurrimiento que ya llegaba en Río Santa Catarina ($r_s=-0.41$) y la evapotranspiración en Cerro Prieto ($r_s=-0.36$).}
 
+\lectura{El resultado depende de que el agua infiltrada llegue al acuífero explotado. Si en el karst parte de ella sale por fallas hacia otras cuencas, la probabilidad de ganancia neta positiva en la cuenca del río Santa Catarina baja de 67\% a 48\% con pérdida moderada y a 16\% con pérdida alta, y la ganancia neta esperada con 30,000 ha pasa de unos 26 L/s a 1 y −40 L/s, respectivamente. La ganancia de 26 L/s es, por tanto, condicional a supuestos no calibrados sobre el destino del agua, y la conectividad del karst es una de las mediciones prioritarias.}
+
 \respuesta{Las obras no desvían el agua: la retienen unas horas para que se infiltre, y desde ahí sigue su curso por el subsuelo dentro de la misma cuenca. Para el abasto, el resultado depende de la fuente. En la cuenca del río Santa Catarina, el escurrimiento de tormenta sale del sistema a través de la ciudad, así que infiltrarlo en la sierra añade recarga al acuífero que explotan los pozos y galerías; la ganancia neta es positiva con probabilidad de 67\% con las cotas base y de 99.7\% con las optimistas. En las cuencas de las presas, retener escurrimiento en la ladera no añade agua en volumen anual y probablemente la reduce: lo que se retiene ya llegaba en buena parte al embalse, y la evapotranspiración se lleva una fracción. Ahí el beneficio de las obras está en reducir el azolve, atenuar los picos de las avenidas y conservar el suelo, no en aumentar el volumen. Con 30,000 ha en la cuenca del río Santa Catarina, el agua neta esperada es del orden de 26 L/s, una fracción pequeña del agua bruta retenida y del déficit de 2022.}
 
 \subsection{P10 · Vegetación para acompañar las obras}\label{res:p10}
@@ -774,6 +790,26 @@ Máximo suelo retenido en presas, 30,000 ha & 30,000 & 481 (187 a 901) & 24.0 & 
 \lectura{Sin obras, las laderas elegibles pierden en promedio 70 t/ha/año en Cerro Prieto y 84 en La Boca con una longitud de ladera de 22 m; son valores altos, propios de laderas pronunciadas con poca cobertura, y probablemente sobrestimados porque el factor $C$ usa el NDVI de temporada seca. Con 30,000 ha seleccionadas para retener suelo, casi todas en Cerro Prieto, las obras evitarían la llegada de unos 480,698 m³ de sedimento al año (intervalo de 90\% de 186,985 a 900,853), es decir, 24.0 hm³ en 50 años, del orden de 8.0\% de la capacidad de Cerro Prieto. En esas mismas laderas, el agua que llega a la presa se reduciría en unos 4.0 hm³ por año.}
 
 \respuesta{Las obras reducen el azolve de las presas, pero el volumen de almacenamiento que conservan es menor que el agua que dejan de enviarles. Con 30,000 ha en Cerro Prieto, se conservarían unos 24.0 hm³ de capacidad en 50 años, mientras que el agua que llega a la presa se reduciría en unos 4.0 hm³ por año. Restaurar las cuencas de las presas se justifica por la conservación del suelo, la vegetación y la atenuación de avenidas, y por la vida útil del embalse, más que por un aumento del agua disponible; si el objetivo es el abasto, la prioridad es la cuenca del río Santa Catarina.}
+
+\subsection{Vida útil de las barreras sin mantenimiento}\label{res:vidautil}
+
+\begin{table}[H]\centering\small
+\caption{Tiempo para que el sedimento llene el almacenamiento de las barreras}\label{tab:vidautil}
+{\color{gris}Cuenca del río Santa Catarina. Media e intervalo de 90\%. Almacenamiento encharcado: 0.9 m³ por metro.\par}\smallskip
+\begin{tabularx}{\linewidth}{Xrrr}
+\toprule
+Erosión supuesta & Sedimento (m³/m/año) & Años hasta llenarse & Intervalo 90\% \\
+\midrule
+RUSLE & 3.40 & 0.3 & 0.2 a 0.5 \\
+RUSLE / 3 & 1.13 & 0.9 & 0.5 a 1.4 \\
+RUSLE / 10 & 0.34 & 2.9 & 1.7 a 4.8 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\lectura{Cada metro de barrera drena unos 602 m² de ladera. Con la erosión de la RUSLE, el almacenamiento encharcado se llenaría en 0.3 años en promedio; aun con una erosión diez veces menor, en unos 2.9 años. Sin limpieza, sólo queda la infiltración a través de la franja, 37.5\% de la capacidad nominal, y la ganancia neta esperada con 30,000 ha bajaría de 26 a unos 10 L/s.}
+
+\respuesta{Los volúmenes del informe suponen barreras con su capacidad nominal. Sin mantenimiento, el sedimento llena el almacenamiento en meses o pocos años y la retención baja a cerca de 37.5\% de lo estimado: el agua neta pasaría de 26 a 10 L/s. Mantener la capacidad exige retirar el sedimento después de las temporadas de lluvia, o aceptar que las barreras evolucionen a terrazas que sólo infiltran. Este costo de mantenimiento no está incluido en el costo por L/s.}
 
 \subsection{P12 · Costo frente a otras fuentes}\label{res:p12}
 
@@ -888,7 +924,7 @@ Los pozos del cañón de la cuenca del río Santa Catarina extraen del acuífero
 Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimización por ganancia neta esperada con 3,000 ha (sección~\ref{sec:destino}), separadas al menos 3 km entre sí, en las que las reglas recomiendan una obra de barreras. Todas están en la cuenca del río Santa Catarina, la única en la que la ganancia neta esperada es positiva; 7 de ellas están dentro del Parque Nacional Cumbres de Monterrey.
 
 \begin{table}[H]\centering\footnotesize
-\caption{Sitios sugeridos por la optimización por ganancia neta}\label{tab:sitios}
+\caption{Sitios sugeridos por la optimización por ganancia neta (trazos conceptuales)}\label{tab:sitios}
 {\color{gris}Lugar: posición de la celda en la optimización. Bruta y neta en m³/ha/año. Intercepta: \% de la ventana con 1,500 m de barreras. ANP: PN, Parque Nacional Cumbres de Monterrey; APRN, Área de Protección de los Recursos Naturales C.A.D.N.R. 026.\par}\smallskip
 \begin{tabularx}{\linewidth}{rrrrrr>{\raggedright\arraybackslash}Xrl}
 \toprule
@@ -919,6 +955,7 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
   \item \textbf{Como fuente de agua, la restauración es cara}: cada L/s neto cuesta unos 43 millones de pesos, más de diez veces el costo de capital por L/s de El Cuchillo II; su valor está en el suelo, los embalses y la biodiversidad.
   \item \textbf{La prioridad para el abasto está dentro del Parque Nacional Cumbres de Monterrey}: 2,933 de las 3,000 ha seleccionadas por ganancia neta; la restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
   \item \textbf{En el acuífero Campo Buenos Aires la ganancia es plausible pero modesta}: con 30,000 ha, la ganancia neta sería de 0.66 a 0.82 hm³ al año, 1.2 a 1.4\% de la recarga natural del acuífero Campo Buenos Aires, y cubriría de 11\% a 14\% de su déficit.
+  \item \textbf{La ganancia neta es condicional y frágil}: si el karst desvía parte del agua infiltrada, la probabilidad de ganancia baja a 48\%, y sin limpieza del sedimento la retención cae a 37.5\% de lo estimado en meses o pocos años.
   \item \textbf{Lo que más conviene medir} es la evapotranspiración del agua infiltrada y la fracción del escurrimiento que ya llega a las presas: son los parámetros con mayor influencia en la ganancia neta.
   \item \textbf{Cada obra se acompaña con la vegetación de su propio tipo según el INEGI}: matorral submontano, desértico, encino o pino-encino, con especies de inventarios publicados, procedencia local y densidad moderada.
   \item \textbf{La selección resiste la sequía}: con la lluvia previa a la crisis se conservan 92\% del agua y 82\% de los sitios.
@@ -930,7 +967,7 @@ Los sitios no se eligen manualmente: son las ocho mejores celdas de la optimizac
 
 \section{Condiciones para escalar el programa}\label{sec:escalar}
 
-Los resultados no permiten decidir todavía si la restauración en la cuenca del río Santa Catarina aumenta el agua disponible: la probabilidad de ganancia neta positiva es de 67\%, porque dependen de tres fracciones no medidas. Por eso se recomienda empezar con un piloto en los ocho sitios sugeridos, con las mediciones del apéndice~\ref{sec:validacion}, y escalar sólo si se cumplen las condiciones siguientes. Todas se derivan del modelo de la sección~\ref{sec:destino}.
+Los resultados no permiten decidir todavía si la restauración en la cuenca del río Santa Catarina aumenta el agua disponible: la probabilidad de ganancia neta positiva es de 67\%, porque dependen de tres fracciones no medidas. Por eso se recomienda empezar con un piloto en los ocho sitios sugeridos, con las mediciones del apéndice~\ref{sec:validacion}, y escalar sólo si se cumplen las condiciones siguientes. Se derivan del modelo de las secciones~\ref{sec:destino} y~\ref{sec:vidautil}.
 
 \textbf{Condición 1: que el acuífero gane agua.} La ganancia neta por m³ retenido es positiva si
 \begin{equation}
@@ -959,7 +996,9 @@ Llega al acuífero, $\phi$ & 0.10 & 0.25 & 0.40 \\
 
 \textbf{Condición 4: en las cuencas de las presas, escalar sólo con objetivos de suelo.} En La Boca y Cerro Prieto la ganancia neta es negativa con alta probabilidad; la restauración ahí se justifica si se mide un azolve evitado relevante para la vida útil del embalse, no por el agua.
 
-\textbf{Condición 5: autorización y vegetación.} Siete de los ocho sitios están en el Parque Nacional Cumbres de Monterrey: escalar requiere la autorización de la CONANP y usar sólo especies nativas del tipo de vegetación de cada ladera, con material de procedencia local.
+\textbf{Condición 5: que el agua llegue al acuífero y las obras conserven su capacidad.} Antes de escalar, las pruebas con trazadores deben mostrar que el agua infiltrada llega al acuífero Campo Buenos Aires y no sale por fallas hacia otras cuencas, y el programa debe incluir la limpieza periódica del sedimento, cuyo costo debe sumarse al de la obra.
+
+\textbf{Condición 6: autorización y vegetación.} Siete de los ocho sitios están en el Parque Nacional Cumbres de Monterrey: escalar requiere la autorización de la CONANP y usar sólo especies nativas del tipo de vegetación de cada ladera, con material de procedencia local.
 
 \section{Limitaciones}
 
@@ -970,10 +1009,11 @@ Llega al acuífero, $\phi$ & 0.10 & 0.25 & 0.40 \\
   \item \textbf{Destino del agua.} Las fracciones $e_g$, $\phi_g$ y $\tau_g$ son distribuciones a priori no calibradas; su medición con balances hídricos, piezometría en la cuenca del río Santa Catarina y aforos en los afluentes de las presas cambiaría las probabilidades de la sección~\ref{res:p9}. El agua que sale de la cuenca de una presa por el subsuelo puede recargar otros acuíferos que también abastecen a la ZMM, lo que el modelo no acredita. Tampoco se modela que el agua que llega a una presa llena se pierde por vertido, lo que reduciría $\tau_g$ en años húmedos.
   \item \textbf{Tipos de vegetación.} La carta del INEGI tiene escala 1:250,000 y su base es de 2017 a 2021; dentro de una celda de 1 km se supone que el área elegible se reparte como la superficie de cada tipo. La lista de especies del encinar proviene de inventarios de pino-encino. El tipo de cada sitio debe confirmarse en campo con la vegetación remanente.
   \item \textbf{Erosión.} La RUSLE no está calibrada en la zona: el factor $C$ con NDVI de temporada seca y la pendiente fuerte probablemente sobrestiman la pérdida de suelo, y la razón de entrega de sedimentos es una cota amplia. No se modela el azolve que ya retienen los cauces ni la erosión de cárcavas y márgenes.
-  \item \textbf{Escala y tiempo.} El aporte a escala de programa supone que las obras se mantienen con su capacidad de diseño; el azolve la reduce con el tiempo. El agua infiltrada llega a los acuíferos y presas con un retraso no modelado, y las fracciones que se pierden por evapotranspiración o que no llegan a la fuente se representan con distribuciones a priori (sección~\ref{sec:destino}).
-  \item \textbf{Resolución.} El DEM de 30 m no resuelve el intervalo vertical de 1 m, por lo que el trazo es preliminar y debe validarse con levantamiento topográfico o con dron. SMAP tiene una resolución de unos 9 km, MODIS detecta área quemada a 500 m y CHIRPS tiene una resolución de unos 5 km.
+  \item \textbf{Escala y tiempo.} Los volúmenes suponen que las obras conservan su capacidad nominal; sin limpieza del sedimento, la capacidad baja a 37.5\% en meses o pocos años (sección~\ref{res:vidautil}), y el costo de ese mantenimiento no está incluido. El agua infiltrada llega a los acuíferos y presas con un retraso no modelado, y las fracciones que se pierden por evapotranspiración o que no llegan a la fuente se representan con distribuciones a priori (sección~\ref{sec:destino}).
+  \item \textbf{Resolución.} El DEM de 30 m no resuelve el intervalo vertical de 1 m ni las cárcavas pequeñas: los trazos de barreras son pruebas de concepto, no planos de construcción, y requieren LiDAR o levantamiento con dron. SMAP tiene una resolución de unos 9 km, MODIS detecta área quemada a 500 m y CHIRPS tiene una resolución de unos 5 km.
   \item \textbf{Optimización.} La selección de barreras es un problema de costo fijo; \emph{lazy greedy} no garantiza el óptimo global. La red D8 asigna un solo receptor por celda.
-  \item \textbf{Suelo.} La textura de OpenLandMap apenas varía en la zona; un mapa edafológico del INEGI mejoraría este criterio.
+  \item \textbf{Suelo.} La textura de OpenLandMap apenas varía sobre el paisaje calizo, así que no diferencia la infiltración entre sitios: el suelo pesa sólo 0.05 en el índice y la infiltración detrás de las barreras usa una tasa fija de 30 mm/h. Un mapa edafológico del INEGI o mediciones de infiltración en campo cambiarían la capacidad por metro, cuya incertidumbre se propaga en el Monte Carlo.
+  \item \textbf{Karst.} En calizas fracturadas, el agua infiltrada puede seguir fallas regionales hacia otras cuencas sin llegar al acuífero explotado. El escenario de pérdida moderada reduce la probabilidad de ganancia neta a 48\% (sección~\ref{res:p9}); la conectividad debe medirse con trazadores.
   \item \textbf{Campo.} No se verifican caminos, construcciones ni tenencia de la tierra. La superficie dentro de áreas protegidas se calcula con los polígonos de la WDPA, sin la zonificación del Parque Nacional Cumbres de Monterrey, cuyo programa de manejo no se encontró publicado.
   \item \textbf{Clima.} Se usan ocho modelos de NEX-GDDP-CMIP6 y sólo la lluvia; no se proyectan cambios de temperatura ni de evapotranspiración, que afectarían $e_g$.
 \end{itemize}
@@ -998,6 +1038,7 @@ Llega al acuífero, $\phi$ & 0.10 & 0.25 & 0.40 \\
 \bibitem{dinic1970} Dinic, E. A. (1970). Algorithm for solution of a problem of maximum flow in networks with power estimation. \emph{Soviet Mathematics Doklady}, 11, 1277–1280.
 \bibitem{edmonds1972} Edmonds, J. y Karp, R. M. (1972). Theoretical improvements in algorithmic efficiency for network flow problems. \emph{Journal of the ACM}, 19(2), 248–264.
 \bibitem{eluniversal2023} El Universal (2023, 16 de diciembre). Inauguran AMLO y Samuel García acueducto El Cuchillo II. \emph{El Universal}.
+\bibitem{ford2007} Ford, D. y Williams, P. (2007). \emph{Karst Hydrogeology and Geomorphology}. John Wiley \& Sons, Chichester.
 \bibitem{ford1956} Ford, L. R. y Fulkerson, D. R. (1956). Maximal flow through a network. \emph{Canadian Journal of Mathematics}, 8, 399–404.
 \bibitem{funk2015} Funk, C. et al. (2015). The climate hazards infrared precipitation with stations: a new environmental record for monitoring extremes. \emph{Scientific Data}, 2, 150066.
 \bibitem{glendenning2012} Glendenning, C. J., van Ogtrop, F. F., Mishra, A. K. y Vervoort, R. W. (2012). Balancing watershed and local scale impacts of rain water harvesting in India: A review. \emph{Agricultural Water Management}, 107, 1–13.
@@ -1212,8 +1253,9 @@ Los parámetros que más influyen en la ganancia neta (sección~\ref{res:p9}) pu
 
 \begin{itemize}
   \item \textbf{Escurrimiento que ya llega, $\tau_g$.} Pares de microcuencas de 1 a 5 ha, una con barreras y una testigo, con vertedores aforadores en la salida. La diferencia de volumen escurrido por tormenta, antes y después de construir, mide la fracción del escurrimiento que las obras retienen y cuánto de ella habría salido de la ladera. Como $\tau_g$ es el parámetro más influyente en la cuenca de Cerro Prieto, conviene instrumentar también pares de microcuencas en ella, además de los ocho sitios de la cuenca del río Santa Catarina.
-  \item \textbf{Evapotranspiración del agua infiltrada, $e_g$.} Perfiles de humedad del suelo a 30, 60 y 100 cm detrás de las barreras y en las testigo. El agua que drena por debajo de la zona de raíces escapa a la evapotranspiración; la recarga puede estimarse también con el balance de masa de cloruro, el método más usado en zonas semiáridas \citap{scanlon2006}.
-  \item \textbf{Fracción que llega al acuífero, $\phi_g$.} Piezómetros ladera abajo de los sitios y la serie de niveles de los pozos de SADM, para detectar la respuesta del acuífero a las tormentas.
+  \item \textbf{Evapotranspiración del agua infiltrada, $e_g$.} Lisímetros pareados detrás de las barreras y en las testigo, que miden directamente el agua que drena por debajo de la zona de raíces, y perfiles de humedad del suelo a 30, 60 y 100 cm. El agua que drena por debajo de la zona de raíces escapa a la evapotranspiración; la recarga puede estimarse también con el balance de masa de cloruro, el método más usado en zonas semiáridas \citap{scanlon2006}.
+  \item \textbf{Fracción que llega al acuífero, $\phi_g$.} Pruebas con trazadores (colorantes o isótopos) inyectados detrás de las barreras y muestreados en manantiales, galerías y pozos, para saber si el agua llega al acuífero Campo Buenos Aires o sale por fallas hacia otras cuencas; piezómetros ladera abajo de los sitios y la serie de niveles de los pozos de SADM.
+  \item \textbf{Azolve de las barreras.} Medición anual del espesor de sedimento en la franja encharcada, para calibrar la vida útil de la sección~\ref{res:vidautil} y programar la limpieza.
 \end{itemize}
 
 El número de pares necesario se obtiene de una prueba de diferencia de medias. Para detectar una diferencia relativa $\delta$ entre sitios con y sin obras, con coeficiente de variación $\text{CV}$ entre sitios, nivel de significancia $\alpha$ y potencia $1-\beta$,

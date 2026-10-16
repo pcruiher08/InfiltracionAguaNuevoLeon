@@ -1,0 +1,86 @@
+{
+ "karst": {
+  "base": {
+   "phi": [
+    0.5,
+    0.9
+   ],
+   "g_mean": 0.073,
+   "p_pos": 68.2,
+   "net_ls_30000": 28.5
+  },
+  "karst_moderado": {
+   "phi": [
+    0.2,
+    0.9
+   ],
+   "g_mean": 0.004,
+   "p_pos": 48.4,
+   "net_ls_30000": 1.6
+  },
+  "karst_alto": {
+   "phi": [
+    0.1,
+    0.5
+   ],
+   "g_mean": -0.112,
+   "p_pos": 16.4,
+   "net_ls_30000": -43.3
+  }
+ },
+ "sediment": {
+  "a0": 71.7,
+  "area_m2_per_m": 602,
+  "scenarios": {
+   "rusle": {
+    "factor": 1.0,
+    "m3_per_m_yr": [
+     1.89,
+     5.38,
+     3.4
+    ],
+    "years_to_fill": [
+     0.17,
+     0.48,
+     0.29
+    ],
+    "years_to_fill_median": 0.28
+   },
+   "rusle_3": {
+    "factor": 0.3333333333333333,
+    "m3_per_m_yr": [
+     0.63,
+     1.79,
+     1.13
+    ],
+    "years_to_fill": [
+     0.5,
+     1.43,
+     0.88
+    ],
+    "years_to_fill_median": 0.83
+   },
+   "rusle_10": {
+    "factor": 0.1,
+    "m3_per_m_yr": [
+     0.19,
+     0.54,
+     0.34
+    ],
+    "years_to_fill": [
+     1.67,
+     4.76,
+     2.93
+    ],
+    "years_to_fill_median": 2.76
+   }
+  },
+  "capacity_left": 0.375,
+  "long_term": {
+   "gross_ls": 145.4,
+   "net_ls": 9.8,
+   "gross_ls_nominal": 387.6,
+   "net_ls_nominal": 26.1
+  }
+ }
+}
