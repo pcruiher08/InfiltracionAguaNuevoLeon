@@ -31,7 +31,7 @@ SC, LB, CP, EC = 3, 1, 2, 4          # supply ids (pipeline.optimize.SUPPLY)
 E_MIN = 0.30                         # focused infiltration loses less to ET than diffuse rain
 PHI = {SC: (0.5, 0.9), LB: (0.3, 0.8), CP: (0.3, 0.8), EC: (0.3, 0.8)}
 TAU = {SC: (0.1, 0.4), LB: (0.3, 0.8), CP: (0.3, 0.8), EC: (0.3, 0.8)}
-rho = lambda p: np.interp(p, O.RETENTION_RAIN, O.RETENTION_FRAC)
+rho = lambda p: O.FIELD_MEAN * np.interp(p, O.RETENTION_RAIN, O.RETENTION_FRAC)
 ls = lambda m3: m3 / SEC_Y * 1000
 
 
@@ -88,7 +88,7 @@ def main():
     by_sup = {key: {s: [] for s in sids} for key in sel}
     params = []
     for _ in range(N_MC):
-        c_f = RNG.uniform(0.7, 1.3); cap = RNG.uniform(0.9, 2.0); bias = RNG.normal(1, 0.1); kec = RNG.uniform(0.4, 0.8)
+        c_f = RNG.uniform(0.7, 1.3); ff = RNG.uniform(*O.FIELD_FACTOR); bias = RNG.normal(1, 0.1); kec = RNG.uniform(0.4, 0.8)
         G = {}
         th = {}
         for s in sids:
@@ -96,9 +96,9 @@ def main():
             ph = RNG.uniform(*PHI[s]); ta = RNG.uniform(*TAU[s])
             G[s] = ((1 - e) * ph - ta) * (kec if s == EC else 1.0)
             draws[s].append(G[s]); th[s] = (e, ph, ta)
-        params.append([c_f, cap, bias, kec] + [v for s in sids for v in th[s]])
+        params.append([c_f, ff, bias, kec] + [v for s in sids for v in th[s]])
         g_cell = np.array([G[s] for s in sup])
-        Cn = np.clip(C * c_f, 0.02, 0.9); scale = cap / M.CAP_M3_PER_M
+        Cn = np.clip(C * c_f, 0.02, 0.9); scale = ff
         Rn = 10 * P * bias * Cn * A * rho(P * bias) * scale
         Rd = 10 * Pd * bias * Cn * A * rho(Pd * bias) * scale
         for key, x in sel.items():

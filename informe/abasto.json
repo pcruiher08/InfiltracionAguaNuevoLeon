@@ -6,22 +6,22 @@
  "scenarios": [
   {
    "ha": 3000,
-   "ls": 44.6,
-   "ls_drought": 40.9,
-   "hm3": 1.41,
-   "hm3_drought": 1.29,
-   "pct_demand": 0.27,
-   "pct_deficit_drought": 1.4,
-   "days_supply": 1.0,
+   "ls": 184.0,
+   "ls_drought": 147.9,
+   "hm3": 5.8,
+   "hm3_drought": 4.66,
+   "pct_demand": 1.11,
+   "pct_deficit_drought": 4.9,
+   "days_supply": 4.1,
    "mc_ls": [
-    26.2,
-    44.9,
-    68.5
+    116.3,
+    183.0,
+    266.0
    ],
    "mc_ls_drought": [
-    23.9,
-    40.9,
-    62.5
+    93.1,
+    146.9,
+    213.6
    ],
    "by_supply": {
     "Presa El Cuchillo": {
@@ -30,40 +30,40 @@
      "ha": 0
     },
     "Presa Cerro Prieto": {
-     "ls": 3.0,
-     "ls_drought": 2.6,
-     "ha": 204
+     "ls": 15.2,
+     "ls_drought": 11.8,
+     "ha": 267
     },
     "Acuífero Santa Catarina (pozos SADM)": {
-     "ls": 39.6,
-     "ls_drought": 36.4,
-     "ha": 2659
+     "ls": 107.6,
+     "ls_drought": 88.8,
+     "ha": 1848
     },
     "Presa La Boca": {
-     "ls": 2.0,
-     "ls_drought": 1.9,
-     "ha": 137
+     "ls": 61.1,
+     "ls_drought": 47.3,
+     "ha": 886
     }
    }
   },
   {
    "ha": 10000,
-   "ls": 141.4,
-   "ls_drought": 128.4,
-   "hm3": 4.46,
-   "hm3_drought": 4.05,
-   "pct_demand": 0.86,
-   "pct_deficit_drought": 4.3,
-   "days_supply": 3.1,
+   "ls": 560.9,
+   "ls_drought": 449.0,
+   "hm3": 17.69,
+   "hm3_drought": 14.16,
+   "pct_demand": 3.4,
+   "pct_deficit_drought": 15.0,
+   "days_supply": 12.4,
    "mc_ls": [
-    83.0,
-    142.1,
-    216.9
+    353.9,
+    557.4,
+    810.4
    ],
    "mc_ls_drought": [
-    75.1,
-    128.4,
-    196.5
+    282.8,
+    446.3,
+    648.5
    ],
    "by_supply": {
     "Presa El Cuchillo": {
@@ -72,144 +72,144 @@
      "ha": 0
     },
     "Presa Cerro Prieto": {
-     "ls": 34.8,
-     "ls_drought": 30.7,
-     "ha": 2514
+     "ls": 174.7,
+     "ls_drought": 134.6,
+     "ha": 3250
     },
     "Acuífero Santa Catarina (pozos SADM)": {
-     "ls": 100.4,
-     "ls_drought": 91.9,
-     "ha": 7045
+     "ls": 320.2,
+     "ls_drought": 263.2,
+     "ha": 5774
     },
     "Presa La Boca": {
-     "ls": 6.2,
-     "ls_drought": 5.8,
-     "ha": 441
+     "ls": 66.0,
+     "ls_drought": 51.1,
+     "ha": 976
     }
    }
   },
   {
    "ha": 30000,
-   "ls": 400.7,
-   "ls_drought": 360.8,
-   "hm3": 12.64,
-   "hm3_drought": 11.38,
-   "pct_demand": 2.43,
-   "pct_deficit_drought": 12.0,
-   "days_supply": 8.9,
+   "ls": 1556.0,
+   "ls_drought": 1242.8,
+   "hm3": 49.07,
+   "hm3_drought": 39.19,
+   "pct_demand": 9.43,
+   "pct_deficit_drought": 41.4,
+   "days_supply": 34.4,
    "mc_ls": [
-    235.2,
-    402.2,
-    613.6
+    981.2,
+    1545.9,
+    2248.1
    ],
    "mc_ls_drought": [
-    210.6,
-    360.6,
-    552.0
+    783.2,
+    1235.5,
+    1796.0
    ],
    "by_supply": {
     "Presa El Cuchillo": {
-     "ls": 0.0,
-     "ls_drought": 0.0,
-     "ha": 0
+     "ls": 0.5,
+     "ls_drought": 0.4,
+     "ha": 11
     },
     "Presa Cerro Prieto": {
-     "ls": 157.4,
-     "ls_drought": 138.1,
-     "ha": 11981
+     "ls": 676.3,
+     "ls_drought": 520.5,
+     "ha": 13327
     },
     "Acuífero Santa Catarina (pozos SADM)": {
-     "ls": 231.8,
-     "ls_drought": 211.8,
-     "ha": 17173
+     "ls": 792.9,
+     "ls_drought": 654.5,
+     "ha": 15279
     },
     "Presa La Boca": {
-     "ls": 11.5,
-     "ls_drought": 10.9,
-     "ha": 846
+     "ls": 86.2,
+     "ls_drought": 67.4,
+     "ha": 1383
     }
    }
   },
   {
    "ha": 60000,
-   "ls": 761.0,
-   "ls_drought": 683.2,
-   "hm3": 24.0,
-   "hm3_drought": 21.55,
-   "pct_demand": 4.61,
-   "pct_deficit_drought": 22.8,
-   "days_supply": 16.8,
+   "ls": 2901.7,
+   "ls_drought": 2332.8,
+   "hm3": 91.51,
+   "hm3_drought": 73.57,
+   "pct_demand": 17.59,
+   "pct_deficit_drought": 77.8,
+   "days_supply": 64.2,
    "mc_ls": [
-    446.1,
-    763.5,
-    1165.3
+    1829.2,
+    2884.0,
+    4195.0
    ],
    "mc_ls_drought": [
-    398.6,
-    682.1,
-    1045.3
+    1470.0,
+    2319.2,
+    3371.0
    ],
    "by_supply": {
     "Presa El Cuchillo": {
-     "ls": 1.1,
-     "ls_drought": 1.0,
-     "ha": 91
+     "ls": 6.8,
+     "ls_drought": 5.4,
+     "ha": 148
     },
     "Presa Cerro Prieto": {
-     "ls": 306.9,
-     "ls_drought": 268.2,
-     "ha": 24442
+     "ls": 1237.3,
+     "ls_drought": 951.6,
+     "ha": 25800
     },
     "Acuífero Santa Catarina (pozos SADM)": {
-     "ls": 435.5,
-     "ls_drought": 397.7,
-     "ha": 34124
+     "ls": 1547.8,
+     "ls_drought": 1289.7,
+     "ha": 32147
     },
     "Presa La Boca": {
-     "ls": 17.5,
-     "ls_drought": 16.4,
-     "ha": 1343
+     "ls": 109.8,
+     "ls_drought": 86.1,
+     "ha": 1905
     }
    }
   },
   {
    "ha": 192040,
-   "ls": 1769.0,
-   "ls_drought": 1566.7,
-   "hm3": 55.79,
-   "hm3_drought": 49.41,
-   "pct_demand": 10.72,
-   "pct_deficit_drought": 52.2,
-   "days_supply": 39.1,
+   "ls": 6489.1,
+   "ls_drought": 5254.0,
+   "hm3": 204.64,
+   "hm3_drought": 165.69,
+   "pct_demand": 39.33,
+   "pct_deficit_drought": 175.1,
+   "days_supply": 143.5,
    "mc_ls": [
-    1001.1,
-    1772.0,
-    2748.1
+    4023.1,
+    6448.5,
+    9537.4
    ],
    "mc_ls_drought": [
-    884.9,
-    1564.1,
-    2449.4
+    3248.2,
+    5222.7,
+    7739.5
    ],
    "by_supply": {
     "Presa El Cuchillo": {
-     "ls": 605.8,
-     "ls_drought": 530.5,
+     "ls": 2158.7,
+     "ls_drought": 1752.5,
      "ha": 93072
     },
     "Presa Cerro Prieto": {
-     "ls": 456.9,
-     "ls_drought": 396.6,
+     "ls": 1726.0,
+     "ls_drought": 1328.6,
      "ha": 38947
     },
     "Acuífero Santa Catarina (pozos SADM)": {
-     "ls": 675.7,
-     "ls_drought": 611.4,
+     "ls": 2465.6,
+     "ls_drought": 2063.5,
      "ha": 57364
     },
     "Presa La Boca": {
-     "ls": 30.5,
-     "ls_drought": 28.2,
+     "ls": 138.8,
+     "ls_drought": 109.2,
      "ha": 2657
     }
    }

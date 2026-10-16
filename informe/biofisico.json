@@ -1,0 +1,90 @@
+{
+ "thresholds_matched": [
+  0.361,
+  0.482
+ ],
+ "thresholds_fixed": [
+  0.45,
+  0.55
+ ],
+ "ranks": [
+  32.5,
+  69.9
+ ],
+ "uplands_ha": 469291,
+ "high_ha": {
+  "publicado": 141190,
+  "biofisico": 138651,
+  "biofisico_fijo": 65409
+ },
+ "both_high_ha": 109041,
+ "overlap_pct_of_published": 77.2,
+ "jaccard": 0.638,
+ "same_class_pct": 72.4,
+ "high_by_supply": {
+  "Presa La Boca": {
+   "publicado": 7117,
+   "biofisico": 4042,
+   "biofisico_fijo": 1214,
+   "ambos": 4042
+  },
+  "Presa Cerro Prieto": {
+   "publicado": 31374,
+   "biofisico": 18735,
+   "biofisico_fijo": 5716,
+   "ambos": 18735
+  },
+  "Acuífero Santa Catarina (pozos SADM)": {
+   "publicado": 61066,
+   "biofisico": 44632,
+   "biofisico_fijo": 22571,
+   "ambos": 44632
+  },
+  "Presa El Cuchillo": {
+   "publicado": 41632,
+   "biofisico": 71243,
+   "biofisico_fijo": 35909,
+   "ambos": 41632
+  }
+ },
+ "filter": {
+  "biofisico_directa_ha": 67408,
+  "biofisico_cuchillo_ha": 71243,
+  "publicado_directa_ha": 99557
+ },
+ "pearson": 0.917,
+ "sites": [
+  {
+   "publicado": 0.741,
+   "biofisico": 0.701
+  },
+  {
+   "publicado": 0.574,
+   "biofisico": 0.467
+  },
+  {
+   "publicado": 0.618,
+   "biofisico": 0.523
+  },
+  {
+   "publicado": 0.583,
+   "biofisico": 0.479
+  },
+  {
+   "publicado": 0.532,
+   "biofisico": 0.453
+  },
+  {
+   "publicado": 0.554,
+   "biofisico": 0.442
+  },
+  {
+   "publicado": 0.571,
+   "biofisico": 0.464
+  },
+  {
+   "publicado": 0.66,
+   "biofisico": 0.575
+  }
+ ]
+}

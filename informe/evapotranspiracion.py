@@ -112,8 +112,8 @@ def main():
     rows, A, P, C, k, sup = MT.cells_arrays()
     sel = sup == 3
     c_sc = float(np.average(C[sel], weights=A[sel]))
-    sites = json.loads((ROOT.parent / "docs" / "data" / "sites.json").read_text())
-    area_m = np.array([s["barriers"]["totals"]["intercepted_pct"] / 100 * 144e4 / s["barriers"]["totals"]["length_m"] for s in sites])
+    # hillslope area (m²) whose runoff reaches each metre of barrier in the field treatment (informe/campo.py)
+    area_m = np.array([v["area_m2_per_m"] for v in json.loads((ROOT / "campo.json").read_text())["sites"].values()])
     es, drs = [], []
     for _ in range(N_MC):
         smax = RNG.uniform(50, 400); kc = RNG.uniform(0.6, 1.1); cap = RNG.uniform(0.9, 2.0); w = RNG.uniform(*ROOT_W)
@@ -127,7 +127,7 @@ def main():
     es = np.array(es)
     out = {"years": [Y0, Y1], "products": products, "ratios": ratios,
            "climate": {"rain_mm_yr": round(float(p.sum() / (Y1 - Y0 + 1))), "pet_mm_yr": round(float(pet.sum() / (Y1 - Y0 + 1)))},
-           "bucket": {"n": N_MC, "c_sc": round(c_sc, 3), "area_m2_per_m": round(float(area_m.mean())),
+           "bucket": {"n": N_MC, "c_sc": round(c_sc, 3), "area_m2_per_m": round(float(area_m.mean()), 1),
                       "smax_mm": [50, 400], "kc": [0.6, 1.1], "root_width_m": list(ROOT_W),
                       "e": [round(float(np.percentile(es, 5)), 3), round(float(es.mean()), 3), round(float(np.percentile(es, 95)), 3)],
                       "e_samples": [round(float(v), 4) for v in es]}}

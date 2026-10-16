@@ -24,7 +24,7 @@ BUDGETS = (3_000, 10_000, 30_000, 60_000)
 N_MC = 2000
 RNG = np.random.default_rng(7)
 SEC_Y = MT.SEC_Y
-rho = lambda p: np.interp(p, O.RETENTION_RAIN, O.RETENTION_FRAC)
+rho = lambda p: O.FIELD_MEAN * np.interp(p, O.RETENTION_RAIN, O.RETENTION_FRAC)
 
 
 def best_first(v, A, budgets):
@@ -52,9 +52,9 @@ def main():
     # Monte Carlo with the same parameter ranges as section 5.9, for every budget and both rain regimes
     mc_n = np.zeros((N_MC, len(budgets))); mc_d = np.zeros_like(mc_n)
     for n in range(N_MC):
-        c_f = RNG.uniform(0.7, 1.3); cap = RNG.uniform(0.9, 2.0); bias = RNG.normal(1, 0.1)
+        c_f = RNG.uniform(0.7, 1.3); ff = RNG.uniform(*O.FIELD_FACTOR); bias = RNG.normal(1, 0.1)
         kk = np.where(np.isclose(k, 0.6), RNG.uniform(0.4, 0.8), k)
-        Cn = np.clip(C * c_f, 0.02, 0.9); s = cap / M.CAP_M3_PER_M
+        Cn = np.clip(C * c_f, 0.02, 0.9); s = ff
         v1 = MT.value(A, P * bias, Cn, kk, rho(P * bias) * s)
         v2 = MT.value(A, Pd * bias, Cn, kk, rho(Pd * bias) * s)
         for j, x in enumerate(best_first(v1, A, budgets)):   # selection made with mean rain,

@@ -7,6 +7,7 @@ cd "$(dirname "$0")/.."
 PY=".venv/bin/python -W ignore"
 
 if [[ "${1:-}" != "--pdf" ]]; then
+  $PY informe/campo.py                    # retention of the field treatment (rho in pipeline/optimize.py; update it if this changes)
   $PY -m pipeline.build_static            # site selection, map overlays, protected areas (docs/data)
   $PY -m pipeline.stats                   # web/stats.json (uses docs/data/sites.json)
   $PY informe/extras.py                   # optimization summaries and targets
@@ -22,10 +23,12 @@ if [[ "${1:-}" != "--pdf" ]]; then
   $PY informe/calibracion.py --posterior  # Bayesian reweighting of the destino.py samples
   $PY informe/costo.py                    # cost per L/s
   $PY informe/sedimento.py                # RUSLE and dam sedimentation
-  $PY informe/sensibilidad.py             # karst and barrier siltation (after destino and sedimento)
   $PY informe/evapotranspiracion.py       # satellite ET ensemble and soil-water budget of the barrier strip
+  $PY informe/sensibilidad.py             # karst, interflow and barrier siltation (after destino, sedimento and ET)
   $PY informe/clima.py                    # protected areas and CMIP6 drought frequency
   $PY informe/oraculos.py                 # MCMF vs Dinic vs topological fill (about 15 min)
+  $PY informe/biofisico.py                # priority index without the connection criterion
+  $PY informe/densidad.py                 # retention by barrier density and check dams in the budget (about 1.5 h)
 fi
 $PY informe/figuras.py
 $PY informe/mapas.py

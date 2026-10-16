@@ -81,16 +81,18 @@ Se calculan siete criterios en Google Earth Engine. Cada uno se normaliza a 0–
 
 ### 3. Robustez
 
-Se recalcula el índice con **40 combinaciones aleatorias de pesos**. Para cada píxel se cuenta en qué porcentaje de esas combinaciones queda como prioridad alta. Los sitios con ≥ 50 % son prioritarios **sin importar cómo ponderen los criterios los expertos**: convierte el desacuerdo entre expertos en un resultado, en lugar de una debilidad.
+Se recalcula el índice con **40 combinaciones aleatorias de pesos**. Para cada pixel se cuenta en qué porcentaje de esas combinaciones queda como prioridad alta. Los sitios con ≥ 50 % son prioritarios **sin importar cómo ponderen los criterios los expertos**: convierte el desacuerdo entre expertos en un resultado, en lugar de una debilidad.
 
 ![Robustez de la prioridad alta](informe/figuras/g3_robustez.png)
+
+**Índice biofísico.** Para separar el potencial biofísico de la conexión con el abasto, el índice se recalcula sin el criterio de conexión (`informe/biofisico.json`). La correlación entre ambos índices es de 0.92, y 77 % de la prioridad alta actual también es alta sin ese criterio. La diferencia está en El Cuchillo: sin el criterio de conexión, su prioridad alta pasa de 41,632 a 71,243 ha.
 
 
 ### ¿Qué significa cada prioridad?
 
 Las tres cifras de resultados describen **lo mismo**: cuánto ganaría un terreno con restauración de suelo que favorezca la infiltración. Cambia solo qué tan estricto es el corte. Todas se cuentan en hectáreas de laderas de 8° o más dentro de las cuencas de abasto.
 
-**Qué se mide.** Para cada píxel de 30 m, el índice (0 a 1) combina los siete criterios de la tabla anterior. Un píxel sale alto cuando su **suelo está degradado**, **genera escurrimiento**, **se puede trabajar** y **su agua llegaría a una fuente de abasto**: ahí es donde restaurar el suelo más ayuda a la infiltración.
+**Qué se mide.** Para cada pixel de 30 m, el índice (0 a 1) combina los siete criterios de la tabla anterior. Un pixel sale alto cuando su **suelo está degradado**, **genera escurrimiento**, **se puede trabajar** y **su agua llegaría a una fuente de abasto**: ahí es donde restaurar el suelo más ayuda a la infiltración.
 
 | Clase | Regla | Superficie | Qué significa |
 |---|---|---|---|
@@ -129,7 +131,9 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 3. **Agua retenida por celda:**
     - Fórmula: *lluvia media × coeficiente de escurrimiento × hectáreas elegibles × ρ*, donde ρ es la fracción del escurrimiento anual que retienen las barreras.
     - El coeficiente sube con la pendiente y con el suelo desnudo: más agua escurre y hay más que frenar.
-    - ρ sale del modelo de flujo de costo mínimo de las barreras con capacidad, ponderado por la lluvia diaria de CHIRPS: 16 % donde llueven 420 mm, 13 % con 640 mm y 7.8 % con 1,190 mm (en sitios lluviosos más agua cae en tormentas grandes que desbordan las barreras).
+    - ρ sale del **tratamiento completo** de la ladera, el mismo que paga el costo por hectárea: todas las barreras en curva de nivel que resuelve el DEM de 30 m (de 558 a 697 m/ha) y una presa en cada cruce con una cárcava, en tres ventanas de 1.2 km (`informe/campo.py`). Con el flujo máximo de la sección 6, ponderado por la lluvia diaria de CHIRPS, ρ vale 64 % donde llueven 415 mm, 62 % con 635 mm y 57 % con 1,180 mm (en sitios lluviosos más agua cae en tormentas grandes que desbordan las obras).
+    - Las obras construidas no se comportan como las del modelo: se supone que en campo retienen de 60 a 100 % de lo modelado (80 % en promedio), un supuesto explícito que se propaga en el Monte Carlo.
+    - **Densidad del trazo y presas en cárcava** (`informe/densidad.py`): la retención crece casi en proporción a los metros de barrera hasta unos 80 m/ha y se satura hacia 150 m/ha; más allá, una barrera adicional sólo recibe agua que otra ya retiene. Las presas en cárcava retienen más por metro de presupuesto que las barreras mientras cada una cueste menos que unos 69 m de barrera, así que deben entrar en el presupuesto. El trazo de 1,500 m por sitio (unos 10 m/ha) de las secciones 6 y 7 es la primera etapa de construcción, las barreras que más retienen por metro, y no el tratamiento completo.
 4. **Agua que llega al abasto:** el agua retenida se multiplica por la conectividad hidrológica *k* con la fuente (1.0 si drena directo a La Boca, Cerro Prieto o el río Santa Catarina; 0.6 en el resto de El Cuchillo). Cada celda se asigna a su fuente de abasto.
 5. **Optimización:** dado un presupuesto de hectáreas, se eligen las celdas con más **m³ entregados por hectárea**. Es un programa lineal con una sola restricción de presupuesto; ordenar por rendimiento por hectárea es **óptimo** cuando las celdas se pueden tratar parcialmente. Hay dos modos:
     - **Máxima agua total:** el óptimo puro.
@@ -139,23 +143,23 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 
 | Fuente | Máxima agua total | | Repartir entre fuentes | |
 |---|---|---|---|---|
-| Presa La Boca | 137 ha | 0.06 M m³ | 750 ha | 0.32 M m³ |
-| Cuenca del río Santa Catarina (acuífero Campo Buenos Aires) | 2,659 ha | 1.25 M m³ | 750 ha | 0.37 M m³ |
-| Presa Cerro Prieto | 204 ha | 0.09 M m³ | 750 ha | 0.34 M m³ |
-| Presa El Cuchillo | 0 ha | 0.00 M m³ | 750 ha | 0.24 M m³ |
-| **Total** | 3,000 ha | **1.41 M m³/año (44.6 L/s)** | 3,000 ha | **1.27 M m³/año (40.1 L/s)** |
+| Presa La Boca | 886 ha | 1.93 M m³ | 750 ha | 1.68 M m³ |
+| Cuenca del río Santa Catarina (acuífero Campo Buenos Aires) | 1,848 ha | 3.39 M m³ | 750 ha | 1.42 M m³ |
+| Presa Cerro Prieto | 267 ha | 0.48 M m³ | 750 ha | 1.32 M m³ |
+| Presa El Cuchillo | 0 ha | 0.00 M m³ | 750 ha | 0.95 M m³ |
+| **Total** | 3,000 ha | **5.80 M m³/año (183.9 L/s)** | 3,000 ha | **5.37 M m³/año (170.4 L/s)** |
 
 
 ![Celdas óptimas para la captación](informe/figuras/m2_optimizacion.png)
 
 ![Agua para la ZMM según hectáreas restauradas](informe/figuras/g4_agua_hectareas.png)
 
-**Rendimientos decrecientes** (modo de máxima agua): 1,000 ha → 15 L/s · 3,000 ha → 45 L/s · 10,000 ha → 141 L/s · 20,000 ha → 273 L/s · 50,000 ha → 645 L/s.
+**Rendimientos decrecientes** (modo de máxima agua): 1,000 ha → 69 L/s · 3,000 ha → 184 L/s · 10,000 ha → 561 L/s · 20,000 ha → 1,069 L/s · 50,000 ha → 2,473 L/s. La curva es casi lineal: hay mucha superficie con rendimientos parecidos.
 
-- **La cuenca del río Santa Catarina rinde más por hectárea:** La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las barreras.
+- **Rendimiento por fuente:** las medianas son de 1,496 m³/ha/año en La Boca, 1,389 en Cerro Prieto, 1,356 en la cuenca del río Santa Catarina y 715 en El Cuchillo. La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las obras, y es una cuenca pequeña: la mayor parte de la selección queda en la cuenca del río Santa Catarina.
 - **El Cuchillo rinde menos:** su conectividad hidrológica *k* vale 0.6.
-- **Repartir cuesta poco:** cubrir las 4 fuentes da ~10 % menos agua total que el óptimo puro.
-- **Máxima ganancia neta** (nuevo modo en la app y en la versión estática): selecciona sólo celdas donde la fuente gana agua en promedio. Con 3,000 ha, todas en la cuenca del río Santa Catarina: 44 L/s brutos y **+3 L/s netos esperados**. Con los otros dos modos la ganancia neta es de +1 L/s (máxima agua) y −8 L/s (repartir entre fuentes), porque incluyen cuencas de presas.
+- **Repartir cuesta poco:** cubrir las 4 fuentes da ~7 % menos agua total que el óptimo puro.
+- **Máxima ganancia neta** (nuevo modo en la app y en la versión estática): selecciona sólo celdas donde la fuente gana agua en promedio. Con 3,000 ha, todas en la cuenca del río Santa Catarina: 171 L/s brutos y **+11.5 L/s netos esperados**. Con los otros dos modos la ganancia neta es de −17 L/s (máxima agua) y −37 L/s (repartir entre fuentes), porque incluyen cuencas de presas.
 
 > Los m³ son **agua retenida bruta**, una cota superior: suponen que toda el agua retenida llega a la fuente. El informe en PDF incluye un análisis probabilístico de su destino (evapotranspiración y escurrimiento que ya llegaba a las presas): la ganancia neta es probablemente positiva sólo en el acuífero Campo Buenos Aires (~67 %), y en las cuencas de las presas la retención probablemente reduce el volumen que llega al embalse.
 
@@ -178,7 +182,7 @@ Dentro de una ventana de ~1.2 km alrededor del sitio (`pipeline/barriers.py`):
 
 Duplicar el presupuesto rinde cada vez menos (61 % → 77 %), que es el comportamiento esperado de una buena optimización: los primeros metros van a donde más se intercepta.
 
-**Con capacidad: minimum-cost maximum-flow (MCMF).** El trazo voraz por área ignora cuánta agua cabe en cada barrera. `pipeline/barriers_mcmf.py` modela la ladera como una red de flujo (un nodo por celda D8 y uno por barrera, con capacidad de 1.44 m³ por metro) y resuelve con *network simplex* de OR-Tools el flujo máximo de costo mínimo, que da el agua retenida respetando drenaje y capacidad. Las barreras se eligen con *lazy greedy* (CELF) usando como oráculo el flujo máximo de Dinic, equivalente a MCMF con estos costos (sección 15). En la app, el panel de barreras ofrece este método como «Con capacidad (flujo máximo)»; el trazo por área interceptada sigue disponible. Resultado: en tormentas pequeñas MCMF retiene hasta 2.6 % más que el trazo por área; en tormentas de 40 mm todas las barreras se llenan y ambos empatan. **En tormentas grandes limita la capacidad, no la posición**: 1,500 m de barreras retienen 27 a 31 % de una tormenta de 5 mm y sólo 3.4 a 4.2 % de una de 40 mm, que ocurre casi cada año.
+**Con capacidad: minimum-cost maximum-flow (MCMF).** El trazo voraz por área ignora cuánta agua cabe en cada barrera. `pipeline/barriers_mcmf.py` modela la ladera como una red de flujo (un nodo por celda D8 y uno por barrera, con capacidad de 1.44 m³ por metro) y resuelve con *network simplex* de OR-Tools el flujo máximo de costo mínimo, que da el agua retenida respetando drenaje y capacidad. Las barreras se eligen con *lazy greedy* (CELF) usando como oráculo el flujo máximo de Dinic, equivalente a MCMF con estos costos (sección 15). En la app, el panel de barreras ofrece este método como «Con capacidad (flujo máximo)»; el trazo por área interceptada sigue disponible. Resultado: en tormentas pequeñas MCMF retiene hasta 2.6 % más que el trazo por área; en tormentas de 40 mm todas las barreras se llenan y ambos empatan. **En un trazo disperso, en tormentas grandes limita la capacidad, no la posición**: 1,500 m de barreras (primera etapa, unos 10 m/ha) retienen 27 a 31 % de una tormenta de 5 mm y sólo 3.4 a 4.2 % de una de 40 mm, que ocurre casi cada año. Con el tratamiento completo de la ladera (sección 5), la retención casi no depende de la posición ni del tamaño de la tormenta: 65 a 74 % con 5 mm y 58 a 62 % con 40 mm.
 
 ![Barreras trazadas por greedy y por MCMF](informe/figuras/m3_barreras.png)
 
@@ -201,7 +205,7 @@ Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terr
 
     Además hay un hidrograma del agua que sale de la ventana (sin y con barreras) y un balance en m³. En la app local, el botón **▶ Ver flujo de agua (demo)** lo muestra en un clic.
 
-En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~9 %** el escurrimiento que sale de la ventana y **~9 %** el pico (cifra sólo indicativa: la simulación usa una velocidad uniforme), y suman de 3,700 a 4,200 m³ infiltrados por tormenta. El almacenamiento por metro de barrera es el mismo que en el modelo de flujo (0.9 m³/m); la diferencia con la retención de MCMF para barreras solas se debe sobre todo a las ~40 presas en cárcava que la simulación coloca por regla en los cruces con flujo concentrado, fuera del presupuesto de 1,500 m y fuera de MCMF. La simulación dura 150 pasos (~6 h) y la lluvia cae en los primeros 8 (~19 min).
+En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~9 %** el escurrimiento que sale de la ventana y **~9 %** el pico (cifra sólo indicativa: la simulación usa una velocidad uniforme), y suman de 3,700 a 4,200 m³ infiltrados por tormenta. El almacenamiento por metro de barrera es el mismo que en el modelo de flujo (0.9 m³/m); la diferencia con la retención de MCMF para barreras solas se debe sobre todo a las ~40 presas en cárcava que la simulación coloca por regla en los cruces con flujo concentrado, fuera del presupuesto de 1,500 m. El análisis de densidad (`informe/densidad.py`) las incluye en la optimización con su propio costo, y el tratamiento completo con que se calcula ρ las incluye todas. La simulación dura 150 pasos (~6 h) y la lluvia cae en los primeros 8 (~19 min).
 
 
 ![Simulación de una tormenta de 40 mm](informe/figuras/m4_simulacion.png)
@@ -210,7 +214,7 @@ En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en c
 
 ### 8. Cuánto aumentaría el abasto: agua bruta frente al déficit de 2022
 
-La optimización se repite a escala de programa y se evalúa con la lluvia de julio de 2021 a junio de 2022. Aun en términos brutos, 30,000 ha aportarían ~361 L/s en un año como el previo a la crisis (~12 % de un déficit de 3,000 L/s), y la totalidad de las 192,040 ha elegibles, ~52 %.
+La optimización se repite a escala de programa y se evalúa con la lluvia de julio de 2021 a junio de 2022. En términos brutos, 30,000 ha aportarían ~1,236 L/s en un año como el previo a la crisis (~41 % de un déficit de 3,000 L/s), y la totalidad de las 192,040 ha elegibles, ~174 %, un límite teórico más que un programa factible. En términos netos, mucho menos (sección 9): la restauración por sí sola no habría evitado la crisis.
 
 ![Aporte al abasto frente al déficit de 2022](informe/figuras/g13_abasto.png)
 
@@ -225,7 +229,7 @@ Las barreras no desvían el agua: la retienen unas horas para que se infiltre, y
 | Cerro Prieto | −0.35 | 4 % | 51 % |
 | El Cuchillo | −0.20 | 4 % | 58 % |
 
-En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en la cuenca del río Santa Catarina) dan en promedio **~26 L/s netos** (intervalo de 90 %: −61 a 126) con supuestos conservadores. Con la evapotranspiración que estima un balance diario del suelo detrás de las barreras (sección «Evapotranspiración del agua infiltrada»), serían **de ~72 a ~156 L/s**, según cuánta agua drenada se mueva ladera abajo como flujo subsuperficial, positivos con probabilidad de 92 a ~100 %.
+En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en la cuenca del río Santa Catarina) dan en promedio **~97 L/s netos** (intervalo de 90 %: −226 a 464) con supuestos conservadores. Con la evapotranspiración que estima un balance diario del suelo detrás de las barreras (sección «Evapotranspiración del agua infiltrada»), serían **de ~−16 a ~156 L/s**, según cuánta agua drenada se mueva ladera abajo como flujo subsuperficial, positivos con probabilidad de 46 a 77 %.
 
 ![Ganancia neta por m³ retenido](informe/figuras/g14_destino.png)
 
@@ -233,7 +237,7 @@ En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciuda
 
 ### 10. Vegetación nativa para cada obra
 
-Cada ladera se restaura **sólo con especies de su propio tipo de vegetación**, tomado de la carta de uso del suelo y vegetación del **INEGI, serie VII** (1:250,000, obtenida del servicio de mapas IDEFOR de CONAFOR; `informe/vegetacion.py`) y confirmado en campo, con material de procedencia local y densidad moderada (una cobertura densa eleva la evapotranspiración y baja la ganancia neta). Con 3,000 ha seleccionadas por ganancia neta: pino y pino-encino 1,230 ha, matorral submontano 934 ha, encino 366 ha, oyamel y ayarín 315 ha, matorral desértico 150 ha.
+Cada ladera se restaura **sólo con especies de su propio tipo de vegetación**, tomado de la carta de uso del suelo y vegetación del **INEGI, serie VII** (1:250,000, obtenida del servicio de mapas IDEFOR de CONAFOR; `informe/vegetacion.py`) y confirmado en campo, con material de procedencia local y densidad moderada (una cobertura densa eleva la evapotranspiración y baja la ganancia neta). Con 3,000 ha seleccionadas por ganancia neta: pino y pino-encino 1,051 ha, matorral submontano 979 ha, encino 593 ha, oyamel y ayarín 357 ha, matorral desértico 17 ha.
 
 | Tipo de vegetación (INEGI) | Especies de referencia (inventarios en Nuevo León) | Obra |
 |---|---|---|
@@ -248,20 +252,20 @@ Fuentes y discusión completa en el informe (sección P10).
 
 ### 11. Calibración con el balance hídrico oficial
 
-El escurrimiento natural de la cuenca de Cerro Prieto según CONAGUA (cuencas Río Pablillo 1, Río Camacho y Río Pablillo 2) es de **166.5 mm/año** (coeficiente 0.25); el modelo da 223.9 mm. Con una actualización bayesiana por muestreo de importancia (`informe/calibracion.py`), el factor de escurrimiento baja a 0.82: el agua bruta y la neta bajan ~18 %, y la probabilidad de ganancia neta positiva no cambia (30,000 ha en la cuenca del río Santa Catarina: 20.8 L/s netos en promedio, P > 0 = 67 %).
+El escurrimiento natural de la cuenca de Cerro Prieto según CONAGUA (cuencas Río Pablillo 1, Río Camacho y Río Pablillo 2) es de **166.5 mm/año** (coeficiente 0.25); el modelo da 223.9 mm. Con una actualización bayesiana por muestreo de importancia (`informe/calibracion.py`), el factor de escurrimiento baja a 0.82: el agua bruta y la neta bajan ~18 %, y la probabilidad de ganancia neta positiva no cambia (30,000 ha en la cuenca del río Santa Catarina: 78.2 L/s netos en promedio, P > 0 = 67 %).
 
 ### 12. Azolve evitado en las presas (RUSLE)
 
-Con la ecuación universal de pérdida de suelo revisada (`informe/sedimento.py`), 30,000 ha en la cuenca de Cerro Prieto evitarían que lleguen de ~48 a ~481 mil m³/año de sedimento a la presa (**de ~2.4 a ~24 hm³ en 50 años**, hasta ~8 % de su capacidad; la cota baja supone que la RUSLE sobrestima la erosión diez veces), pero reducirían el agua que le llega en ~4.0 hm³/año. En las presas, el azolve evitado no compensa el agua retenida.
+Con la ecuación universal de pérdida de suelo revisada (`informe/sedimento.py`), 30,000 ha en la cuenca de Cerro Prieto evitarían que lleguen de ~48 a ~481 mil m³/año de sedimento a la presa (**de ~2.4 a ~24 hm³ en 50 años**, hasta ~8 % de su capacidad; la cota baja supone que la RUSLE sobrestima la erosión diez veces), pero reducirían el agua que le llega en ~15.6 hm³/año. En las presas, el azolve evitado no compensa el agua retenida.
 
 ### 13. Costo
 
-Con un costo **supuesto** de 25,000 a 50,000 pesos por hectárea (la cota inferior es un supuesto propio; la superior, el tope del subsidio de CONAFOR para restauración forestal, Reglas de Operación 2026; ninguna es un costo medido de obra), cada **L/s neto cuesta ~43 millones de pesos**, más de diez veces el costo de capital por L/s del acueducto El Cuchillo II (~2.9 millones). Como fuente de agua la restauración es cara; su valor está en el suelo, la vida útil de los embalses, las avenidas y la biodiversidad.
+Con un costo **supuesto** de 25,000 a 50,000 pesos por hectárea (la cota inferior es un supuesto propio; la superior, el tope del subsidio de CONAFOR para restauración forestal, Reglas de Operación 2026; ninguna es un costo medido de obra), cada **L/s bruto** cuesta de 0.4 a 1.0 millones de pesos, menos que el costo de capital por L/s del acueducto El Cuchillo II (~2.9 millones). Pero el agua bruta no es agua nueva: con 30,000 ha en la cuenca del río Santa Catarina, cada **L/s neto cuesta ~11.4 millones de pesos** con supuestos conservadores, unas cuatro veces el acueducto (la restauración resulta más barata en 10 % de los escenarios), y ~7.2 millones con la evapotranspiración del balance del suelo. Por L/s neto, la restauración sólo competiría con el acueducto si se miden una evapotranspiración baja, poco flujo subsuperficial y un costo cercano a la cota baja; su valor seguro está en el suelo, la vida útil de los embalses, las avenidas y la biodiversidad.
 
 ### 14. Áreas protegidas y clima futuro
 
 - **Parque Nacional Cumbres de Monterrey:** 2,933 de las 3,000 ha seleccionadas por ganancia neta están dentro del parque (WDPA). La restauración es compatible con un parque nacional (LGEEPA, art. 50), pero requiere autorización de la CONANP.
-- **Clima (NEX-GDDP-CMIP6, 8 modelos, 2041 a 2070):** un año tan seco como 2021 a 2022 (percentil 11 histórico) tendría una frecuencia media de 10 % en SSP2-4.5 y 12 % en SSP5-8.5, con mucha dispersión entre modelos (3 a 23 %). El agua bruta cambiaría entre −0.7 % y +1.6 %.
+- **Clima (NEX-GDDP-CMIP6, 8 modelos, 2041 a 2070):** un año tan seco como 2021 a 2022 (percentil 11 histórico) tendría una frecuencia media de 10 % en SSP2-4.5 y 12 % en SSP5-8.5, con mucha dispersión entre modelos (3 a 23 %). El agua bruta con 3,000 ha cambiaría +3.0 % en SSP2-4.5 y −1.4 % en SSP5-8.5.
 
 ### 15. Tres algoritmos para calcular el agua retenida
 
@@ -279,10 +283,10 @@ Con los costos de este problema (−1 en los arcos de las barreras, 0 en los dem
 
 Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y escalar sólo si:
 
-1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ). El balance del suelo estima *e* de ~7 % a ~38 % (según el flujo subsuperficial), por debajo de casi todos los umbrales: si se confirma, la decisión depende sobre todo de φ y τ.
+1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ). El balance del suelo estima *e* de ~49 % a ~66 % (según el flujo subsuperficial), por debajo de unos umbrales y por encima de otros: la condición puede cumplirse o no, y la deciden las mediciones de *e*, del flujo subsuperficial, de φ y de τ.
 2. **La evidencia alcanza:** el intervalo de 90 % de la ganancia neta medida en campo queda por encima de cero (al menos 16 pares de microcuencas, dos o tres temporadas).
 3. **El agua llega y las obras duran:** trazadores que confirmen que el agua infiltrada llega al acuífero Campo Buenos Aires y limpieza periódica del sedimento.
-4. **No se justifica como agua barata:** igualar el costo por L/s de El Cuchillo II exigiría una ganancia neta de 0.66 a 1.32 m³ por m³ retenido; el máximo plausible es 0.53. El escalamiento se justifica por el suelo, los embalses, las avenidas y la biodiversidad.
+4. **No se justifica como agua barata:** igualar el costo por L/s de El Cuchillo II exigiría una ganancia neta de 0.18 a 0.35 m³ por m³ retenido (con 25,000 y 50,000 pesos por hectárea); el máximo plausible es 0.53. Con la evapotranspiración del balance del suelo, el umbral se supera en 32.8 % de los escenarios con el costo bajo y en 4.1 % con el alto. Mientras eso no se mida, el escalamiento se justifica por el suelo, los embalses, las avenidas y la biodiversidad.
 5. **En las presas,** sólo con objetivos de suelo y azolve.
 6. **Con autorización de la CONANP** y sólo especies nativas de cada ladera.
 
@@ -291,9 +295,9 @@ Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y
 `informe/evapotranspiracion.py` estima *e*, la fracción del agua infiltrada detrás de las barreras que regresa a la atmósfera:
 
 1. **Satélites** (MODIS MOD16A2GF, PML, TerraClimate y FLDAS, 2015 a 2023): en las laderas de la cuenca del río Santa Catarina se evapotranspira de 77 a 113 % de la lluvia ordinaria. Los productos difieren mucho entre sí y los valores mayores que 1 sugieren que CHIRPS subestima la lluvia de la sierra. Es una cota superior de *e*.
-2. **Balance diario del suelo** detrás de la barrera (lluvia CHIRPS, evapotranspiración potencial TerraClimate, zona de raíces de 3 a 15 m de ancho y 50 a 400 mm de agua disponible): cada metro de barrera recibe el escurrimiento de ~600 m² de ladera, la zona de raíces se satura y sólo **~7 %** del agua retenida se evapotranspira; el resto drena por debajo de las raíces (recarga concentrada).
+2. **Balance diario del suelo** detrás de la barrera (lluvia CHIRPS, evapotranspiración potencial TerraClimate, zona de raíces de 3 a 15 m de ancho y 50 a 400 mm de agua disponible): con el tratamiento completo, cada metro de barrera recibe el escurrimiento de sólo ~11 m² de ladera, así que la zona de raíces se satura únicamente en las tormentas mayores y **~49 %** del agua retenida se evapotranspira (intervalo de 90 %: 31 a 76 %); el resto drena por debajo de las raíces (recarga concentrada). Un trazo disperso concentraría más agua por metro y daría una *e* menor, pero retendría mucho menos por hectárea.
 
-Si se confirma, la ganancia neta con 30,000 ha en la cuenca del río Santa Catarina pasaría de ~26 a **~156 L/s**, con probabilidad cercana a 100 % (88 % con pérdidas moderadas por karst): el análisis base es conservador. El modelo probablemente subestima *e*: en laderas calizas de suelo somero, parte del agua drenada se mueve ladera abajo como flujo subsuperficial dentro de la zona de raíces, y los encinos toman agua de las fracturas del epikarst. Si entre 20 y 60 % del agua drenada sigue ese camino, *e* sube a ~38 % y la ganancia neta baja a **~72 L/s** (probabilidad positiva ~92 %). El costo por L/s neto (~7 millones de pesos) sigue por encima del de El Cuchillo II.
+Si se confirma, la ganancia neta con 30,000 ha en la cuenca del río Santa Catarina pasaría de ~97 a **~156 L/s**, con probabilidad de 77 % (56 % con pérdidas moderadas por karst). El modelo probablemente subestima *e*: en laderas calizas de suelo somero, parte del agua drenada se mueve ladera abajo como flujo subsuperficial dentro de la zona de raíces, y los encinos toman agua de las fracturas del epikarst. Si entre 20 y 60 % del agua drenada sigue ese camino, *e* sube a ~66 % y la ganancia neta baja a **~−16 L/s** (probabilidad positiva ~46 %). Al recorrer esa fracción ι de 0 a 1 (`informe/sensibilidad.py`), la ganancia neta media es positiva sólo mientras ι < ~36 %, y la probabilidad de que sea positiva no supera 77 % ni sin flujo subsuperficial: ι decide el signo de la ganancia y es una de las mediciones prioritarias en campo. El costo por L/s neto (~7.2 millones de pesos sin flujo subsuperficial) sigue por encima del de El Cuchillo II.
 
 **Cómo medirla en campo:** lisímetros de drenaje detrás de las barreras y en laderas testigo; sensores de humedad del suelo a 30, 60 y 100 cm; flujo de savia en los árboles cercanos (qué tan lejos alcanzan las raíces el agua retenida); isótopos estables del agua (δ¹⁸O, δ²H) y balance de cloruro, que indican qué parte se evaporó antes de recargar; y covarianza de remolinos para calibrar los productos satelitales.
 
@@ -305,8 +309,8 @@ No se sabe **a dónde va el agua infiltrada**. Con los supuestos base, la evapot
 
 `informe/sensibilidad.py`, a partir de resultados guardados:
 
-- **Karst:** si parte del agua infiltrada sale por fallas hacia otras cuencas (fracción que llega al acuífero entre 0.2 y 0.9), la probabilidad de ganancia neta en la cuenca del río Santa Catarina baja de 67 % a 48 %, y la ganancia esperada con 30,000 ha de ~26 a ~1 L/s; con pérdida alta (0.1 a 0.5), la ganancia es negativa. La conectividad debe medirse con trazadores.
-- **Azolve de las barreras:** cada metro de barrera drena ~600 m² de ladera. Con la erosión de la RUSLE, el almacenamiento encharcado (0.9 m³/m) se llena en ~0.3 años; aun con erosión diez veces menor, en ~3 años. Sin limpieza sólo queda la infiltración (37.5 % de la capacidad) y la ganancia neta bajaría de ~26 a ~10 L/s. El costo de mantenimiento no está en el costo por L/s.
+- **Karst:** si parte del agua infiltrada sale por fallas hacia otras cuencas (fracción que llega al acuífero entre 0.2 y 0.9), la probabilidad de ganancia neta en la cuenca del río Santa Catarina baja de 67 % a 48 %, y la ganancia esperada con 30,000 ha de ~97 a ~5 L/s; con pérdida alta (0.1 a 0.5), la ganancia es negativa (~−149 L/s). La conectividad debe medirse con trazadores.
+- **Azolve de las barreras:** con el tratamiento completo, cada metro de barrera drena ~11 m² de ladera. Con la erosión de la RUSLE, el almacenamiento encharcado (0.9 m³/m) se llena en ~15.6 años en promedio; con erosión diez veces menor, en ~156 años. Sin limpieza sólo queda la infiltración a través de la franja (37.5 % de la capacidad por metro), pero como el tratamiento completo rara vez se llena, la retención baja sólo a ~90 % de la nominal y la ganancia neta bajaría de ~97 a ~87 L/s. El costo de mantenimiento no está en el costo por L/s.
 
 Los trazos de barreras son **pruebas de concepto** con un DEM de 30 m, no planos de construcción: requieren LiDAR o levantamiento con dron.
 
@@ -322,26 +326,26 @@ El informe incluye además un **resumen ejecutivo de una página**.
 
 Los 8 sitios sugeridos **no se eligen a mano**. Salen de la **optimización por ganancia neta esperada** (sección 9):
 
-1. Se corre la optimización en modo **máxima ganancia neta** con 3,000 ha. Sólo entran celdas donde la fuente de abasto gana agua en promedio, y todas resultan en la cuenca del **Santa Catarina**.
+1. Se corre la optimización en modo **máxima ganancia neta** con 3,000 ha. Sólo entran celdas donde la fuente de abasto gana agua en promedio, y todas resultan en la cuenca del **río Santa Catarina**.
 2. Se toman las mejores celdas en orden, **separadas al menos 3 km**, y se analiza el punto central de cada una.
 3. Solo se conservan los sitios donde el motor de reglas recomienda una **obra de barreras, zanjas o reforestación con barreras**.
-4. En cada sitio se optimizan las barreras con 1,500 m lineales.
+4. En cada sitio se optimizan las barreras con 1,500 m lineales: la primera etapa de construcción, las barreras que más retienen por metro, no el tratamiento completo con que se calcula el agua.
 
 | # | Lugar en la optimización | m³/ha/año brutos | m³/ha/año netos | Lluvia · coef. escurrimiento | Prioridad · robustez | Obra recomendada | Barreras · m · % interceptado | Área protegida |
 |---|---|---|---|---|---|---|---|---|
-| 1 | #3 | 500 | +33 | 642 mm · 0.6 | 0.57 · 38% | Reforestación con nativas + barreras de material vegetal | 35 · 1,482 m · 70% | Cumbres de Monterrey |
-| 2 | #5 | 386 | +33 | 665 mm · 0.582 | 0.73 · 96% | Barreras de piedra acomodada | 40 · 1,497 m · 53% | C.A.D.N.R. 026 Bajo Río San Juan |
-| 3 | #8 | 487 | +33 | 635 mm · 0.587 | 0.55 · 35% | Reforestación con nativas + barreras de material vegetal | 38 · 1,486 m · 69% | Cumbres de Monterrey |
-| 4 | #12 | 473 | +32 | 673 mm · 0.567 | 0.62 · 68% | Barreras de piedra acomodada | 36 · 1,498 m · 66% | Cumbres de Monterrey |
-| 5 | #15 | 382 | +32 | 673 mm · 0.561 | 0.51 · 25% | Barreras de material vegetal muerto en curvas de nivel | 40 · 1,499 m · 68% | Cumbres de Monterrey |
-| 6 | #18 | 478 | +32 | 677 mm · 0.558 | 0.58 · 51% | Reforestación con nativas + barreras de material vegetal | 40 · 1,491 m · 55% | Cumbres de Monterrey |
-| 7 | #21 | 475 | +32 | 642 mm · 0.569 | 0.57 · 50% | Reforestación con nativas + barreras de material vegetal | 35 · 1,493 m · 61% | Cumbres de Monterrey |
-| 8 | #32 | 468 | +31 | 655 mm · 0.556 | 0.66 · 81% | Reforestación con nativas + barreras de material vegetal | 39 · 1,497 m · 57% | Cumbres de Monterrey |
+| 1 | #3 | 1,496 | +128 | 665 mm · 0.582 | 0.74 · 98% | Barreras de piedra acomodada | 40 · 1,497 m · 53% | C.A.D.N.R. 026 Bajo Río San Juan |
+| 2 | #4 | 1,913 | +128 | 642 mm · 0.6 | 0.57 · 38% | Reforestación con nativas + barreras de material vegetal | 35 · 1,482 m · 70% | Cumbres de Monterrey |
+| 3 | #11 | 1,842 | +126 | 673 mm · 0.567 | 0.62 · 68% | Barreras de piedra acomodada | 36 · 1,498 m · 66% | Cumbres de Monterrey |
+| 4 | #16 | 1,867 | +125 | 677 mm · 0.558 | 0.58 · 51% | Reforestación con nativas + barreras de material vegetal | 40 · 1,491 m · 55% | Cumbres de Monterrey |
+| 5 | #17 | 1,489 | +125 | 673 mm · 0.561 | 0.53 · 33% | Barreras de material vegetal muerto en curvas de nivel | 40 · 1,499 m · 68% | Cumbres de Monterrey |
+| 6 | #20 | 1,856 | +124 | 635 mm · 0.587 | 0.55 · 35% | Reforestación con nativas + barreras de material vegetal | 38 · 1,486 m · 69% | Cumbres de Monterrey |
+| 7 | #25 | 1,820 | +122 | 642 mm · 0.569 | 0.57 · 50% | Reforestación con nativas + barreras de material vegetal | 35 · 1,493 m · 61% | Cumbres de Monterrey |
+| 8 | #30 | 1,806 | +121 | 655 mm · 0.556 | 0.66 · 81% | Reforestación con nativas + barreras de material vegetal | 39 · 1,497 m · 57% | Cumbres de Monterrey |
 
 **Cómo leer la tabla:**
 
 - **Todos los sitios están en la cuenca del río Santa Catarina.** Ahí el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra es recarga nueva para el acuífero de los pozos de SADM. En las cuencas de las presas, retener escurrimiento en la ladera probablemente reduce el agua que llega al embalse (sección 9).
-- **Bruta frente a neta.** Cada hectárea retiene del orden de 400 a 500 m³/año (agua bruta), pero la ganancia neta esperada para el abasto es de ~30 m³/ha/año con supuestos conservadores (probabilidad de ser positiva ~67 %), o de ~75 a ~165 m³/ha/año con la evapotranspiración del balance del suelo.
+- **Bruta frente a neta.** Con el tratamiento completo, cada hectárea retiene del orden de 1,500 a 1,900 m³/año (agua bruta), pero la ganancia neta esperada para el abasto es de ~120 a ~130 m³/ha/año con supuestos conservadores (probabilidad de ser positiva ~67 %); con la evapotranspiración del balance del suelo puede ser mayor o negativa, según el flujo subsuperficial (sección 9).
 - **7 de los 8 sitios están en el Parque Nacional Cumbres de Monterrey.** La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
 - **El índice de prioridad mide otra cosa.** Algunos sitios óptimos tienen prioridad media o robustez baja: el índice pesa también degradación, incendios y suelo. **Las dos vistas se complementan.**
 
@@ -387,12 +391,13 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 2. **La mayor parte de la prioridad alta drena directo a una fuente de abasto:** ~99,600 ha (71 %) en las cuencas de La Boca, Cerro Prieto o el río Santa Catarina. El índice usa la conectividad hidrológica, no la ganancia neta, para no anticipar el resultado del modelo del destino del agua.
 3. **La prioridad es robusta.** ~**90,600 ha (64 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
 4. **Los incendios abren una ventana de acción.** ~**17,100 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
-5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero Campo Buenos Aires** (~26 L/s con 30,000 ha y supuestos conservadores; de ~72 a ~156 L/s si se confirma en campo la baja evapotranspiración del agua concentrada detrás de las barreras); en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
+5. **Con 3,000 ha bien elegidas se retienen del orden de 5.8 millones de m³/año (~184 L/s; media de Monte Carlo 182.7 L/s, intervalo de 90 % de 116 a 265 L/s).** Es agua retenida bruta, con el tratamiento completo de las laderas. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈1,236 L/s brutos en un año como el previo a la crisis) cubrirían ~41 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero Campo Buenos Aires** (~97 L/s con 30,000 ha y supuestos conservadores; de ~−16 a ~156 L/s con la evapotranspiración del balance del suelo, según cuánta agua drenada se mueva ladera abajo como flujo subsuperficial); en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
     - Para maximizar agua: **la cuenca del río Santa Catarina**, que además es donde la ganancia neta es más probable.
-    - Para cubrir todas las fuentes: repartir cuesta ~10 % del agua bruta, pero en ganancia neta el reparto es negativo (−8 L/s con 3,000 ha), porque asigna superficie a las cuencas de las presas.
+    - Para cubrir todas las fuentes: repartir cuesta ~7 % del agua bruta, pero en ganancia neta el reparto es negativo (−37 L/s con 3,000 ha), porque asigna superficie a las cuencas de las presas.
 7. **Las laderas muy empinadas no son para obras.** Por encima de ~35–45° conviene la exclusión y la regeneración natural.
-8. **El trazo importa en tormentas frecuentes; en las grandes manda la capacidad.** Con 1,500 m de barreras se intercepta el escurrimiento de buena parte de una ventana de 1.2 km y los rendimientos decrecen, pero en tormentas de 40 mm, que ocurren casi cada año, todas las barreras se llenan y retienen sólo ~4 %: para retener más hay que agregar almacenamiento. Conviene repartir el presupuesto entre varios sitios en lugar de saturar uno.
+8. **La densidad del trazo importa hasta un límite, y las presas en cárcava van en el presupuesto.** Con un trazo disperso de 1,500 m (primera etapa, unos 10 m/ha), en tormentas de 40 mm, que ocurren casi cada año, todas las barreras se llenan y retienen sólo ~4 %. Con el tratamiento completo, la retención crece casi en proporción a los metros de barrera hasta unos 80 m/ha y se satura hacia 150 m/ha; las presas en cárcava retienen más por metro de presupuesto que las barreras mientras cada una cueste menos que unos 69 m de barrera, y elevan la retención de una tormenta de 40 mm a 58 a 62 %. Más allá de la saturación conviene pasar a otra ladera en lugar de densificar la misma.
+9. **Por L/s neto, la restauración es más cara que la infraestructura.** Cada L/s bruto cuesta de 0.4 a 1.0 millones de pesos, menos que El Cuchillo II (~2.9 millones), pero cada L/s neto cuesta ~11.4 millones con supuestos conservadores y ~7.2 millones con el balance del suelo (costos supuestos, no medidos).
 
 ---
 
@@ -401,7 +406,7 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 - **El índice es relativo.** No estima metros cúbicos infiltrados.
 - **El DEM de 30 m no resuelve el intervalo vertical de 1 m.** El trazo de barreras es **preliminar** y debe validarse en campo con levantamiento topográfico o dron.
 - **La textura del suelo de OpenLandMap casi no varía en la zona** (todo es franco arcilloso). Un mapa edafológico de INEGI o de Pronatura mejoraría este criterio.
-- **Hay supuestos sin calibrar:** el coeficiente de escurrimiento sólo se calibró con la cuenca de Cerro Prieto (sección 11); también son supuestos la capacidad de las barreras (1.44 m³/m), las fracciones del destino del agua retenida, los niveles de conectividad, los umbrales de cárcava (5 ha) y cauce (100 ha), y la retención por barrera (60 %). Son parámetros explícitos en el código.
+- **Hay supuestos sin calibrar:** el coeficiente de escurrimiento sólo se calibró con la cuenca de Cerro Prieto (sección 11); también son supuestos la capacidad de las barreras (1.44 m³/m), su desempeño en campo (60 a 100 % de lo modelado), las fracciones del destino del agua retenida, los niveles de conectividad, los umbrales de cárcava (5 ha) y cauce (100 ha), y la retención por barrera (60 %). Son parámetros explícitos en el código.
 - **SMAP** tiene resolución gruesa (~9 km) y **MODIS** detecta área quemada a 500 m.
 - **El optimizador no excluye** caminos, construcciones ni cobertura dentro de la ventana, y no considera el acceso.
 - **Áreas protegidas sin zonificación:** las celdas y sitios se intersectan con los polígonos de la WDPA, pero no con la zonificación del Parque Nacional Cumbres de Monterrey, cuyo programa de manejo no se encontró publicado. Las obras dentro del parque requieren autorización de la CONANP.

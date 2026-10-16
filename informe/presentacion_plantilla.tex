@@ -213,13 +213,13 @@ El Cuchillo & «g_ec» & «pg_ec» \\
 \end{columns}
 \end{frame}
 
-\begin{frame}{Como fuente de agua, la restauración es cara}
+\begin{frame}{Por L/s neto, la restauración es más cara que el acueducto}
 \begin{columns}[T]
 \begin{column}{0.5\textwidth}
 \begin{itemize}
   \item Costo supuesto: 25,000 (supuesto propio) a 50,000 pesos por hectárea (tope del subsidio de CONAFOR, 2026); no son costos medidos de obra.
-  \item Por L/s bruto: de «cb30_lo» a «cb30_hi» millones de pesos, del orden del acueducto El Cuchillo II.
-  \item Por \textbf{L/s neto}: unos \textbf{«cn30» millones de pesos}, más de diez veces más.
+  \item Por L/s bruto: de «cb30_lo» a «cb30_hi» millones de pesos, menos que El Cuchillo II; pero el agua bruta no es agua nueva.
+  \item Por \textbf{L/s neto}: unos \textbf{«cn30» millones de pesos} con supuestos conservadores y «et_cost» con el balance del suelo.
   \item Probabilidad de que resulte más barata que El Cuchillo II por L/s: «cp30».
 \end{itemize}
 \nota{Sólo costo de capital; no incluye el bombeo ni la operación del acueducto, ni los beneficios distintos del agua.}
@@ -243,7 +243,7 @@ El Cuchillo & «g_ec» & «pg_ec» \\
 \begin{itemize}
   \item Las celdas óptimas por ganancia neta están todas en la cuenca del río Santa Catarina; \textbf{«anp_cumbres3» de 3,000 ha} están en el Parque Nacional Cumbres de Monterrey: se requiere autorización de la CONANP.
   \item Ocho sitios sugeridos por ganancia neta, todos en la cuenca del río Santa Catarina y siete dentro del Parque Nacional, separados al menos 3 km.
-  \item En tormentas grandes manda la \textbf{capacidad} de las obras: 1,500 m de barreras retienen «ret5» de una tormenta de 5 mm y sólo «ret40» de una de 40 mm.
+  \item El volumen usa el \textbf{tratamiento completo} de la ladera, el que paga el costo por hectárea: retiene «cf_rho» del escurrimiento anual en el modelo (80\% de eso en campo) y se satura hacia «dn_sat» m/ha.
 \end{itemize}
 \end{column}
 \end{columns}
@@ -289,9 +289,9 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \small
 \begin{itemize}
   \item \textbf{Satélites} (MODIS, PML, TerraClimate, FLDAS): «et_sc_min» a «et_sc_max» de la lluvia ordinaria se evapotranspira en la cuenca del río Santa Catarina. Es una cota superior.
-  \item \textbf{Balance diario del suelo:} la barrera concentra el escurrimiento de ~«vu_area» m² por metro; la zona de raíces se satura y sólo «bk_e» del agua retenida se evapotranspira.
+  \item \textbf{Balance diario del suelo:} con el tratamiento completo cada metro recibe el escurrimiento de ~«vu_area» m²; «bk_e» del agua retenida se evapotranspira.
   \item Si se confirma, la ganancia neta con 30,000 ha pasa de «et_w0» a «et_w1» L/s (probabilidad positiva «et_p1»; con karst moderado, «et_pk»). El costo por L/s neto, «et_cost» M\$, sigue arriba de El Cuchillo II.
-  \item Si parte del agua drenada se mueve ladera abajo dentro de la zona de raíces (flujo subsuperficial, raíces en el epikarst), $e\approx$ «if_e» y la ganancia baja a ~«if_w» L/s.
+  \item Si parte del agua drenada se mueve ladera abajo dentro de la zona de raíces (flujo subsuperficial, raíces en el epikarst), $e\approx$ «if_e» y la ganancia baja a ~«if_w» L/s; con más de «if_g0» la ganancia esperada es negativa.
 \end{itemize}
 \end{column}
 \begin{column}{0.45\textwidth}
@@ -316,7 +316,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
   \item \textbf{Sequía:} con la lluvia de 2021 a 2022 se conserva «dr_pct» del agua bruta y «dr_overlap» de los sitios.
   \item \textbf{Clima 2041 a 2070:} la frecuencia de un año tan seco como 2021 a 2022 sería de «clima_f245» (SSP2-4.5) y «clima_f585» (SSP5-8.5), con mucha dispersión entre modelos.
   \item \textbf{Karst:} si parte del agua infiltrada sale por fallas a otras cuencas, la probabilidad de ganancia neta baja de «ks_base_p» a «ks_mod_p» con pérdida moderada («et_pk» con la evapotranspiración del balance del suelo).
-  \item \textbf{Azolve de las barreras:} sin limpieza, el sedimento llena su almacenamiento en meses o pocos años y la ganancia neta bajaría de «vu_net0» a «vu_net1» L/s.
+  \item \textbf{Azolve de las barreras:} sin limpieza, el sedimento llena su almacenamiento en una o varias décadas y la ganancia neta bajaría de «vu_net0» a «vu_net1» L/s.
   \item \textbf{Limitación principal: a dónde va el agua infiltrada.} La evapotranspiración explica «lim_e_b» de la incertidumbre de la ganancia neta y el escurrimiento que ya llegaba «lim_t_b»; si el karst desvía agua, la ruta subterránea pasa a «lim_p_k» y es la más difícil de medir (trazadores). Los trazos de barreras son conceptuales (DEM de 30 m).
 \end{itemize}
 \end{frame}

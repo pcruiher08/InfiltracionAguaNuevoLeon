@@ -21,18 +21,22 @@ from pipeline.config import CONNECTIVITY_TIERS
 
 CELL_M = 1000
 MIN_ELIGIBLE_HA = 15     # ignore slivers
-# Annual share of runoff retained by contour barriers, by rainfall regime.
-# From the min-cost-flow barrier model (storage + infiltration during the event,
-# 1,500 m in a 1.2 km window): ~29 % of a 5 mm storm, 15 % of 10 mm, 7.5 % of 20 mm,
-# 3.8 % of 40 mm; weighted by each site's CHIRPS daily rain 2019–2026. Wetter
-# catchments get more of their rain in large storms that overflow the barriers.
-RETENTION_RAIN = (420, 640, 1190)
-RETENTION_FRAC = (0.160, 0.130, 0.078)
+# Annual share of runoff retained by the field treatment of a hillslope (every contour barrier the 30 m DEM
+# resolves plus every gully check dam, 560-700 m/ha), the layout the cost per hectare pays for. Maximum
+# retention flow of that fixed layout for storms of 2-80 mm in three 1.2 km windows, weighted by each site's
+# CHIRPS daily rain 2019-2026 (informe/campo.py). The sparse layout of earlier versions (1,500 m per window,
+# about 10 m/ha) retained 0.04-0.075.
+RETENTION_RAIN = (415, 635, 1180)
+RETENTION_FRAC = (0.636, 0.622, 0.571)
+# Field works are assumed to retain 60-100 % of what the model gives for well-built, maintained works:
+# expected 80 %, and a Monte Carlo factor of 0.75-1.25 around it.
+FIELD_MEAN = 0.8
+FIELD_FACTOR = (0.75, 1.25)
 
 
 def retention(rain_mm):
     import numpy as np
-    return float(np.interp(rain_mm, RETENTION_RAIN, RETENTION_FRAC))
+    return float(FIELD_MEAN * np.interp(rain_mm, RETENTION_RAIN, RETENTION_FRAC))
 # Expected net gain of each supply source per m³ retained (E[(1 - e)·phi - tau], times k for El
 # Cuchillo), from the probabilistic analysis in informe/destino.py: retention in the dam catchments
 # mostly holds back runoff that already reached the reservoir, so its expected net gain is negative.

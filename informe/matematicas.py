@@ -76,11 +76,11 @@ def monte_carlo(A, P, C, k, sup):
     chosen = np.zeros_like(A)
     base_rho = np.array([O.retention(p) for p in P])
     for _ in range(N_MC):
-        c_f = RNG.uniform(0.7, 1.3); cap = RNG.uniform(0.9, 2.0); bias = RNG.normal(1, 0.1)
+        c_f = RNG.uniform(0.7, 1.3); ff = RNG.uniform(*O.FIELD_FACTOR); bias = RNG.normal(1, 0.1)
         k_ec = RNG.uniform(0.4, 0.8)
         kk = np.where(np.isclose(k, 0.6), k_ec, k)
         Pb = P * bias
-        rho = np.array([O.retention(p) for p in Pb]) * cap / M.CAP_M3_PER_M
+        rho = np.array([O.retention(p) for p in Pb]) * ff
         v = value(A, Pb, np.clip(C * c_f, 0.02, 0.9), kk, rho)
         x, tot, _ = knapsack(v, A, H)
         tot_max.append(ls(tot)); chosen += (x > 0.5)

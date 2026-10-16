@@ -341,6 +341,49 @@ def oracle_figs():
     save(fig, "g17_oraculos_tiempo")
 
 
+def iota_fig():
+    p = ROOT / "sensibilidad.json"
+    if not p.exists():
+        return
+    F = json.loads(p.read_text())["interflow"]; R = F["rows"]
+    io = [100 * r["iota"] for r in R]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7, 2.8))
+    for ax in (a1, a2):
+        ax.axvspan(20, 60, color="#efece6", zorder=0)
+        ax.set_xlabel(r"$\iota$: agua drenada que se evapotranspira (%)"); ax.set_xlim(0, 100)
+    a1.plot(io, [r["net_ls_30000"] for r in R], color="#eb6834", lw=2)
+    a1.axhline(0, color="#1d1b18", lw=1); a1.set_ylabel("ganancia neta media (L/s)")
+    a1.axvline(100 * F["iota_g0"], color="#6b675f", lw=1, ls=":")
+    a2.plot(io, [r["p_pos"] for r in R], color="#2a78d6", lw=2)
+    a2.axhline(50, color="#1d1b18", lw=1); a2.set_ylabel("P(G > 0) (%)"); a2.set_ylim(0, 102)
+    if F["iota_p50"] is not None:
+        a2.axvline(100 * F["iota_p50"], color="#6b675f", lw=1, ls=":")
+    fig.tight_layout()
+    save(fig, "g_iota")
+
+
+def density_fig():
+    p, q = ROOT / "densidad.json", ROOT / "campo.json"
+    if not (p.exists() and q.exists()):
+        return
+    D = json.loads(p.read_text())["sites"]; F = json.loads(q.read_text())["sites"]
+    cols = dict(zip(D, ["#2a78d6", "#eb6834", "#1baf7a"]))
+    fig, axes = plt.subplots(1, 2, figsize=(7, 3), sharey=True)
+    for ax, storm in zip(axes, ("40", "5")):
+        for name, v in D.items():
+            L = v["layouts"]
+            ax.plot([l["m_per_ha"] for l in L], [100 * l["phi"][storm] for l in L], "o-", color=cols[name], ms=4, lw=1.6,
+                    label=name if storm == "40" else None)
+            ax.plot(F[name]["m_per_ha"], 100 * F[name]["phi"][storm], "D", color=cols[name], ms=6, mec="white", mew=0.8)
+        ax.set_xscale("log"); ax.set_xticks([10, 30, 100, 300, 700]); ax.xaxis.set_minor_formatter(lambda v, _: "")
+        ax.xaxis.set_major_formatter(lambda v, _: fmt(v)); ax.set_ylim(0, 80)
+        ax.set_xlabel("metros de barrera por hectárea"); ax.set_title(f"tormenta de {storm} mm", fontsize=9, color="#4a4740")
+    axes[0].set_ylabel("escurrimiento retenido (%)")
+    fig.tight_layout(rect=(0, 0, 1, 0.9))
+    fig.legend(loc="upper center", ncol=3, bbox_to_anchor=(0.5, 1.0), fontsize=9)
+    save(fig, "g_densidad")
+
+
 def maps(src):
     """Crop the app screenshots to the map area (drop the sidebar)."""
     for name, out in (("fig_cuencas", "m1_cuencas"), ("fig_optim", "m2_optimizacion"),
@@ -357,6 +400,6 @@ def maps(src):
 if __name__ == "__main__":
     OUT.mkdir(exist_ok=True)
     for fn in (ha_catchment, criteria, robustness, water, productivity, barriers, storm, mcmf,
-               uncertainty, duals, gumbel_fig, pareto_fig, supply_fig, fate_figs, oracle_figs):
+               uncertainty, duals, gumbel_fig, pareto_fig, supply_fig, fate_figs, oracle_figs, iota_fig, density_fig):
         fn()
     # map figures are rendered from data by informe/mapas.py

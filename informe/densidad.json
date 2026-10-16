@@ -1,0 +1,563 @@
+{
+ "window_ha": 144.0,
+ "storms": [
+  2,
+  5,
+  10,
+  20,
+  40,
+  80
+ ],
+ "design_mm": 40,
+ "dam_cap_m3": 100.0,
+ "dam_leq_m": [
+  15,
+  30,
+  60
+ ],
+ "sites": {
+  "Pilón": {
+   "interval_m": 5,
+   "slope_deg": 17.3,
+   "n_contour": 1813,
+   "n_dams": 68,
+   "full_m": 80304,
+   "full_m_per_ha": 558,
+   "rain_mm_yr": 415,
+   "runoff_40_m3": 51783,
+   "layouts": [
+    {
+     "budget_m": 1500,
+     "used_m": 1495,
+     "m_per_ha": 10.4,
+     "n": 35,
+     "phi": {
+      "2": 0.0927,
+      "5": 0.0929,
+      "10": 0.0851,
+      "20": 0.0648,
+      "40": 0.0416,
+      "80": 0.0208
+     },
+     "rho": 0.075,
+     "m3_per_m_40": 1.44,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 3000,
+     "used_m": 2983,
+     "m_per_ha": 20.7,
+     "n": 69,
+     "phi": {
+      "2": 0.1801,
+      "5": 0.1729,
+      "10": 0.1561,
+      "20": 0.1263,
+      "40": 0.0829,
+      "80": 0.0415
+     },
+     "rho": 0.1419,
+     "m3_per_m_40": 1.44,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 6000,
+     "used_m": 5994,
+     "m_per_ha": 41.6,
+     "n": 139,
+     "phi": {
+      "2": 0.2757,
+      "5": 0.2763,
+      "10": 0.2669,
+      "20": 0.2347,
+      "40": 0.1666,
+      "80": 0.0833
+     },
+     "rho": 0.2427,
+     "m3_per_m_40": 1.44,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 12000,
+     "used_m": 11998,
+     "m_per_ha": 83.3,
+     "n": 275,
+     "phi": {
+      "2": 0.4262,
+      "5": 0.4269,
+      "10": 0.4221,
+      "20": 0.3969,
+      "40": 0.3334,
+      "80": 0.1667
+     },
+     "rho": 0.396,
+     "m3_per_m_40": 1.439,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 24000,
+     "used_m": 18899,
+     "m_per_ha": 131.2,
+     "n": 437,
+     "phi": {
+      "2": 0.4808,
+      "5": 0.4816,
+      "10": 0.482,
+      "20": 0.4794,
+      "40": 0.4754,
+      "80": 0.2616
+     },
+     "rho": 0.4702,
+     "m3_per_m_40": 1.303,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 80304,
+     "used_m": 80304,
+     "m_per_ha": 557.7,
+     "n": 1813,
+     "phi": {
+      "2": 0.4808,
+      "5": 0.4816,
+      "10": 0.482,
+      "20": 0.4794,
+      "40": 0.4754,
+      "80": 0.4606
+     },
+     "rho": 0.4792,
+     "m3_per_m_40": 0.307,
+     "kind": "completo"
+    }
+   ],
+   "outside_budget": {
+    "n_dams": 40,
+    "retained_40_m3": 6152,
+    "phi_40": 0.1188
+   },
+   "mixed": [
+    {
+     "leq_m": 15,
+     "budget_m": 1500,
+     "n_dams": 68,
+     "n_barriers": 11,
+     "barrier_m": 478,
+     "retained_40_m3": 7488,
+     "phi_40": 0.1446,
+     "barriers_only_phi_40": 0.0416
+    },
+    {
+     "leq_m": 15,
+     "budget_m": 6000,
+     "n_dams": 68,
+     "n_barriers": 116,
+     "barrier_m": 4976,
+     "retained_40_m3": 13964,
+     "phi_40": 0.2697,
+     "barriers_only_phi_40": 0.1666
+    },
+    {
+     "leq_m": 30,
+     "budget_m": 1500,
+     "n_dams": 50,
+     "n_barriers": 0,
+     "barrier_m": 0,
+     "retained_40_m3": 5000,
+     "phi_40": 0.0966,
+     "barriers_only_phi_40": 0.0416
+    },
+    {
+     "leq_m": 30,
+     "budget_m": 6000,
+     "n_dams": 68,
+     "n_barriers": 93,
+     "barrier_m": 3958,
+     "retained_40_m3": 12498,
+     "phi_40": 0.2414,
+     "barriers_only_phi_40": 0.1666
+    },
+    {
+     "leq_m": 60,
+     "budget_m": 1500,
+     "n_dams": 25,
+     "n_barriers": 0,
+     "barrier_m": 0,
+     "retained_40_m3": 2500,
+     "phi_40": 0.0483,
+     "barriers_only_phi_40": 0.0416
+    },
+    {
+     "leq_m": 60,
+     "budget_m": 6000,
+     "n_dams": 68,
+     "n_barriers": 45,
+     "barrier_m": 1910,
+     "retained_40_m3": 9550,
+     "phi_40": 0.1844,
+     "barriers_only_phi_40": 0.1666
+    }
+   ]
+  },
+  "Santa Catarina": {
+   "interval_m": 5,
+   "slope_deg": 26.0,
+   "n_contour": 2267,
+   "n_dams": 86,
+   "full_m": 100309,
+   "full_m_per_ha": 697,
+   "rain_mm_yr": 635,
+   "runoff_40_m3": 63757,
+   "layouts": [
+    {
+     "budget_m": 1500,
+     "used_m": 1487,
+     "m_per_ha": 10.3,
+     "n": 34,
+     "phi": {
+      "2": 0.1376,
+      "5": 0.1145,
+      "10": 0.0859,
+      "20": 0.0571,
+      "40": 0.0336,
+      "80": 0.0168
+     },
+     "rho": 0.0695,
+     "m3_per_m_40": 1.44,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 3000,
+     "used_m": 2999,
+     "m_per_ha": 20.8,
+     "n": 69,
+     "phi": {
+      "2": 0.2348,
+      "5": 0.196,
+      "10": 0.1566,
+      "20": 0.1111,
+      "40": 0.0677,
+      "80": 0.0339
+     },
+     "rho": 0.1267,
+     "m3_per_m_40": 1.44,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 6000,
+     "used_m": 5995,
+     "m_per_ha": 41.6,
+     "n": 137,
+     "phi": {
+      "2": 0.3002,
+      "5": 0.2687,
+      "10": 0.2327,
+      "20": 0.1869,
+      "40": 0.1354,
+      "80": 0.0677
+     },
+     "rho": 0.194,
+     "m3_per_m_40": 1.44,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 12000,
+     "used_m": 11997,
+     "m_per_ha": 83.3,
+     "n": 274,
+     "phi": {
+      "2": 0.4456,
+      "5": 0.4234,
+      "10": 0.3854,
+      "20": 0.3369,
+      "40": 0.2708,
+      "80": 0.1354
+     },
+     "rho": 0.3309,
+     "m3_per_m_40": 1.439,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 24000,
+     "used_m": 22152,
+     "m_per_ha": 153.8,
+     "n": 507,
+     "phi": {
+      "2": 0.519,
+      "5": 0.5185,
+      "10": 0.5053,
+      "20": 0.4815,
+      "40": 0.4683,
+      "80": 0.2496
+     },
+     "rho": 0.4573,
+     "m3_per_m_40": 1.348,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 100309,
+     "used_m": 100309,
+     "m_per_ha": 696.6,
+     "n": 2267,
+     "phi": {
+      "2": 0.519,
+      "5": 0.5185,
+      "10": 0.5053,
+      "20": 0.4815,
+      "40": 0.4683,
+      "80": 0.4565
+     },
+     "rho": 0.4702,
+     "m3_per_m_40": 0.298,
+     "kind": "completo"
+    }
+   ],
+   "outside_budget": {
+    "n_dams": 40,
+    "retained_40_m3": 6141,
+    "phi_40": 0.0963
+   },
+   "mixed": [
+    {
+     "leq_m": 15,
+     "budget_m": 1500,
+     "n_dams": 86,
+     "n_barriers": 6,
+     "barrier_m": 208,
+     "retained_40_m3": 8900,
+     "phi_40": 0.1396,
+     "barriers_only_phi_40": 0.0336
+    },
+    {
+     "leq_m": 15,
+     "budget_m": 6000,
+     "n_dams": 86,
+     "n_barriers": 108,
+     "barrier_m": 4709,
+     "retained_40_m3": 15380,
+     "phi_40": 0.2412,
+     "barriers_only_phi_40": 0.1354
+    },
+    {
+     "leq_m": 30,
+     "budget_m": 1500,
+     "n_dams": 50,
+     "n_barriers": 0,
+     "barrier_m": 0,
+     "retained_40_m3": 5000,
+     "phi_40": 0.0784,
+     "barriers_only_phi_40": 0.0336
+    },
+    {
+     "leq_m": 30,
+     "budget_m": 6000,
+     "n_dams": 86,
+     "n_barriers": 78,
+     "barrier_m": 3410,
+     "retained_40_m3": 13510,
+     "phi_40": 0.2119,
+     "barriers_only_phi_40": 0.1354
+    },
+    {
+     "leq_m": 60,
+     "budget_m": 1500,
+     "n_dams": 25,
+     "n_barriers": 0,
+     "barrier_m": 0,
+     "retained_40_m3": 2500,
+     "phi_40": 0.0392,
+     "barriers_only_phi_40": 0.0336
+    },
+    {
+     "leq_m": 60,
+     "budget_m": 6000,
+     "n_dams": 86,
+     "n_barriers": 20,
+     "barrier_m": 840,
+     "retained_40_m3": 9809,
+     "phi_40": 0.1539,
+     "barriers_only_phi_40": 0.1354
+    }
+   ]
+  },
+  "La Boca": {
+   "interval_m": 5,
+   "slope_deg": 29.0,
+   "n_contour": 1916,
+   "n_dams": 83,
+   "full_m": 84727,
+   "full_m_per_ha": 588,
+   "rain_mm_yr": 1180,
+   "runoff_40_m3": 64683,
+   "layouts": [
+    {
+     "budget_m": 1500,
+     "used_m": 1499,
+     "m_per_ha": 10.4,
+     "n": 35,
+     "phi": {
+      "2": 0.0987,
+      "5": 0.0831,
+      "10": 0.0724,
+      "20": 0.0531,
+      "40": 0.0334,
+      "80": 0.0167
+     },
+     "rho": 0.04,
+     "m3_per_m_40": 1.44,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 3000,
+     "used_m": 2984,
+     "m_per_ha": 20.7,
+     "n": 69,
+     "phi": {
+      "2": 0.1935,
+      "5": 0.1757,
+      "10": 0.1483,
+      "20": 0.108,
+      "40": 0.0664,
+      "80": 0.0332
+     },
+     "rho": 0.0813,
+     "m3_per_m_40": 1.44,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 6000,
+     "used_m": 5995,
+     "m_per_ha": 41.6,
+     "n": 137,
+     "phi": {
+      "2": 0.2828,
+      "5": 0.2673,
+      "10": 0.2406,
+      "20": 0.2079,
+      "40": 0.1334,
+      "80": 0.0667
+     },
+     "rho": 0.1452,
+     "m3_per_m_40": 1.439,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 12000,
+     "used_m": 11993,
+     "m_per_ha": 83.3,
+     "n": 273,
+     "phi": {
+      "2": 0.4197,
+      "5": 0.4249,
+      "10": 0.4018,
+      "20": 0.3595,
+      "40": 0.2668,
+      "80": 0.1334
+     },
+     "rho": 0.2566,
+     "m3_per_m_40": 1.439,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 24000,
+     "used_m": 23994,
+     "m_per_ha": 166.6,
+     "n": 549,
+     "phi": {
+      "2": 0.5652,
+      "5": 0.573,
+      "10": 0.5658,
+      "20": 0.5542,
+      "40": 0.5254,
+      "80": 0.2668
+     },
+     "rho": 0.4187,
+     "m3_per_m_40": 1.416,
+     "kind": "seleccion"
+    },
+    {
+     "budget_m": 84727,
+     "used_m": 84727,
+     "m_per_ha": 588.4,
+     "n": 1916,
+     "phi": {
+      "2": 0.5657,
+      "5": 0.5735,
+      "10": 0.5663,
+      "20": 0.5547,
+      "40": 0.5271,
+      "80": 0.4898
+     },
+     "rho": 0.4787,
+     "m3_per_m_40": 0.402,
+     "kind": "completo"
+    }
+   ],
+   "outside_budget": {
+    "n_dams": 40,
+    "retained_40_m3": 6159,
+    "phi_40": 0.0952
+   },
+   "mixed": [
+    {
+     "leq_m": 15,
+     "budget_m": 1500,
+     "n_dams": 83,
+     "n_barriers": 6,
+     "barrier_m": 249,
+     "retained_40_m3": 8659,
+     "phi_40": 0.1339,
+     "barriers_only_phi_40": 0.0334
+    },
+    {
+     "leq_m": 15,
+     "budget_m": 6000,
+     "n_dams": 83,
+     "n_barriers": 109,
+     "barrier_m": 4752,
+     "retained_40_m3": 15141,
+     "phi_40": 0.2341,
+     "barriers_only_phi_40": 0.1334
+    },
+    {
+     "leq_m": 30,
+     "budget_m": 1500,
+     "n_dams": 50,
+     "n_barriers": 0,
+     "barrier_m": 0,
+     "retained_40_m3": 5000,
+     "phi_40": 0.0773,
+     "barriers_only_phi_40": 0.0334
+    },
+    {
+     "leq_m": 30,
+     "budget_m": 6000,
+     "n_dams": 83,
+     "n_barriers": 81,
+     "barrier_m": 3509,
+     "retained_40_m3": 13351,
+     "phi_40": 0.2064,
+     "barriers_only_phi_40": 0.1334
+    },
+    {
+     "leq_m": 60,
+     "budget_m": 1500,
+     "n_dams": 25,
+     "n_barriers": 0,
+     "barrier_m": 0,
+     "retained_40_m3": 2500,
+     "phi_40": 0.0387,
+     "barriers_only_phi_40": 0.0334
+    },
+    {
+     "leq_m": 60,
+     "budget_m": 6000,
+     "n_dams": 83,
+     "n_barriers": 23,
+     "barrier_m": 1000,
+     "retained_40_m3": 9740,
+     "phi_40": 0.1506,
+     "barriers_only_phi_40": 0.1334
+    }
+   ]
+  }
+ }
+}

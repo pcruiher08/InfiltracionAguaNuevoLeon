@@ -6,6 +6,8 @@ Inputs: web/stats.json, docs/data/meta.json, docs/data/sites.json, informe/extra
 import json
 from pathlib import Path
 
+import numpy as np
+
 ROOT = Path(__file__).resolve().parent
 S = json.loads((ROOT.parent / "web" / "stats.json").read_text())
 META = json.loads((ROOT.parent / "docs" / "data" / "meta.json").read_text())
@@ -351,6 +353,39 @@ V.update({"et_rows": "\n".join(et_rows), "et_net_rows": "\n".join(et_net_rows), 
           "et_w1_3": n(SEL["neta_3000"]["net_mean"] * EN["g_mean"] / f_sc["mean"], 1)})
 
 # ---------------------------------------------------------------- simulation vs MCMF (conciliacion.py) and RUSLE range
+IF = SB["interflow"]
+V.update({"if_g0": pct(100 * IF["iota_g0"]), "et_comp50": pct(EN["p_competitive"]["50000"], 1)})
+CF = json.loads((ROOT / "campo.json").read_text()); CFS = list(CF["sites"].values())
+rng = lambda vals, d=0, f=1: f"{min(vals) * f:.{d}f} a {max(vals) * f:.{d}f}"
+by_rain = sorted(CFS, key=lambda v: v["rain_mm_yr"])
+V.update({"cf_mha": rng([v["m_per_ha"] for v in CFS]), "cf_dams": rng([v["n_dams"] for v in CFS]),
+          "cf_phi5": rng([v["phi"]["5"] for v in CFS], 0, 100) + "\\%", "cf_phi40": rng([v["phi"]["40"] for v in CFS], 0, 100) + "\\%",
+          "cf_rho": rng([v["rho"] for v in CFS], 0, 100) + "\\%", "cf_rho1500": rng([v["rho_1500"] for v in CFS], 1, 100) + "\\%",
+          "cf_rho_list": ", ".join(f"{v['rho']:.2f}" for v in by_rain[:-1]) + f" y {by_rain[-1]['rho']:.2f}",
+          "cf_rain_list": ", ".join(n(v["rain_mm_yr"]) for v in by_rain[:-1]) + f" y {n(by_rain[-1]['rain_mm_yr'])}"})
+DN = json.loads((ROOT / "densidad.json").read_text()); DNS = list(DN["sites"].values())
+lay = lambda v, b: next(l for l in v["layouts"] if l["budget_m"] == b)
+def sat_mha(v, tol=0.98):
+    """Smallest selected density reaching 98 % of the full-treatment retention of the 40 mm storm."""
+    full = v["layouts"][-1]["phi"]["40"]
+    return next(l["m_per_ha"] for l in v["layouts"] if l["phi"]["40"] >= tol * full)
+mix = lambda leq, b, key: float(np.mean([next(m[key] for m in v["mixed"] if m["leq_m"] == leq and m["budget_m"] == b) for v in DNS]))
+V.update({"dn_1500": rng([lay(v, 1500)["phi"]["40"] for v in DNS], 0, 100) + "\\%",
+          "dn_12000": rng([lay(v, 12000)["phi"]["40"] for v in DNS], 0, 100) + "\\%",
+          "dn_sat": f"{10 * round(np.mean([sat_mha(v) for v in DNS]) / 10):.0f}",
+          "dn_satpct": rng([v["layouts"][-1]["phi"]["40"] for v in DNS], 0, 100) + "\\%",
+          "dm_leq": f"{DN['dam_cap_m3'] / 1.44:.0f}",
+          "dm_nd30": f"{mix(30, 6000, 'n_dams'):.0f}", "dm_nb30": f"{mix(30, 6000, 'n_barriers'):.0f}",
+          "dm_r30": pct(100 * mix(30, 6000, 'phi_40')), "dm_r0": pct(100 * mix(30, 6000, 'barriers_only_phi_40')),
+          "dm_rows": "\n".join(f"{leq} & {n(b)} & {mix(leq, b, 'n_dams'):.0f} & {mix(leq, b, 'n_barriers'):.0f} & {pct(100 * mix(leq, b, 'phi_40'))} & {pct(100 * mix(leq, b, 'barriers_only_phi_40'))} \\\\"
+                                for leq in DN["dam_leq_m"] for b in (1500, 6000))})
+BI = json.loads((ROOT / "biofisico.json").read_text()); BIS = BI["high_by_supply"]
+V.update({"bio_t1": f"{BI['thresholds_matched'][0]:.2f}", "bio_t2": f"{BI['thresholds_matched'][1]:.2f}",
+          "bio_alta": n(BI["high_ha"]["biofisico"]), "bio_ambos": n(BI["both_high_ha"]), "bio_overlap": pct(BI["overlap_pct_of_published"]),
+          "bio_r": f"{BI['pearson']:.2f}", "bio_same": pct(BI["same_class_pct"]),
+          "bio_cu0": n(BIS["Presa El Cuchillo"]["publicado"]), "bio_cu1": n(BIS["Presa El Cuchillo"]["biofisico"]),
+          "bio_dir": n(BI["filter"]["biofisico_directa_ha"]), "bio_sc": n(BIS["Acuífero Santa Catarina (pozos SADM)"]["biofisico"]),
+          **{f"bio_s{i}{e}": f"{f([x[k] for x in BI['sites']]):.2f}" for i, k in enumerate(("publicado", "biofisico")) for e, f in (("lo", min), ("hi", max))}})
 CC = json.loads((ROOT / "conciliacion.json").read_text())
 ret = lambda k: CC[k]["t1"]["infiltrated_works"] + CC[k]["t1"]["still_ponded"]
 V.update({"cc_bar": n(ret("barreras")), "cc_dam": n(ret("presas")), "cc_mcmf": n(CC["mcmf"]["retained_m3"]),
@@ -366,7 +401,7 @@ from pipeline import simulate as _SIM  # noqa: E402
 V.update({"alta_pct": pct(100 * _a / _t), "tau1_pct": f"{100 * _b / _t:.0f}", "tau2_pct": f"{100 * (_b + _m) / _t:.0f}",
           "cc_ndams": n(CC["n_dams"]), "sim_steps": n(_SIM.STEPS), "sim_h": n(_SIM.STEPS * 2.4 / 60), "sim_rain": n(_SIM.RAIN_STEPS),
           "sim_rain_min": n(_SIM.RAIN_STEPS * 2.4), "if_w_3": n(SEL["neta_3000"]["net_mean"] * EN["interflow_g_mean"] / f_sc["mean"], 1),
-          "if_e_pct": pct(100 * EN["interflow_e"]), "if_cost": n(37_500 * 30_000 / EN["interflow_net_ls_30000"] / 1e6, 1)})
+          "if_e_pct": pct(100 * EN["interflow_e"]), "if_cost": n(37_500 * 30_000 / max(EN["interflow_net_ls_30000"], 1e-9) / 1e6, 1)})
 
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():
