@@ -184,7 +184,7 @@ def uncertainty():
     fig, ax = plt.subplots(figsize=(7, 2.8))
     ax.hist(x, bins=40, color="#86b6ef", edgecolor="white", linewidth=.5)
     p5, p50, p95 = mc["max_ls"]
-    for v, ls_, lab in ((p5, (0, (3, 3)), f"P5 {p5:.0f}"), (p50, "-", f"mediana {p50:.0f}"), (p95, (0, (3, 3)), f"P95 {p95:.0f}")):
+    for v, ls_, lab in ((p5, (0, (3, 3)), f"P5 {p5:.0f}"), (p50, "-", f"media {p50:.0f}"), (p95, (0, (3, 3)), f"P95 {p95:.0f}")):
         ax.axvline(v, color="#0d366b", ls=ls_, lw=1.2)
         ax.text(v, ax.get_ylim()[1] * 0.95, f" {lab} L/s", fontsize=8, color="#0d366b", va="top")
     ax.set_xlabel("L/s de agua bruta con 3,000 ha (máxima agua), 2,000 escenarios de parámetros")
@@ -261,12 +261,12 @@ def supply_fig():
     y = np.arange(len(R))[::-1]; h = 0.36
     for off, key, mc, col, lab in ((h / 2, "ls", "mc_ls", "#2a78d6", "Lluvia media"),
                                    (-h / 2, "ls_drought", "mc_ls_drought", "#eb6834", "Lluvia de jul 2021 a jun 2022")):
-        v = np.array([r[key] for r in R]); lo = np.array([r[mc][0] for r in R]); hi = np.array([r[mc][2] for r in R])
+        v = np.array([r[mc][1] for r in R]); lo = np.array([r[mc][0] for r in R]); hi = np.array([r[mc][2] for r in R])  # mean, p5, p95
         ax.barh(y + off, v, height=h, color=col, label=lab)
         ax.errorbar(v, y + off, xerr=[v - lo, hi - v], fmt="none", ecolor="#4a4740", elinewidth=0.8, capsize=2)
     for yi, r in zip(y, R):
-        ax.text(r["mc_ls"][2] + 40, yi + h / 2, f"{r['ls']:,.0f}", va="center", fontsize=7.5, color="#4a4740")
-        ax.text(r["mc_ls_drought"][2] + 40, yi - h / 2, f"{r['ls_drought']:,.0f} L/s · {r['pct_deficit_drought']:.0f} % del déficit",
+        ax.text(r["mc_ls"][2] + 40, yi + h / 2, f"{r['mc_ls'][1]:,.0f}", va="center", fontsize=7.5, color="#4a4740")
+        ax.text(r["mc_ls_drought"][2] + 40, yi - h / 2, f"{r['mc_ls_drought'][1]:,.0f} L/s · {100 * r['mc_ls_drought'][1] / A['deficit_ls']:.0f} % del déficit",
                 va="center", fontsize=7.5, color="#4a4740", bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none"), zorder=3)
     ax.axvline(A["deficit_ls"], color="#1d1b18", ls=(0, (3, 3)), lw=1)
     ax.text(A["deficit_ls"] - 40, y[0] + 0.55, "déficit de 2022: 3,000 L/s", ha="right", fontsize=7.5, color="#1d1b18")
@@ -290,7 +290,7 @@ def fate_figs():
         body.set_facecolor(SCOL[n]); body.set_alpha(0.75); body.set_edgecolor("white")
     for y, n in enumerate(names, 1):
         f = D["factor"][n]
-        ax.plot(f["q"][1], y, "o", color="white", ms=4, mec="#1d1b18", mew=0.8)
+        ax.plot(f["mean"], y, "o", color="white", ms=4, mec="#1d1b18", mew=0.8)
         ax.text(0.62, y, f"P(G > 0) = {f['p_pos']:.0f} %", va="center", fontsize=8, color="#4a4740")
     ax.axvline(0, color="#1d1b18", lw=1)
     ax.set_yticks(range(1, len(names) + 1), [SHORT[n] for n in names]); ax.set_xlim(-0.9, 0.9)

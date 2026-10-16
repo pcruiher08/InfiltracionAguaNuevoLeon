@@ -59,7 +59,7 @@ def main():
         v2 = MT.value(A, Pd * bias, Cn, kk, rho(Pd * bias) * s)
         for j, x in enumerate(best_first(v1, A, budgets)):   # selection made with mean rain,
             mc_n[n, j] = (x * v1).sum(); mc_d[n, j] = (x * v2).sum()   # then exposed to the drought
-    q = lambda a: [round(float(np.percentile(a, p) / SEC_Y * 1000), 1) for p in (5, 50, 95)]
+    q = lambda a: [round(float(v / SEC_Y * 1000), 1) for v in (np.percentile(a, 5), np.mean(a), np.percentile(a, 95))]  # p5, mean, p95
 
     out = {"demand_ls": DEMAND_LS, "available_2022_ls": AVAILABLE_2022_LS, "deficit_ls": DEFICIT_LS,
            "total_eligible_ha": round(total_ha), "scenarios": []}

@@ -155,7 +155,7 @@ Uso del suelo y vegetación & INEGI serie VII, 1:250,000 & Tipo de vegetación d
 
 \section{Método}
 
-La notación completa se resume en el apéndice~\ref{ap:notacion}. La simulación de tormenta, la propagación de la incertidumbre por Monte Carlo, la dualidad, los periodos de retorno y la frontera entre agua y equidad se describen en el apéndice~\ref{ap:metodos}.
+La notación completa se resume en el apéndice~\ref{ap:notacion}. Los resultados de Monte Carlo se reportan como media e intervalo de 90\% (percentiles 5 y 95), porque la media es el valor esperado: se suma entre celdas, años y fuentes, y es la que corresponde a costos y decisiones. La mediana sólo se usa para describir distribuciones en cuadros y figuras y para los tiempos de cómputo, que tienen valores atípicos. La simulación de tormenta, la propagación de la incertidumbre por Monte Carlo, la dualidad, los periodos de retorno y la frontera entre agua y equidad se describen en el apéndice~\ref{ap:metodos}.
 
 \subsection{Área de análisis}
 
@@ -458,7 +458,7 @@ Días de abasto de la ZMM al año & \multicolumn{2}{r}{«max_days»} & \multicol
 
 \begin{table}[H]\centering\small
 \caption{Agua bruta retenida para el abasto de la ZMM según la superficie restaurada}\label{tab:abasto}
-{\color{gris}Selección con lluvia media, evaluada también con la lluvia de julio de 2021 a junio de 2022. Intervalo de 90\% por Monte Carlo. Déficit en el momento más crítico de 2022: 3,000 L/s (sección~\ref{sec:abasto}). La proporción del consumo usa el año normal; la del déficit, el año 2021 a 2022. Cota superior: la ganancia neta esperada es de «n3n_mean» L/s con 3,000 ha y de «n30n_mean» L/s con 30,000 ha (cuadro~\ref{tab:neta}).\par}\smallskip
+{\color{gris}Selección con lluvia media, evaluada también con la lluvia de julio de 2021 a junio de 2022. Intervalo de 90\% por Monte Carlo. Media e intervalo de 90\% de Monte Carlo. Déficit en el momento más crítico de 2022: 3,000 L/s (sección~\ref{sec:abasto}). La proporción del consumo usa el año normal; la del déficit, el año 2021 a 2022. Cota superior: la ganancia neta esperada es de «n3n_mean» L/s con 3,000 ha y de «n30n_mean» L/s con 30,000 ha (cuadro~\ref{tab:neta}).\par}\smallskip
 \begin{tabularx}{\linewidth}{Xrrrrr}
 \toprule
  & \multicolumn{1}{c}{Año normal} & \multicolumn{2}{c}{Año 2021 a 2022} & \multicolumn{2}{c}{Proporción} \\
@@ -477,7 +477,7 @@ Hectáreas & L/s & L/s & Intervalo 90\% & del consumo & del déficit 2022 \\
 
 \subsection{P9 · Destino del agua retenida y ganancia neta para el abasto}\label{res:p9}
 
-\grafica{g14_destino}{Ganancia neta por metro cúbico retenido, por fuente}{Distribución de $G_g=(1-e_g)\phi_g-\tau_g$ en «fate_n» escenarios con las distribuciones del cuadro~\ref{tab:priores}; el punto es la mediana. Valores negativos indican que la restauración reduce el agua que llega a la fuente. Fuente: elaboración propia con MODIS y CHIRPS.}
+\grafica{g14_destino}{Ganancia neta por metro cúbico retenido, por fuente}{Distribución de $G_g=(1-e_g)\phi_g-\tau_g$ en «fate_n» escenarios con las distribuciones del cuadro~\ref{tab:priores}; el punto es la media. Valores negativos indican que la restauración reduce el agua que llega a la fuente. Fuente: elaboración propia con MODIS y CHIRPS.}
 
 \lectura{La evapotranspiración de MODIS equivale a «et_sc» de la lluvia en las laderas elegibles del Santa Catarina, «et_lb» en La Boca, «et_cp» en Cerro Prieto y «et_ec» en El Cuchillo. Con esas cotas, cada m³ retenido en el Santa Catarina aporta en promedio «g_sc» m³ netos al acuífero, con probabilidad de ganancia positiva de «pg_sc». En las presas el promedio es negativo: «g_lb» en La Boca, «g_cp» en Cerro Prieto y «g_ec» en El Cuchillo, con probabilidad de ganancia positiva de «pg_lb», «pg_cp» y «pg_ec», respectivamente. Con las cotas optimistas, la probabilidad de ganancia positiva sube a «pgo_sc» en el Santa Catarina, pero sólo a «pgo_lb», «pgo_cp» y «pgo_ec» en las presas, con promedios cercanos a cero («go_lb», «go_cp» y «go_ec»).}
 
@@ -495,7 +495,7 @@ Selección & Bruta & Neta, media & Neta, mediana & Intervalo 90\% & $\Pr[W_{\tex
 \end{tabularx}
 \end{table}
 
-\lectura{Con la selección que maximiza el agua bruta, 30,000 ha retienen «n30b_g» L/s, pero el agua neta para el abasto tiene mediana de «n30b» L/s y probabilidad de ser positiva de sólo «n30b_pp», porque «n30b_cp» de esas hectáreas drenan a Cerro Prieto, donde la retención resta escurrimiento a la presa. Al maximizar la ganancia neta esperada, la selección se concentra por completo en el Santa Catarina y el agua neta tiene mediana de «n30n» L/s (intervalo de 90\% de «n30n_lo» a «n30n_hi» L/s), con probabilidad de ser positiva de «n30n_pp». Los parámetros que más influyen en el resultado son, en orden, «spearman_top».}
+\lectura{Con la selección que maximiza el agua bruta, 30,000 ha retienen «n30b_g» L/s, pero el agua neta para el abasto tiene una media de «n30b» L/s y probabilidad de ser positiva de sólo «n30b_pp», porque «n30b_cp» de esas hectáreas drenan a Cerro Prieto, donde la retención resta escurrimiento a la presa. Al maximizar la ganancia neta esperada, la selección se concentra por completo en el Santa Catarina y el agua neta tiene una media de «n30n» L/s (intervalo de 90\% de «n30n_lo» a «n30n_hi» L/s), con probabilidad de ser positiva de «n30n_pp». Los parámetros que más influyen en el resultado son, en orden, «spearman_top».}
 
 \respuesta{Las obras no desvían el agua: la retienen unas horas para que se infiltre, y desde ahí sigue su curso por el subsuelo dentro de la misma cuenca. Para el abasto, el resultado depende de la fuente. En el Santa Catarina, el escurrimiento de tormenta sale del sistema a través de la ciudad, así que infiltrarlo en la sierra añade recarga al acuífero que explotan los pozos y galerías; la ganancia neta es positiva con probabilidad de «pg_sc» con las cotas base y de «pgo_sc» con las optimistas. En las cuencas de las presas, retener escurrimiento en la ladera no añade agua en volumen anual y probablemente la reduce: lo que se retiene ya llegaba en buena parte al embalse, y la evapotranspiración se lleva una fracción. Ahí el beneficio de las obras está en reducir el azolve, atenuar los picos de las avenidas y conservar el suelo, no en aumentar el volumen. Con 30,000 ha en el Santa Catarina, el agua neta esperada es del orden de «n30n_mean» L/s, una fracción pequeña del agua bruta retenida y del déficit de 2022.}
 
@@ -537,7 +537,7 @@ Pastizal inducido, cultivado o agricultura & Las del tipo de vegetación natural
 
 \begin{table}[H]\centering\small
 \caption{Sedimento que las obras dejan de enviar a La Boca y Cerro Prieto}\label{tab:azolve}
-{\color{gris}Mediana e intervalo de 90\% de «sed_n» escenarios. Agua neta: cambio en el agua que llega a las presas (sección~\ref{sec:destino}).\par}\smallskip
+{\color{gris}Media e intervalo de 90\% de «sed_n» escenarios. Agua neta: cambio en el agua que llega a las presas (sección~\ref{sec:destino}).\par}\smallskip
 \footnotesize
 \begin{tabularx}{\linewidth}{Xrrrr}
 \toprule
@@ -604,7 +604,7 @@ Selección & Costo total & Por L/s bruto & Por L/s neto & $\Pr[\text{más barata
 
 \begin{table}[H]\centering\small
 \caption{Lluvia futura y frecuencia de una sequía como la de 2021 a 2022}\label{tab:clima}
-{\color{gris}«clima_nmod» modelos de NEX-GDDP-CMIP6, 2041 a 2070 frente a 1985 a 2014. Mediana y rango entre modelos.\par}\smallskip
+{\color{gris}«clima_nmod» modelos de NEX-GDDP-CMIP6, 2041 a 2070 frente a 1985 a 2014. Media y rango entre modelos.\par}\smallskip
 \begin{tabularx}{\linewidth}{Xrr}
 \toprule
  & SSP2-4.5 & SSP5-8.5 \\
@@ -616,7 +616,7 @@ Selección & Costo total & Por L/s bruto & Por L/s neto & $\Pr[\text{más barata
 
 \lectura{La lluvia de julio de 2021 a junio de 2022 en el área de análisis fue de «clima_p21» mm, frente a una media de «clima_pm» mm; ocupa el percentil «clima_q» de los años de 1981 a 2025, es decir, ocurre en promedio una vez cada «clima_T» años. Hacia 2041 a 2070, «clima_more245» de «clima_nmod» modelos en SSP2-4.5 y «clima_more585» en SSP5-8.5 proyectan sequías así de severas con mayor frecuencia que en el periodo histórico.}
 
-\respuesta{«anp_resp» En cuanto al clima, la frecuencia proyectada de un año tan seco como el previo a la crisis es de «clima_f245» en SSP2-4.5 y de «clima_f585» en SSP5-8.5 (mediana de los modelos), frente a «clima_q» histórico, y el cambio de la lluvia media modificaría el agua bruta retenida en «clima_g245» y «clima_g585», respectivamente. Como la selección de sitios resiste la sequía (sección~\ref{res:p5}), los mismos sitios siguen siendo prioritarios en el clima proyectado.}
+\respuesta{«anp_resp» En cuanto al clima, la frecuencia proyectada de un año tan seco como el previo a la crisis es de «clima_f245» en SSP2-4.5 y de «clima_f585» en SSP5-8.5 (media de los modelos), frente a «clima_q» histórico, y el cambio de la lluvia media modificaría el agua bruta retenida en «clima_g245» y «clima_g585», respectivamente. Como la selección de sitios resiste la sequía (sección~\ref{res:p5}), los mismos sitios siguen siendo prioritarios en el clima proyectado.}
 
 \subsection{P14 · Algoritmos para calcular la retención}\label{res:p14}
 
@@ -900,7 +900,7 @@ que vale 1 cuando todas reciben lo mismo y $1/4$ cuando una sola recibe toda el 
 
 \grafica{g9_incertidumbre}{Incertidumbre del agua bruta retenida}{Distribución del agua retenida con 3,000 ha en 2,000 escenarios de parámetros (sección~\ref{sec:incertidumbre}). Fuente: elaboración propia.}
 
-\lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen una mediana de «mc_p50» L/s (intervalo de 90\% de «mc_p5» a «mc_p95» L/s); con el reparto entre fuentes, «mcb_p50» L/s (de «mcb_p5» a «mcb_p95» L/s). La selección es estable: «mc_p80» de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
+\lectura{Al considerar la incertidumbre de los parámetros, 3,000 ha retienen en promedio «mc_p50» L/s (intervalo de 90\% de «mc_p5» a «mc_p95» L/s); con el reparto entre fuentes, «mcb_p50» L/s (de «mcb_p5» a «mcb_p95» L/s). La selección es estable: «mc_p80» de las celdas seleccionadas aparecen en al menos 80\% de los escenarios.}
 
 \grafica{g10_duales}{Precios sombra}{Izquierda: variable dual $\lambda^\ast$ de la restricción de presupuesto, en L/s por cada 1,000 ha adicionales, según el presupuesto. Derecha: m³ retenidos por cada m³ de almacenamiento agregado como capacidad o como metros nuevos, con tormentas de 10 y de 40 mm, en el sitio de la figura~\ref{fig:m3_barreras}. Fuente: elaboración propia.}
 

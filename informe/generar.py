@@ -138,13 +138,13 @@ sc = {s["ha"]: s for s in AB["scenarios"]}; all_s = AB["scenarios"][-1]
 key = {3000: "ab3", 10000: "ab10", 30000: "ab30", 60000: "ab60"}
 ab_rows = []
 for s in AB["scenarios"]:
-    lo, _, hi = s["mc_ls_drought"]
+    lo, mean_d, hi = s["mc_ls_drought"]; mean_n = s["mc_ls"][1]          # Monte Carlo mean and 90 % interval
     label = n(s["ha"]) if s is not all_s else f"{n(s['ha'])} (todas)"
-    ab_rows.append(f"{label} & {n(s['ls'])} & {n(s['ls_drought'])} & {n(lo)} a {n(hi)} & "
-                   f"{pct(100 * s['ls'] / AB['demand_ls'], 1)} & {pct(s['pct_deficit_drought'], 1)} \\\\")
+    ab_rows.append(f"{label} & {n(mean_n)} & {n(mean_d)} & {n(lo)} a {n(hi)} & "
+                   f"{pct(100 * mean_n / AB['demand_ls'], 1)} & {pct(100 * mean_d / AB['deficit_ls'], 1)} \\\\")
     k = key.get(s["ha"], "aball")
-    V.update({f"{k}_d": n(s["ls_drought"]), f"{k}_pct": pct(s["pct_deficit_drought"]),
-              f"{k}_lo": n(lo), f"{k}_hi": n(hi), f"{k}_dem": pct(100 * s["ls_drought"] / AB["demand_ls"], 1)})
+    V.update({f"{k}_d": n(mean_d), f"{k}_pct": pct(100 * mean_d / AB["deficit_ls"]),
+              f"{k}_lo": n(lo), f"{k}_hi": n(hi), f"{k}_dem": pct(100 * mean_d / AB["demand_ls"], 1)})
 V.update({"abasto_rows": "\n".join(ab_rows), "ab_all_ha": n(all_s["ha"]),
           "ab60_sc": n(sc[60000]["by_supply"]["Acuífero Santa Catarina (pozos SADM)"]["ls_drought"]),
           "ab60_cp": n(sc[60000]["by_supply"]["Presa Cerro Prieto"]["ls_drought"])})
@@ -176,11 +176,11 @@ spear = ", ".join(f"{pname(l)} ($r_s={r:+.2f}$)" for l, r in top[:-1]) + f" y {p
 b3, b30 = DE["inegi"]["neta_3000"], DE["inegi"]["neta_30000"]
 belt_rows = [f"{k} & {n(b3[k])} & {n(b30[k])} \\\\" for k in b3 if b3[k] + b30[k] > 0]
 V.update({"fate_n": n(DE["n"]), "prior_rows": "\n".join(prior_rows), "neta_rows": "\n".join(neta_rows),
-          "n30b_g": n(SEL["bruta_30000"]["gross_ls"]), "n30b": n(SEL["bruta_30000"]["net_ls"][1]), "n30b_pp": pct(SEL["bruta_30000"]["p_pos"]),
+          "n30b_g": n(SEL["bruta_30000"]["gross_ls"]), "n30b": n(SEL["bruta_30000"]["net_mean"]), "n30b_pp": pct(SEL["bruta_30000"]["p_pos"]),
           "n30b_cp": n(SEL["bruta_30000"]["ha_by_supply"]["Presa Cerro Prieto"]),
-          "n30n": n(SEL["neta_30000"]["net_ls"][1]), "n30n_lo": n(SEL["neta_30000"]["net_ls"][0]), "n30n_hi": n(SEL["neta_30000"]["net_ls"][2]),
+          "n30n": n(SEL["neta_30000"]["net_mean"]), "n30n_lo": n(SEL["neta_30000"]["net_ls"][0]), "n30n_hi": n(SEL["neta_30000"]["net_ls"][2]),
           "n30n_pp": pct(SEL["neta_30000"]["p_pos"]), "n30n_mean": n(SEL["neta_30000"]["net_mean"]),
-          "n3n": n(SEL["neta_3000"]["net_ls"][1]), "n3n_mean": n(SEL["neta_3000"]["net_mean"], 1),
+          "n3n": n(SEL["neta_3000"]["net_mean"], 1), "n3n_mean": n(SEL["neta_3000"]["net_mean"], 1),
           "spearman_top": spear, "belt_rows": "\n".join(belt_rows),
           "inegi_pino3": n(b3["Bosque de pino y pino-encino"]), "inegi_sub3": n(b3["Matorral submontano"]),
           "inegi_enc3": n(b3["Bosque de encino y encino-pino"]), "inegi_oya3": n(b3["Bosque de oyamel y ayarín"]),
@@ -242,8 +242,8 @@ fq = lambda v: pct(100 * v)
 def crow(lbl, f):
     return f"{lbl} & {f('ssp245')} & {f('ssp585')} \\\\"
 clima_rows = [
-    crow("Cambio de la lluvia media de julio a junio", lambda sc: f"{sg(CL[sc]['change_median'], 1)}\\% ({sg(CL[sc]['change_range'][0], 1)} a {sg(CL[sc]['change_range'][1], 1)})"),
-    crow(f"Frecuencia de un año como 2021 a 2022 (histórica: {fq(CL['q_star'])})", lambda sc: f"{fq(CL[sc]['freq_median'])} ({fq(CL[sc]['freq_range'][0])} a {fq(CL[sc]['freq_range'][1])})"),
+    crow("Cambio de la lluvia media de julio a junio", lambda sc: f"{sg(CL[sc]['change_mean'], 1)}\\% ({sg(CL[sc]['change_range'][0], 1)} a {sg(CL[sc]['change_range'][1], 1)})"),
+    crow(f"Frecuencia de un año como 2021 a 2022 (histórica: {fq(CL['q_star'])})", lambda sc: f"{fq(CL[sc]['freq_mean'])} ({fq(CL[sc]['freq_range'][0])} a {fq(CL[sc]['freq_range'][1])})"),
     crow("Modelos con sequías más frecuentes", lambda sc: f"{CL[sc]['models_more_droughts']} de {CL['n_models']}"),
     crow("Cambio del agua bruta con 3,000 ha", lambda sc: f"{sg(CL[sc]['gross_change_pct'], 1)}\\%")]
 V.update({"anp_rows": "\n".join(anp_rows), "anp_cumbres3": n(a3.get(cum, 0)), "anp_cumbres30": n(a30.get(cum, 0)), "anp_sitios": sit_txt,
@@ -251,7 +251,7 @@ V.update({"anp_rows": "\n".join(anp_rows), "anp_cumbres3": n(a3.get(cum, 0)), "a
           "clima_nmod": str(CL["n_models"]), "clima_rows": "\n".join(clima_rows), "clima_p21": n(CL["chirps"]["p_2021_22"]),
           "clima_pm": n(CL["chirps"]["mean"]), "clima_q": fq(CL["q_star"]), "clima_T": n(1 / CL["q_star"]),
           "clima_more245": str(CL["ssp245"]["models_more_droughts"]), "clima_more585": str(CL["ssp585"]["models_more_droughts"]),
-          "clima_f245": fq(CL["ssp245"]["freq_median"]), "clima_f585": fq(CL["ssp585"]["freq_median"]),
+          "clima_f245": fq(CL["ssp245"]["freq_mean"]), "clima_f585": fq(CL["ssp585"]["freq_mean"]),
           "clima_g245": f"{sg(CL['ssp245']['gross_change_pct'], 1)}\\%", "clima_g585": f"{sg(CL['ssp585']['gross_change_pct'], 1)}\\%"})
 
 # ---------------------------------------------------------------- Campo Buenos Aires aquifer (CONAGUA, DR 1907)

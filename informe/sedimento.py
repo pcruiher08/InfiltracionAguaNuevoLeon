@@ -98,7 +98,7 @@ def main():
             water = float((x * R * g_cell * dam).sum())                     # net water change at the dams, m³/yr
             res[key]["t"].append(t); res[key]["m3"].append(m3); res[key]["water_m3"].append(water)
             res[key]["ratio"].append(m3 / max(-water, 1.0))
-    q = lambda a: [round(float(np.percentile(a, p)), 0) for p in (5, 50, 95)]
+    q = lambda a: [round(float(v), 0) for v in (np.percentile(a, 5), np.mean(a), np.percentile(a, 95))]  # p5, mean, p95
     names = MT.SUPPLY_NAMES
     a_w = lambda m: float(np.average(a0[m], weights=A[m])) if m.any() else 0.0
     out = {"n": N_MC, "years": YEARS, "priors": {"lambda_m": [30, 100], "P": [0.2, 0.6], "SDR": [0.1, 0.4], "bulk_t_m3": [1.1, 1.5], "R_factor": [0.8, 1.2]},

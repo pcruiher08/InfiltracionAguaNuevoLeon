@@ -88,7 +88,7 @@ def monte_carlo(A, P, C, k, sup):
         tot_bal.append(ls((xb * v).sum()))
         for s in SUPPLY_NAMES:
             by_sup[s].append(ls((x * v)[sup == s].sum()))
-    q = lambda a: [round(float(np.percentile(a, p)), 1) for p in (5, 50, 95)]
+    q = lambda a: [round(float(v), 1) for v in (np.percentile(a, 5), np.mean(a), np.percentile(a, 95))]  # p5, mean, p95
     prob = chosen / N_MC
     base_x, _, _ = knapsack(value(A, P, C, k, base_rho), A, H)
     sel = base_x > 0.5

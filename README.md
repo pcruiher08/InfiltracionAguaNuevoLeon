@@ -224,7 +224,7 @@ Las barreras no desvían el agua: la retienen unas horas para que se infiltre, y
 | Cerro Prieto | −0.35 | 4 % | 51 % |
 | El Cuchillo | −0.20 | 4 % | 58 % |
 
-En el Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en el Santa Catarina) dan una mediana de **~23 L/s netos** (intervalo de 90 %: −61 a 126).
+En el Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en el Santa Catarina) dan en promedio **~26 L/s netos** (intervalo de 90 %: −61 a 126).
 
 ![Ganancia neta por m³ retenido](informe/figuras/g14_destino.png)
 
@@ -251,7 +251,7 @@ El escurrimiento natural de la cuenca de Cerro Prieto según CONAGUA (cuencas R�
 
 ### 12. Azolve evitado en las presas (RUSLE)
 
-Con la ecuación universal de pérdida de suelo revisada (`informe/sedimento.py`), 30,000 ha en la cuenca de Cerro Prieto evitarían que lleguen ~448 mil m³/año de sedimento a la presa (**~22.4 hm³ en 50 años**, ~7.5 % de su capacidad), pero reducirían el agua que le llega en ~4.1 hm³/año. En las presas, el azolve evitado no compensa el agua retenida.
+Con la ecuación universal de pérdida de suelo revisada (`informe/sedimento.py`), 30,000 ha en la cuenca de Cerro Prieto evitarían que lleguen en promedio ~481 mil m³/año de sedimento a la presa (**~24.0 hm³ en 50 años**, ~8.0 % de su capacidad), pero reducirían el agua que le llega en ~4.0 hm³/año. En las presas, el azolve evitado no compensa el agua retenida.
 
 ### 13. Costo
 
@@ -260,7 +260,7 @@ Con 25,000 a 50,000 pesos por hectárea (tope de CONAFOR para restauración fore
 ### 14. Áreas protegidas y clima futuro
 
 - **Parque Nacional Cumbres de Monterrey:** 2,933 de las 3,000 ha seleccionadas por ganancia neta están dentro del parque (WDPA). La restauración es compatible con un parque nacional (LGEEPA, art. 50), pero requiere autorización de la CONANP.
-- **Clima (NEX-GDDP-CMIP6, 8 modelos, 2041 a 2070):** un año tan seco como 2021 a 2022 (percentil 11 histórico) tendría una frecuencia mediana de 8 % en SSP2-4.5 y 10 % en SSP5-8.5, con mucha dispersión entre modelos (3 a 23 %). El agua bruta cambiaría entre -1.4 % y +1.8 %.
+- **Clima (NEX-GDDP-CMIP6, 8 modelos, 2041 a 2070):** un año tan seco como 2021 a 2022 (percentil 11 histórico) tendría una frecuencia media de 10 % en SSP2-4.5 y 12 % en SSP5-8.5, con mucha dispersión entre modelos (3 a 23 %). El agua bruta cambiaría entre −0.7 % y +1.6 %.
 
 ### 15. Tres algoritmos para calcular el agua retenida
 
@@ -273,6 +273,8 @@ La selección de barreras evalúa miles de veces cuánta agua retiene un conjunt
 | *Topological greedy fill* | 2 | −0.8 % en promedio, hasta −12.6 % | 22 s, −0.3 % de retención |
 
 Con los costos de este problema (−1 en los arcos de las barreras, 0 en los demás), el *minimum-cost maximum-flow* equivale a un flujo máximo en la red sin salidas, y el informe lo demuestra. Dinic da el mismo resultado ~13 veces más rápido por evaluación y ~135 veces más rápido en la selección completa. El *minimum-cost maximum-flow* sólo vuelve a ser necesario con costos diferenciados por barrera.
+
+**Convención estadística:** los resultados de Monte Carlo se reportan como **media** (valor esperado, que se suma entre celdas y años y es el que corresponde a costos) con su intervalo de 90 %. La mediana sólo se usa para describir distribuciones y para tiempos de cómputo.
 
 ### 16. Validación en campo
 
@@ -349,7 +351,7 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 2. **La conexión con el abasto pesa según la ganancia neta.** El Santa Catarina, donde la recarga es agua nueva para los pozos de SADM, puntúa 1.0; las cuencas de las presas, 0.5. ~**66,100 ha (83 %)** de la prioridad alta están en las cuencas de La Boca, Cerro Prieto o Santa Catarina.
 3. **La prioridad es robusta.** ~**56,500 ha (71 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
 4. **Los incendios abren una ventana de acción.** ~**14,800 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
-5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero del Santa Catarina**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
+5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero del Santa Catarina**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
     - Para maximizar agua: **Santa Catarina**, que además es donde la ganancia neta es más probable.
     - Para cubrir todas las fuentes: repartir cuesta ~10 % del agua bruta, pero en ganancia neta el reparto es negativo (−8 L/s con 3,000 ha), porque asigna superficie a las cuencas de las presas.

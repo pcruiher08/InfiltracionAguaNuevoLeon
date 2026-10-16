@@ -96,10 +96,10 @@ def main():
         ch = np.array([r[sc]["mean_change_pct"] for r in out["models"].values()])
         fr = np.array([r[sc]["freq"] for r in out["models"].values()])
         # gross water of the 3,000 ha selection with the rain scaled by the ensemble-median change
-        x = sel["bruta_3000"]; s = 1 + np.median(ch) / 100
+        x = sel["bruta_3000"]; s = 1 + np.mean(ch) / 100
         g0 = (x * R * k).sum(); g1 = (x * 10 * P * s * C * A * DS.rho(P * s) * k).sum()
-        out[sc] = {"change_median": round(float(np.median(ch)), 1), "change_range": [round(float(ch.min()), 1), round(float(ch.max()), 1)],
-                   "freq_median": round(float(np.median(fr)), 3), "freq_range": [round(float(fr.min()), 3), round(float(fr.max()), 3)],
+        out[sc] = {"change_mean": round(float(np.mean(ch)), 1), "change_range": [round(float(ch.min()), 1), round(float(ch.max()), 1)],
+                   "freq_mean": round(float(np.mean(fr)), 3), "freq_range": [round(float(fr.min()), 3), round(float(fr.max()), 3)],
                    "models_more_droughts": int(sum(r[sc]["freq"] > r["hist_freq"] for r in out["models"].values())), "gross_change_pct": round(100 * (g1 / g0 - 1), 1)}
     out["q_star"] = q_star; out["n_models"] = len(MODELS)
     (ROOT / "clima.json").write_text(json.dumps(out, ensure_ascii=False))
