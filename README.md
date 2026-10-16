@@ -2,7 +2,7 @@
 
 **Reto 1 · Infiltración**, Grok Monterrey Build Day (14 oct 2026). Planteado por Antonio Hernández Ramírez (Pronatura Noreste).
 
-**Equipo:** Pablo César Ruíz Hernández · David Martin Oliva Zavala · Zaddkiel de Jesus Martinez Alor
+**Equipo:** Pablo César Ruíz Hernández · David Martin Oliva Zavala · Zaddkiel de Jesus Martinez Alor · **Urora** ([urora.mx](https://urora.mx))
 
 > *¿Dónde restaurar suelos en partes altas para favorecer la infiltración?*
 
@@ -470,6 +470,10 @@ web/
 - **Mejores datos:** DEM más fino (LiDAR de INEGI o dron) para el trazo, y edafología de INEGI para el suelo.
 
 ---
+
+## Sobre Urora
+
+Este proyecto fue elaborado por [Urora](https://urora.mx), empresa de tecnología, desarrollo de software e innovación digital. Urora desarrolló el análisis geoespacial con datos abiertos, los modelos de optimización y de flujo en redes, la aplicación web y el informe reproducible. Todo el código es abierto.
 
 ## Equipo
 

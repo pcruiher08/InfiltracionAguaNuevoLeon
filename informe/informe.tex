@@ -136,7 +136,7 @@
 \author[1,*]{M.Sc. Pablo César Ruíz Hernández}
 \author[1]{B.Sc. David Martin Oliva Zavala}
 \author[1]{Zaddkiel de Jesus Martinez Alor}
-\affil[1]{Monterrey, Nuevo León, México}
+\affil[1]{Urora (\href{https://urora.mx}{urora.mx}), Monterrey, Nuevo León, México}
 \affil[*]{Autor de correspondencia: \href{mailto:pablo@urora.mx}{pablo@urora.mx}}
 \date{15 de octubre de 2026}
 \renewcommand\Authfont{\Large\bfseries}
@@ -147,7 +147,7 @@
 \setlength{\affilsep}{0.8em}
 \hypersetup{pdftitle={¿Dónde restaurar suelos en las partes altas de las cuencas de Monterrey para favorecer la infiltración, y cuánta agua gana el abasto?},
   pdfauthor={M.Sc. Pablo César Ruíz Hernández, B.Sc. David Martin Oliva Zavala, Zaddkiel de Jesus Martinez Alor}, pdflang={es-MX},
-  pdfsubject={Reto 1 · Infiltración. Grok Monterrey Build Day, Pronatura Noreste}}
+  pdfsubject={Reto 1 · Infiltración. Grok Monterrey Build Day, Pronatura Noreste. Urora}}
 
 % ---------------------------------------------------------------- encabezado y pie
 \renewcommand{\sectionmark}[1]{\markboth{\thesection.\ #1}{\thesection.\ #1}}
@@ -180,15 +180,17 @@
 {\color{naranja}\rule{\linewidth}{1.2pt}}\par\vspace{0.6em}
 {\large\color{gris}INFORME TÉCNICO · AGUA Y RESTAURACIÓN DE CUENCAS}\par\vspace{0.4em}
 {\color{naranja}\rule{\linewidth}{0.4pt}}\par
-\vspace{4cm}
+\vspace{2.6cm}
 {\fontsize{22}{28}\selectfont\bfseries\color{naranja} \@title\par}
 \vspace{1em}
 {\Large Reto 1 · Infiltración, planteado por Pronatura Noreste en el Grok Monterrey Build Day\par}
 \vspace{1.2em}
 {\color{verde}\rule{3cm}{3pt}}\par
-\vspace{3cm}
+\vspace{2cm}
 {\@author\par}
 \vfill
+{\includegraphics[height=2.2cm]{figuras/urora.png}\par}
+\vspace{0.6em}
 {\large Monterrey, Nuevo León, México\par}
 \vspace{0.3em}
 {\large \@date\par}
@@ -1350,6 +1352,11 @@ donde $z_q$ es el cuantil $q$ de la distribución normal estándar. Con $\alpha=
 \addcontentsline{toc}{section}{Disponibilidad de datos y código}
 
 El código y una versión estática del mapa están en \url{https://github.com/pcruiher08/InflitracionAguaNuevoLeon} y \url{https://pcruiher08.github.io/InflitracionAguaNuevoLeon/}. La versión completa (pesos ajustables, análisis de cualquier sitio, optimización, barreras y simulación) corre localmente con Google Earth Engine. Los flujos máximos de costo mínimo se resuelven con Google OR-Tools, y el oráculo de la selección de barreras, con el algoritmo de Dinic implementado en Python.
+
+\section*{Sobre Urora}
+\addcontentsline{toc}{section}{Sobre Urora}
+
+Este informe fue elaborado por Urora (\url{https://urora.mx}), empresa de tecnología, desarrollo de software e innovación digital cuyo propósito es transformar ideas en soluciones tecnológicas. Para este reto, Urora desarrolló el análisis geoespacial con datos abiertos en Google Earth Engine, los modelos de optimización y de flujo en redes, la aplicación web que permite consultar la prioridad, optimizar la captación y trazar barreras en cualquier sitio, y este informe, que se genera de forma reproducible a partir de los datos. Todo el código es abierto.
 
 \section*{Equipo}
 \addcontentsline{toc}{section}{Equipo}
