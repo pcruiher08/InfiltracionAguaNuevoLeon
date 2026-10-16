@@ -140,7 +140,7 @@ def regional_maps():
                     ls=(0, (3, 2)), zorder=5)
     draw_catchments(ax, gj, labels=False)
     base_axes(ax, z, km=5)
-    fig.legend(handles=[Patch(color=SCOL["Acuífero Santa Catarina (pozos SADM)"], label="Celdas seleccionadas (Santa Catarina)"),
+    fig.legend(handles=[Patch(color=SCOL["Acuífero Santa Catarina (pozos SADM)"], label="Celdas seleccionadas (cuenca del río Santa Catarina)"),
                         Line2D([], [], color="#0a9055", ls=(0, (3, 2)), label="Áreas naturales protegidas (WDPA)")],
                loc="lower center", ncol=2, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.01))
     fig.tight_layout(rect=(0, 0.05, 1, 1))

@@ -86,7 +86,7 @@ def summary(body: WeightsIn):
 
 CATCHMENT_LABELS = {
     "la_boca": "Cuenca de La Boca", "cerro_prieto": "Cuenca de Cerro Prieto",
-    "santa_catarina": "Río Santa Catarina (recarga de pozos SADM)", "el_cuchillo": "Cuenca de El Cuchillo",
+    "santa_catarina": "Cuenca del río Santa Catarina (acuífero Campo Buenos Aires)", "el_cuchillo": "Cuenca de El Cuchillo",
 }
 
 

@@ -46,6 +46,17 @@ def burned_high():
     return round(ha.reduceRegion(ee.Reducer.sum(), layers.aoi(), 90, maxPixels=1e10, bestEffort=True).values().get(0).getInfo())
 
 
+def high_by_slope():
+    """High-priority hectares on 8–35° slopes (works apply) and on slopes above 35° (natural regeneration)."""
+    idx, cls = _uplands_classes()
+    slope = layers.raw().select("slope_deg")
+    ha = ee.Image.pixelArea().divide(1e4)
+    img = ee.Image.cat([ha.updateMask(cls.eq(3).And(slope.lte(35))).rename("obras"),
+                        ha.updateMask(cls.eq(3).And(slope.gt(35))).rename("regeneracion")])
+    r = img.reduceRegion(ee.Reducer.sum(), layers.aoi(), 90, maxPixels=1e10, bestEffort=True).getInfo()
+    return {k: round(v) for k, v in r.items()}
+
+
 def class_percentiles():
     """Median and 80th percentile of the index on slopes > 8°, to check the class thresholds."""
     idx, _ = _uplands_classes()
@@ -141,7 +152,7 @@ if __name__ == "__main__":
     layers.init()
     stats = {}
     for name, fn in [("ha_by_catchment", ha_by_catchment), ("criteria_by_class", criteria_by_class),
-                     ("robustness_hist", robustness_hist), ("burned_high", burned_high), ("class_percentiles", class_percentiles), ("water_curves", water_curves),
+                     ("robustness_hist", robustness_hist), ("burned_high", burned_high), ("high_by_slope", high_by_slope), ("class_percentiles", class_percentiles), ("water_curves", water_curves),
                      ("productivity_by_supply", productivity_by_supply),
                      ("barrier_budget_curves", barrier_budget_curves), ("storm_sites", storm_sites),
                      ("mcmf_vs_greedy", mcmf_vs_greedy)]:

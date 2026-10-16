@@ -68,7 +68,7 @@ Se calculan siete criterios en Google Earth Engine. Cada uno se normaliza a 0–
 | Incendios | Área quemada entre 2019 y 2026: 1 si fue en los últimos 3 años, 0.5 si antes | 0.10 |
 | Suelo seco | Humedad superficial SMAP en temporada seca | 0.10 |
 | Lluvia | Precipitación media anual (CHIRPS): más agua por captar | 0.10 |
-| **Conexión con abasto** | Según la ganancia neta esperada de su fuente: Santa Catarina 1.0, La Boca y Cerro Prieto 0.5 (la retención no añade volumen a las presas, pero reduce azolve y avenidas), resto de El Cuchillo 0.3 | 0.20 |
+| **Conexión con abasto** | Según la ganancia neta esperada de su fuente: río Santa Catarina 1.0, La Boca y Cerro Prieto 0.5 (la retención no añade volumen a las presas, pero reduce azolve y avenidas), resto de El Cuchillo 0.3 | 0.20 |
 
 - **Clases:** alta si el índice supera 0.55, media entre 0.45 y 0.55, baja por debajo. Los umbrales se calibraron con la distribución real en laderas de más de 8°: equivalen a la mediana (~p50) y a ~p80.
 - **Exclusiones:** zonas urbanas y cuerpos de agua (ESA WorldCover). El mapa muestra por defecto solo laderas de 8° o más.
@@ -129,7 +129,7 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
     - Fórmula: *lluvia media × coeficiente de escurrimiento × hectáreas elegibles × ρ*, donde ρ es la fracción del escurrimiento anual que retienen las barreras.
     - El coeficiente sube con la pendiente y con el suelo desnudo: más agua escurre y hay más que frenar.
     - ρ sale del modelo de flujo de costo mínimo de las barreras con capacidad, ponderado por la lluvia diaria de CHIRPS: 16 % donde llueven 420 mm, 13 % con 640 mm y 7.8 % con 1,190 mm (en sitios lluviosos más agua cae en tormentas grandes que desbordan las barreras).
-4. **Agua que llega al abasto:** el agua retenida se multiplica por la conectividad hidrológica *k* con la fuente (1.0 si drena directo a La Boca, Cerro Prieto o Santa Catarina; 0.6 en el resto de El Cuchillo). Cada celda se asigna a su fuente de abasto.
+4. **Agua que llega al abasto:** el agua retenida se multiplica por la conectividad hidrológica *k* con la fuente (1.0 si drena directo a La Boca, Cerro Prieto o el río Santa Catarina; 0.6 en el resto de El Cuchillo). Cada celda se asigna a su fuente de abasto.
 5. **Optimización:** dado un presupuesto de hectáreas, se eligen las celdas con más **m³ entregados por hectárea**. Es un programa lineal con una sola restricción de presupuesto; ordenar por rendimiento por hectárea es **óptimo** cuando las celdas se pueden tratar parcialmente. Hay dos modos:
     - **Máxima agua total:** el óptimo puro.
     - **Repartir entre fuentes:** el presupuesto se divide en partes iguales entre las 4 fuentes y se optimiza dentro de cada una.
@@ -139,7 +139,7 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 | Fuente | Máxima agua total | | Repartir entre fuentes | |
 |---|---|---|---|---|
 | Presa La Boca | 137 ha | 0.06 M m³ | 750 ha | 0.32 M m³ |
-| Acuífero Santa Catarina (pozos SADM) | 2,659 ha | 1.25 M m³ | 750 ha | 0.37 M m³ |
+| Cuenca del río Santa Catarina (acuífero Campo Buenos Aires) | 2,659 ha | 1.25 M m³ | 750 ha | 0.37 M m³ |
 | Presa Cerro Prieto | 204 ha | 0.09 M m³ | 750 ha | 0.34 M m³ |
 | Presa El Cuchillo | 0 ha | 0.00 M m³ | 750 ha | 0.24 M m³ |
 | **Total** | 3,000 ha | **1.41 M m³/año (44.6 L/s)** | 3,000 ha | **1.27 M m³/año (40.1 L/s)** |
@@ -151,12 +151,12 @@ Responde la pregunta de fondo: **¿dónde restaurar para que llegue más agua a 
 
 **Rendimientos decrecientes** (modo de máxima agua): 1,000 ha → 15 L/s · 3,000 ha → 45 L/s · 10,000 ha → 141 L/s · 20,000 ha → 273 L/s · 50,000 ha → 645 L/s.
 
-- **Santa Catarina rinde más por hectárea:** La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las barreras.
+- **La cuenca del río Santa Catarina rinde más por hectárea:** La Boca recibe más lluvia, pero buena parte cae en tormentas grandes que desbordan las barreras.
 - **El Cuchillo rinde menos:** su conectividad hidrológica *k* vale 0.6.
 - **Repartir cuesta poco:** cubrir las 4 fuentes da ~10 % menos agua total que el óptimo puro.
-- **Máxima ganancia neta** (nuevo modo en la app y en la versión estática): selecciona sólo celdas donde la fuente gana agua en promedio. Con 3,000 ha, todas en el Santa Catarina: 44 L/s brutos y **+3 L/s netos esperados**. Con los otros dos modos la ganancia neta es de +1 L/s (máxima agua) y −8 L/s (repartir entre fuentes), porque incluyen cuencas de presas.
+- **Máxima ganancia neta** (nuevo modo en la app y en la versión estática): selecciona sólo celdas donde la fuente gana agua en promedio. Con 3,000 ha, todas en la cuenca del río Santa Catarina: 44 L/s brutos y **+3 L/s netos esperados**. Con los otros dos modos la ganancia neta es de +1 L/s (máxima agua) y −8 L/s (repartir entre fuentes), porque incluyen cuencas de presas.
 
-> Los m³ son **agua retenida bruta**, una cota superior: suponen que toda el agua retenida llega a la fuente. El informe en PDF incluye un análisis probabilístico de su destino (evapotranspiración y escurrimiento que ya llegaba a las presas): la ganancia neta es probablemente positiva sólo en el acuífero del Santa Catarina (~67 %), y en las cuencas de las presas la retención probablemente reduce el volumen que llega al embalse.
+> Los m³ son **agua retenida bruta**, una cota superior: suponen que toda el agua retenida llega a la fuente. El informe en PDF incluye un análisis probabilístico de su destino (evapotranspiración y escurrimiento que ya llegaba a las presas): la ganancia neta es probablemente positiva sólo en el acuífero Campo Buenos Aires (~67 %), y en las cuencas de las presas la retención probablemente reduce el volumen que llega al embalse.
 
 ### 6. Optimizador de ubicación de barreras
 
@@ -172,8 +172,8 @@ Dentro de una ventana de ~1.2 km alrededor del sitio (`pipeline/barriers.py`):
 | Sitio | Presupuesto | Barreras | % de la ventana interceptado |
 |---|---|---|---|
 | Pilón (-100.05, 25.00) | 1,500 m | 37 | 60 % |
-| Santa Catarina (-100.45, 25.45) | 1,500 m | 37 | 61 % |
-| Santa Catarina (-100.45, 25.45) | 3,000 m | 74 | 77 % |
+| Río Santa Catarina (-100.45, 25.45) | 1,500 m | 37 | 61 % |
+| Río Santa Catarina (-100.45, 25.45) | 3,000 m | 74 | 77 % |
 
 Duplicar el presupuesto rinde cada vez menos (61 % → 77 %), que es el comportamiento esperado de una buena optimización: los primeros metros van a donde más se intercepta.
 
@@ -219,12 +219,12 @@ Las barreras no desvían el agua: la retienen unas horas para que se infiltre, y
 
 | Fuente | G medio | P(G > 0) | P(G > 0), supuestos optimistas |
 |---|---|---|---|
-| Acuífero Santa Catarina | +0.07 | 67 % | 99.7 % |
+| Río Santa Catarina (acuífero Campo Buenos Aires) | +0.07 | 67 % | 99.7 % |
 | La Boca | −0.30 | 5 % | 65 % |
 | Cerro Prieto | −0.35 | 4 % | 51 % |
 | El Cuchillo | −0.20 | 4 % | 58 % |
 
-En el Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en el Santa Catarina) dan en promedio **~26 L/s netos** (intervalo de 90 %: −61 a 126).
+En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en la cuenca del río Santa Catarina) dan en promedio **~26 L/s netos** (intervalo de 90 %: −61 a 126).
 
 ![Ganancia neta por m³ retenido](informe/figuras/g14_destino.png)
 
@@ -247,7 +247,7 @@ Fuentes y discusión completa en el informe (sección P10).
 
 ### 11. Calibración con el balance hídrico oficial
 
-El escurrimiento natural de la cuenca de Cerro Prieto según CONAGUA (cuencas Río Pablillo 1, Río Camacho y Río Pablillo 2) es de **166.5 mm/año** (coeficiente 0.25); el modelo da 223.9 mm. Con una actualización bayesiana por muestreo de importancia (`informe/calibracion.py`), el factor de escurrimiento baja a 0.82: el agua bruta y la neta bajan ~18 %, y la probabilidad de ganancia neta positiva no cambia (30,000 ha en el Santa Catarina: 20.8 L/s netos en promedio, P > 0 = 67 %).
+El escurrimiento natural de la cuenca de Cerro Prieto según CONAGUA (cuencas Río Pablillo 1, Río Camacho y Río Pablillo 2) es de **166.5 mm/año** (coeficiente 0.25); el modelo da 223.9 mm. Con una actualización bayesiana por muestreo de importancia (`informe/calibracion.py`), el factor de escurrimiento baja a 0.82: el agua bruta y la neta bajan ~18 %, y la probabilidad de ganancia neta positiva no cambia (30,000 ha en la cuenca del río Santa Catarina: 20.8 L/s netos en promedio, P > 0 = 67 %).
 
 ### 12. Azolve evitado en las presas (RUSLE)
 
@@ -276,7 +276,7 @@ Con los costos de este problema (−1 en los arcos de las barreras, 0 en los dem
 
 ### Condiciones para escalar
 
-Empezar con un **piloto en los 8 sitios del Santa Catarina** y escalar sólo si:
+Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y escalar sólo si:
 
 1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ).
 2. **La evidencia alcanza:** el intervalo de 90 % de la ganancia neta medida en campo queda por encima de cero (al menos 16 pares de microcuencas, dos o tres temporadas).
@@ -288,7 +288,7 @@ Empezar con un **piloto en los 8 sitios del Santa Catarina** y escalar sólo si:
 
 ### 16. Validación en campo
 
-El informe propone un diseño antes y después con control e impacto en los 8 sitios: microcuencas pareadas con vertedores (τ), perfiles de humedad del suelo y balance de cloruro (e) y piezómetros en el Santa Catarina (φ). Con CV = 0.5, α = 0.05 y potencia de 80 %, se necesitan ~16 pares para detectar una diferencia de 50 % y ~63 para una de 25 %.
+El informe propone un diseño antes y después con control e impacto en los 8 sitios: microcuencas pareadas con vertedores (τ), perfiles de humedad del suelo y balance de cloruro (e) y piezómetros en la cuenca del río Santa Catarina (φ). Con CV = 0.5, α = 0.05 y potencia de 80 %, se necesitan ~16 pares para detectar una diferencia de 50 % y ~63 para una de 25 %.
 
 El informe incluye además un **resumen ejecutivo de una página**.
 
@@ -314,7 +314,7 @@ Los 8 sitios sugeridos **no se eligen a mano**. Salen de la **optimización por 
 
 **Cómo leer la tabla:**
 
-- **Todos los sitios están en el Santa Catarina.** Ahí el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra es recarga nueva para el acuífero de los pozos de SADM. En las cuencas de las presas, retener escurrimiento en la ladera probablemente reduce el agua que llega al embalse (sección 9).
+- **Todos los sitios están en la cuenca del río Santa Catarina.** Ahí el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra es recarga nueva para el acuífero de los pozos de SADM. En las cuencas de las presas, retener escurrimiento en la ladera probablemente reduce el agua que llega al embalse (sección 9).
 - **Bruta frente a neta.** Cada hectárea retiene del orden de 400 a 500 m³/año (agua bruta), pero la ganancia neta esperada para el abasto es de ~30 m³/ha/año, con probabilidad de ser positiva de ~67 %.
 - **7 de los 8 sitios están en el Parque Nacional Cumbres de Monterrey.** La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
 - **El índice de prioridad mide otra cosa.** Algunos sitios óptimos tienen prioridad media o robustez baja: el índice pesa también degradación, incendios y suelo. **Las dos vistas se complementan.**
@@ -357,13 +357,13 @@ En cada sitio, el optimizador elige las barreras así:
 
 Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en laderas de 8° o más.
 
-1. **La prioridad se concentra en las laderas de la Sierra Madre, sobre todo en la cuenca del Santa Catarina.** Hay ~**79,500 ha de prioridad alta** (~61,100 ha en el Santa Catarina) y ~126,700 ha de prioridad media.
-2. **La conexión con el abasto pesa según la ganancia neta.** El Santa Catarina, donde la recarga es agua nueva para los pozos de SADM, puntúa 1.0; las cuencas de las presas, 0.5. ~**66,100 ha (83 %)** de la prioridad alta están en las cuencas de La Boca, Cerro Prieto o Santa Catarina.
+1. **La prioridad se concentra en las laderas de la Sierra Madre, sobre todo en la cuenca del río Santa Catarina.** Hay ~**79,500 ha de prioridad alta** (~74,400 ha entre 8° y 35°, aptas para obras, y ~5,200 ha de más de 35°, para regeneración natural) (~61,100 ha en la cuenca del río Santa Catarina) y ~126,700 ha de prioridad media.
+2. **La conexión con el abasto pesa según la ganancia neta.** La cuenca del río Santa Catarina, donde la recarga es agua nueva para los pozos de SADM, puntúa 1.0; las cuencas de las presas, 0.5. ~**66,100 ha (83 %)** de la prioridad alta están en las cuencas de La Boca, Cerro Prieto o el río Santa Catarina.
 3. **La prioridad es robusta.** ~**56,500 ha (71 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
 4. **Los incendios abren una ventana de acción.** ~**14,800 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
-5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero del Santa Catarina**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
+5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero Campo Buenos Aires**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
-    - Para maximizar agua: **Santa Catarina**, que además es donde la ganancia neta es más probable.
+    - Para maximizar agua: **la cuenca del río Santa Catarina**, que además es donde la ganancia neta es más probable.
     - Para cubrir todas las fuentes: repartir cuesta ~10 % del agua bruta, pero en ganancia neta el reparto es negativo (−8 L/s con 3,000 ha), porque asigna superficie a las cuencas de las presas.
 7. **Las laderas muy empinadas no son para obras.** Por encima de ~35–45° conviene la exclusión y la regeneración natural.
 8. **El trazo importa en tormentas frecuentes; en las grandes manda la capacidad.** Con 1,500 m de barreras se intercepta el escurrimiento de buena parte de una ventana de 1.2 km y los rendimientos decrecen, pero en tormentas de 40 mm, que ocurren casi cada año, todas las barreras se llenan y retienen sólo ~4 %: para retener más hay que agregar almacenamiento. Conviene repartir el presupuesto entre varios sitios en lugar de saturar uno.

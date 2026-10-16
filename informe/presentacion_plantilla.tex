@@ -35,6 +35,8 @@
   \hspace{1em}{\color{gris}\tiny Reto 1 · Infiltración · Grok Monterrey Build Day · P.\,C. Ruíz H., D.\,M. Oliva Z. y Z. de J. Martinez A.}\hfill
   {\color{gris}\tiny\insertframenumber\,/\,\inserttotalframenumber}\hspace{1em}\vspace{6pt}}
 \newcommand{\cifra}[2]{{\color{naranja}\fontsize{26}{28}\selectfont\bfseries #1}\\[2pt]{\small\color{gris}#2}}
+% smaller key figure for dense slides
+\newcommand{\cifrac}[2]{{\color{naranja}\fontsize{20}{22}\selectfont\bfseries #1}\\[1pt]{\footnotesize\color{gris}#2}\par\vspace{5pt}}
 \newcommand{\nota}[1]{\par\vspace{4pt}{\scriptsize\color{gris}#1}}
 \newcommand{\clave}[1]{\begin{beamercolorbox}[sep=6pt,rounded=false]{bloque}\small #1\end{beamercolorbox}}
 \setbeamercolor{bloque}{bg=crema,fg=tinta}
@@ -103,20 +105,16 @@
 \vspace{4pt}\clave{Datos abiertos (NASADEM, Sentinel-2, CHIRPS, MODIS, SMAP, HydroBASINS, INEGI, CONAGUA) y código reproducible; cada recomendación muestra sus reglas y datos.}
 \end{frame}
 
-\begin{frame}{Dónde: la prioridad se concentra en el Santa Catarina}
+\begin{frame}{Dónde restaurar: la cuenca del río Santa Catarina}
 \begin{columns}[T]
 \begin{column}{0.6\textwidth}
 \centering\includegraphics[width=\linewidth,height=0.72\textheight,keepaspectratio]{figuras/m1_cuencas.png}
 \end{column}
 \begin{column}{0.38\textwidth}
-\cifra{«alta» ha}{de prioridad alta en laderas de 8° o más}
-\vspace{0.3cm}
-
-\cifra{«sc_alta» ha}{en la cuenca del Santa Catarina}
-\vspace{0.3cm}
-
-\cifra{«robusta_pct»}{robustas: no dependen de cómo se ponderen los criterios}
-\nota{La conexión con el abasto se puntúa por la ganancia neta esperada de cada fuente: Santa Catarina 1, presas 0.5, resto de El Cuchillo 0.3.}
+\cifrac{«alta» ha}{de prioridad alta en laderas de 8° o más}
+\cifrac{«alta835» ha}{entre 8° y 35°, aptas para obras («alta35» ha de más de 35°, para regeneración natural)}
+\cifrac{«sc_alta» ha}{en la cuenca del río Santa Catarina}
+\cifrac{«robusta_pct»}{robustas: no dependen de cómo se ponderen los criterios}
 \end{column}
 \end{columns}
 \end{frame}
@@ -139,7 +137,7 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}{Sólo el Santa Catarina gana agua neta}
+\begin{frame}{Sólo la cuenca del río Santa Catarina gana agua neta}
 \begin{columns}[T]
 \begin{column}{0.47\textwidth}
 \centering\small
@@ -147,7 +145,7 @@
 \toprule
 Fuente & $G$ medio & P($G>0$) \\
 \midrule
-Santa Catarina (acuífero) & «g_sc» & «pg_sc» \\
+Río Santa Catarina & «g_sc» & «pg_sc» \\
 La Boca & «g_lb» & «pg_lb» \\
 Cerro Prieto & «g_cp» & «pg_cp» \\
 El Cuchillo & «g_ec» & «pg_ec» \\
@@ -156,7 +154,7 @@ El Cuchillo & «g_ec» & «pg_ec» \\
 \vspace{0.4cm}
 
 \begin{itemize}
-  \item En el Santa Catarina, el escurrimiento de tormenta cruza la ciudad y se pierde: infiltrarlo en la sierra es \textbf{recarga nueva} para los pozos de SADM.
+  \item En la cuenca del río Santa Catarina, el escurrimiento de tormenta cruza la ciudad y se pierde: infiltrarlo en la sierra es \textbf{recarga nueva} para el acuífero Campo Buenos Aires, del que extraen los pozos de SADM.
   \item En las presas, lo retenido ya llegaba al embalse: la retención \textbf{probablemente reduce} el agua que les llega.
 \end{itemize}
 \end{column}
@@ -232,8 +230,8 @@ El Cuchillo & «g_ec» & «pg_ec» \\
 \end{column}
 \begin{column}{0.48\textwidth}
 \begin{itemize}
-  \item Las celdas óptimas por ganancia neta están todas en el Santa Catarina; \textbf{«anp_cumbres3» de 3,000 ha} están en el Parque Nacional Cumbres de Monterrey: se requiere autorización de la CONANP.
-  \item Ocho sitios sugeridos por ganancia neta, todos en el Santa Catarina y siete dentro del Parque Nacional, separados al menos 3 km.
+  \item Las celdas óptimas por ganancia neta están todas en la cuenca del río Santa Catarina; \textbf{«anp_cumbres3» de 3,000 ha} están en el Parque Nacional Cumbres de Monterrey: se requiere autorización de la CONANP.
+  \item Ocho sitios sugeridos por ganancia neta, todos en la cuenca del río Santa Catarina y siete dentro del Parque Nacional, separados al menos 3 km.
   \item En tormentas grandes manda la \textbf{capacidad} de las obras: 1,500 m de barreras retienen «ret5» de una tormenta de 5 mm y sólo «ret40» de una de 40 mm.
 \end{itemize}
 \end{column}
@@ -277,7 +275,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \begin{frame}{Qué tan sólidos son los resultados}
 \begin{itemize}
   \item \textbf{Calibración:} contra el escurrimiento natural oficial de Cerro Prieto (CONAGUA), el modelo sobrestima el escurrimiento; calibrado, el agua bruta y la neta bajan alrededor de «cal_drop», sin cambiar la probabilidad de ganancia positiva.
-  \item \textbf{Acuífero:} la ganancia neta en el Santa Catarina es «aq_net_pct» de la recarga natural del acuífero Campo Buenos Aires: físicamente plausible.
+  \item \textbf{Acuífero:} la ganancia neta en la cuenca del río Santa Catarina es «aq_net_pct» de la recarga natural del acuífero Campo Buenos Aires: físicamente plausible.
   \item \textbf{Sequía:} con la lluvia de 2021 a 2022 se conserva «dr_pct» del agua bruta y «dr_overlap» de los sitios.
   \item \textbf{Clima 2041 a 2070:} la frecuencia de un año tan seco como 2021 a 2022 sería de «clima_f245» (SSP2-4.5) y «clima_f585» (SSP5-8.5), con mucha dispersión entre modelos.
   \item \textbf{Lo más incierto:} la evapotranspiración del agua infiltrada y la fracción del escurrimiento que ya llega a las presas. No están calibradas.
@@ -298,7 +296,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \end{column}
 \begin{column}{0.42\textwidth}
 \centering
-\cifra{Piloto}{en los ocho sitios del Santa Catarina, con mediciones de dos o tres temporadas}
+\cifra{Piloto}{en los ocho sitios de la cuenca del río Santa Catarina, con mediciones de dos o tres temporadas}
 \vspace{0.4cm}
 
 \cifra{Escalar}{sólo si $e$ medida $<e^\ast$ y el intervalo de $G$ queda por encima de cero}
@@ -308,7 +306,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 
 \begin{frame}{Recomendaciones}
 \begin{enumerate}
-  \item \textbf{Restaurar primero las laderas del Santa Catarina}, donde el abasto sí gana agua, con autorización de la CONANP dentro del Parque Nacional Cumbres de Monterrey.
+  \item \textbf{Restaurar primero las laderas de la cuenca del río Santa Catarina}, donde el abasto sí gana agua, con autorización de la CONANP dentro del Parque Nacional Cumbres de Monterrey.
   \item \textbf{En las cuencas de las presas}, restaurar por el suelo, la vegetación y la vida útil de los embalses, sin esperar más agua.
   \item \textbf{Acompañar cada obra} sólo con especies nativas de su tipo de vegetación, de procedencia local y a densidad moderada.
   \item \textbf{Medir antes de escalar:} microcuencas pareadas con vertedores, humedad del suelo y piezómetros en los ocho sitios (unos 16 pares para detectar una diferencia de 50\%), más pares en Cerro Prieto.

@@ -3,6 +3,7 @@
   const { map, post } = window.app;
   const COLORS = { "Presa La Boca":"#2a78d6", "Acuífero Santa Catarina (pozos SADM)":"#eb6834",
                    "Presa Cerro Prieto":"#1baf7a", "Presa El Cuchillo":"#eda100" };
+  const LABEL = k => k === "Acuífero Santa Catarina (pozos SADM)" ? "Cuenca del río Santa Catarina (acuífero Campo Buenos Aires)" : k;
   const fmt = n => Math.round(n).toLocaleString("es-MX");
   const panel = document.getElementById("optimize-panel");
   let group = null, mode = "max";
@@ -48,7 +49,7 @@
       style: f => ({ color:"#ffffff", weight:1, fillColor:COLORS[f.properties.supply_name] || "#6b675f", fillOpacity:.7 }),
       onEachFeature: (f, l) => {
         const p = f.properties;
-        l.bindTooltip(`#${p.rank} · ${p.supply_name}<br>${fmt(p.treated_ha)} ha · ~${fmt(p.delivered_m3)} m³/año brutos · ${p.net_m3 >= 0 ? "+" : ""}${fmt(p.net_m3)} m³/año netos<br>lluvia ${p.rain_mm} mm · C ${p.c}`);
+        l.bindTooltip(`#${p.rank} · ${LABEL(p.supply_name)}<br>${fmt(p.treated_ha)} ha · ~${fmt(p.delivered_m3)} m³/año brutos · ${p.net_m3 >= 0 ? "+" : ""}${fmt(p.net_m3)} m³/año netos<br>lluvia ${p.rain_mm} mm · C ${p.c}`);
         l.on("click", ev => { L.DomEvent.stopPropagation(ev); map.fire("click", { latlng:L.latLng(p.lat, p.lon) }); });
       },
     }).addTo(map);
@@ -60,7 +61,7 @@
   function summarize(r) {
     const t = r.totals;
     const rows = Object.entries(r.by_supply).sort((a, b) => b[1].m3 - a[1].m3).map(([k, v]) =>
-      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]}"></span>${k}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³ brutos · neta ${v.net_m3 >= 0 ? "+" : ""}${(v.net_m3 / 1e6).toFixed(2)} (P>0 ${Math.round(v.p_pos)}%)</b></div>`).join("");
+      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]}"></span>${LABEL(k)}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³ brutos · neta ${v.net_m3 >= 0 ? "+" : ""}${(v.net_m3 / 1e6).toFixed(2)} (P>0 ${Math.round(v.p_pos)}%)</b></div>`).join("");
     const curve = r.curve.map(c => `${fmt(c.ha)} ha → ${fmt(c.ls)} L/s`).join(" · ");
     const im = r.impact, d = r.drought, tg = r.target;
     const targetLine = tg ? `<div style="margin-top:10px;padding:8px;border-radius:6px;background:color-mix(in srgb, var(--accent) 12%, transparent)">

@@ -70,7 +70,7 @@
   <div id="opt"></div>
 
   <h2>Sitios sugeridos</h2>
-  <div class="muted">Las 8 mejores celdas según la optimización por ganancia neta (separadas al menos 3 km), todas en la cuenca del Santa Catarina, con barreras ya optimizadas (1,500 m lineales). Haz clic en uno.</div>
+  <div class="muted">Las 8 mejores celdas según la optimización por ganancia neta (separadas al menos 3 km), todas en la cuenca del río Santa Catarina, con barreras ya optimizadas (1,500 m lineales). Haz clic en uno.</div>
   <div id="sites"></div>
   <div id="bar"></div>
   <div id="ficha"></div>
@@ -99,7 +99,7 @@ legend.onAdd = () => {
     <div><span class="sw" style="background:#2a78d6"></span>Media</div>
     <div><span class="sw" style="background:#a8401a"></span>Robusta (≥ 50%)</div>
     <b style="margin-top:6px">Celdas óptimas (ganancia neta)</b>
-    <div><span class="sw" style="background:#eb6834"></span>Santa Catarina (pozos SADM)</div>
+    <div><span class="sw" style="background:#eb6834"></span>Cuenca del río Santa Catarina</div>
     <div><span class="sw" style="border:2px dashed #0a9055;background:transparent"></span>Área natural protegida</div>
     <b style="margin-top:6px">Barreras</b>
     <div><span class="ln" style="border-color:#1d1b18"></span>Barrera en curva de nivel</div>
@@ -110,6 +110,7 @@ legend.onAdd = () => {
 legend.addTo(map);
 
 let pri, rob, cat, opt, anp, barGroup;
+const LABEL = k => k === "Acuífero Santa Catarina (pozos SADM)" ? "Cuenca del río Santa Catarina (acuífero Campo Buenos Aires)" : k;
 const COLORS = { "Presa La Boca":"#2a78d6", "Acuífero Santa Catarina (pozos SADM)":"#eb6834",
                  "Presa Cerro Prieto":"#1baf7a", "Presa El Cuchillo":"#eda100" };
 const toggle = (id, layer) => document.getElementById(id).onchange = e =>
@@ -142,7 +143,7 @@ let o;
   const cells = await (await fetch("data/cells.geojson")).json();
   opt = L.geoJSON(cells, {
     style: f => ({ color:"#ffffff", weight:1, fillColor:COLORS[f.properties.supply_name], fillOpacity:.75 }),
-    onEachFeature: (f, l) => l.bindTooltip(`#${f.properties.rank} · ${f.properties.supply_name}<br>${fmt(f.properties.treated_ha)} ha · ~${fmt(f.properties.delivered_m3)} m³/año brutos · +${fmt(f.properties.net_m3)} m³/año netos`),
+    onEachFeature: (f, l) => l.bindTooltip(`#${f.properties.rank} · ${LABEL(f.properties.supply_name)}<br>${fmt(f.properties.treated_ha)} ha · ~${fmt(f.properties.delivered_m3)} m³/año brutos · +${fmt(f.properties.net_m3)} m³/año netos`),
   }).addTo(map);
   toggle("l-opt", () => opt);
   const anpGj = await (await fetch("data/anp.geojson")).json();
@@ -155,7 +156,7 @@ let o;
   const renderOpt = mode => {
     const r = o[mode];
     const rows = Object.entries(r.by_supply).sort((a, b) => b[1].m3 - a[1].m3).map(([k, v]) =>
-      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]};width:12px;height:12px"></span>${k}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³ brutos · neta ${v.net_m3 >= 0 ? "+" : ""}${(v.net_m3 / 1e6).toFixed(2)}</b></div>`).join("");
+      `<div class="stat"><span><span class="sw" style="background:${COLORS[k]};width:12px;height:12px"></span>${LABEL(k)}</span><b>${fmt(v.ha)} ha · ${(v.m3 / 1e6).toFixed(2)} M m³ brutos · neta ${v.net_m3 >= 0 ? "+" : ""}${(v.net_m3 / 1e6).toFixed(2)}</b></div>`).join("");
     optBox.innerHTML = `<div class="seg"><button data-m="max" class="${mode === "max" ? "on" : ""}">Máxima agua total</button>
       <button data-m="balanced" class="${mode === "balanced" ? "on" : ""}">Repartir entre fuentes</button>
       <button data-m="net" class="${mode === "net" ? "on" : ""}">Máxima ganancia neta</button></div>
@@ -173,7 +174,7 @@ let o;
     const el = document.createElement("div");
     el.className = "site";
     const t = st.barriers.totals;
-    el.innerHTML = `<b>${i + 1}.</b> <span class="sw" style="background:${COLORS[st.why.supply]};width:10px;height:10px"></span>${st.why.supply}<br>
+    el.innerHTML = `<b>${i + 1}.</b> <span class="sw" style="background:${COLORS[st.why.supply]};width:10px;height:10px"></span>${LABEL(st.why.supply)}<br>
       <span class="muted">${st.recommendation.obra} · +${fmt(st.why.net_m3_per_ha)} m³/ha/año netos · ${t.n_barriers} barreras${st.why.park ? ` · ${st.why.park}` : ""}</span>`;
     el.onclick = () => show(st, el);
     list.appendChild(el);
@@ -207,14 +208,14 @@ function show(st, el) {
   const rob = Math.round(100 * (w.robustness || 0));
   document.getElementById("bar").innerHTML = `
     <h2>¿Por qué este sitio?</h2>
-    <div class="stat"><span>Fuente de abasto</span><b>${w.supply}</b></div>
+    <div class="stat"><span>Fuente de abasto</span><b>${LABEL(w.supply)}</b></div>
     <div class="stat"><span>Lugar en la optimización por ganancia neta</span><b>#${w.opt_rank} de ${fmt(o.net.totals.candidates)} celdas</b></div>
     <div class="stat"><span>Agua bruta retenida</span><b>~${fmt(w.m3_per_ha)} m³/ha/año</b></div>
     <div class="stat"><span>Ganancia neta esperada · P(ganancia > 0)</span><b>+${fmt(w.net_m3_per_ha)} m³/ha/año · ${Math.round(w.p_pos)}%</b></div>
     <div class="stat"><span>Área protegida</span><b>${w.park || "ninguna"}</b></div>
     <div class="stat"><span>Lluvia · coef. de escurrimiento</span><b>${w.rain_mm} mm · ${w.c}</b></div>
     <div class="stat"><span>Prioridad · robustez</span><b>${st.stats.priority.toFixed(2)} · ${rob}%</b></div>
-    <div class="note">Elegido por la optimización por ganancia neta: es de las celdas donde el abasto más gana agua por hectárea restaurada. En la cuenca del Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra recarga el acuífero de los pozos de SADM.${w.park === "Cumbres de Monterrey" ? " Está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP." : ""}</div>`
+    <div class="note">Elegido por la optimización por ganancia neta: es de las celdas donde el abasto más gana agua por hectárea restaurada. En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra recarga el acuífero Campo Buenos Aires, del que extraen los pozos de SADM.${w.park === "Cumbres de Monterrey" ? " Está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP." : ""}</div>`
     + `
     <h2>Barreras optimizadas</h2>
     <div class="stat"><span>Barreras en curva de nivel</span><b>${t.n_barriers} · ${fmt(t.length_m)} m</b></div>

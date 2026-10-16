@@ -15,7 +15,7 @@ MA = json.loads((ROOT / "math.json").read_text())
 AB = json.loads((ROOT / "abasto.json").read_text())
 DE = json.loads((ROOT / "destino.json").read_text())
 
-SHORT = {"Presa La Boca": "La Boca", "Acuífero Santa Catarina (pozos SADM)": "Santa Catarina",
+SHORT = {"Presa La Boca": "La Boca", "Acuífero Santa Catarina (pozos SADM)": "Río Santa Catarina",
          "Presa Cerro Prieto": "Cerro Prieto", "Presa El Cuchillo": "El Cuchillo"}
 ORDER = ["Presa La Boca", "Acuífero Santa Catarina (pozos SADM)", "Presa Cerro Prieto", "Presa El Cuchillo"]
 
@@ -79,11 +79,11 @@ for i, s in enumerate(SITES, 1):
 opt_rows = []
 for k in ORDER:
     a = mx["by_supply"].get(k, {"ha": 0, "m3": 0}); b = bal["by_supply"].get(k, {"ha": 0, "m3": 0})
-    opt_rows.append(f"{k.replace(' (pozos SADM)', '')} & {n(a['ha'])} & {n(ls(a['m3']), 1)} & {n(b['ha'])} & {n(ls(b['m3']), 1)} \\\\")
+    opt_rows.append(f"{k.replace('Acuífero Santa Catarina (pozos SADM)', 'Cuenca del río Santa Catarina (acuífero Campo Buenos Aires)')} & {n(a['ha'])} & {n(ls(a['m3']), 1)} & {n(b['ha'])} & {n(ls(b['m3']), 1)} \\\\")
 
 V = {
     "alta": n(alta), "media": n(media), "robusta": n(robusta), "robusta_pct": pct(100 * robusta / alta),
-    "directa": n(directa), "directa_pct": pct(100 * directa / alta), "quemada": n(S["burned_high"]),
+    "directa": n(directa), "directa_pct": pct(100 * directa / alta), "quemada": n(S["burned_high"]), "alta835": n(S["high_by_slope"]["obras"]), "alta35": n(S["high_by_slope"]["regeneracion"]),
     "p50": f"{S['class_percentiles']['priority_p50']:.2f}", "p80": f"{S['class_percentiles']['priority_p80']:.2f}",
     "sc_alta": n(hc["Acuífero Santa Catarina (pozos SADM)"]["alta"]), "lb_alta": n(hc["Presa La Boca"]["alta"]),
     "c_veg_a": f"{crit['alta']['vegetation']:.2f}", "c_veg_b": f"{crit['baja']['vegetation']:.2f}",

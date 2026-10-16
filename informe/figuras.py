@@ -28,7 +28,7 @@ plt.rcParams.update({
 })
 ALTA, MEDIA, BAJA = "#0d366b", "#2a78d6", "#86b6ef"
 SUP = ["Presa La Boca", "Acuífero Santa Catarina (pozos SADM)", "Presa Cerro Prieto", "Presa El Cuchillo"]
-SHORT = dict(zip(SUP, ["La Boca", "Santa Catarina", "Cerro Prieto", "El Cuchillo"]))
+SHORT = dict(zip(SUP, ["La Boca", "Río Santa Catarina", "Cerro Prieto", "El Cuchillo"]))
 SCOL = dict(zip(SUP, ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]))
 CRIT = {"slope": "Pendiente", "vegetation": "Vegetación degradada", "soil": "Suelo permeable", "fire": "Incendios",
         "moisture": "Suelo seco", "rain": "Lluvia", "connectivity": "Conexión con abasto"}

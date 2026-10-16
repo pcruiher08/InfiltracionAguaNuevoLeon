@@ -55,7 +55,7 @@
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const fmt = n => Math.round(n).toLocaleString("es-MX");
 const SUP = ["Presa La Boca", "Acuífero Santa Catarina (pozos SADM)", "Presa Cerro Prieto", "Presa El Cuchillo"];
-const SHORT = { "Presa La Boca":"La Boca", "Acuífero Santa Catarina (pozos SADM)":"Santa Catarina", "Presa Cerro Prieto":"Cerro Prieto", "Presa El Cuchillo":"El Cuchillo" };
+const SHORT = { "Presa La Boca":"La Boca", "Acuífero Santa Catarina (pozos SADM)":"Río Santa Catarina", "Presa Cerro Prieto":"Cerro Prieto", "Presa El Cuchillo":"El Cuchillo" };
 const SCOL = { "Presa La Boca":"--s1", "Acuífero Santa Catarina (pozos SADM)":"--s2", "Presa Cerro Prieto":"--s3", "Presa El Cuchillo":"--s4" };
 const CRIT = { slope:"Pendiente", vegetation:"Vegetación degradada", soil:"Suelo permeable", fire:"Incendios",
                moisture:"Suelo seco", rain:"Lluvia", connectivity:"Conexión con abasto" };
@@ -139,7 +139,7 @@ function lineChart(c, series, { xMax, yMax, xLabel, yLabel, xFmt = fmt, yFmt = f
   // 1 · hectares by catchment, stacked alta + media
   {
     const c = card("Hectáreas prioritarias por cuenca de abasto",
-      "Santa Catarina concentra la mayor superficie de prioridad alta; El Cuchillo es grande pero con más prioridad media y baja.");
+      "La cuenca del río Santa Catarina concentra la mayor superficie de prioridad alta; El Cuchillo es grande pero con más prioridad media y baja.");
     legend(c, [["Alta", css("--alta")], ["Media", css("--media")]]);
     const W = 560, rowH = 26, gap = 14, m = { l: 112, r: 70, t: 4 }, H = m.t + SUP.length * (rowH + gap);
     const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, c);
