@@ -346,7 +346,8 @@ V.update({"et_rows": "\n".join(et_rows), "et_net_rows": "\n".join(et_net_rows), 
           "bk_e": pct(100 * BK["e"][1]), "bk_e_lo": pct(100 * BK["e"][0], 1), "bk_e_hi": pct(100 * BK["e"][2]),
           "et_g0": f"{f_sc['mean']:.2f}", "et_g1": f"{EN['g_mean']:.2f}", "et_p1": pct(EN["p_pos"]), "et_pk": pct(EN["karst_p_pos"]),
           "et_w0": n(w_prior), "et_w1": n(EN["net_ls_30000"]), "et_cost": n(EN["mxn_per_net_ls"] / 1e6, 1),
-          "et_comp": pct(EN["p_competitive"]["25000"], 1)})
+          "et_comp": pct(EN["p_competitive"]["25000"], 1),
+          "et_w1_3": n(SEL["neta_3000"]["net_mean"] * EN["g_mean"] / f_sc["mean"], 1)})
 
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():

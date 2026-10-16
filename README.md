@@ -224,7 +224,7 @@ Las barreras no desvían el agua: la retienen unas horas para que se infiltre, y
 | Cerro Prieto | −0.35 | 4 % | 51 % |
 | El Cuchillo | −0.20 | 4 % | 58 % |
 
-En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en la cuenca del río Santa Catarina) dan en promedio **~26 L/s netos** (intervalo de 90 %: −61 a 126).
+En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en la cuenca del río Santa Catarina) dan en promedio **~26 L/s netos** (intervalo de 90 %: −61 a 126) con supuestos conservadores. Con la evapotranspiración que estima un balance diario del suelo detrás de las barreras (~7 %, sección «Evapotranspiración del agua infiltrada»), serían **~156 L/s**, positivos con probabilidad cercana a 100 %.
 
 ![Ganancia neta por m³ retenido](informe/figuras/g14_destino.png)
 
@@ -278,7 +278,7 @@ Con los costos de este problema (−1 en los arcos de las barreras, 0 en los dem
 
 Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y escalar sólo si:
 
-1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ).
+1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ). El balance del suelo estima *e* ≈ 7 %, por debajo de todos los umbrales: si se confirma, la decisión depende sobre todo de φ y τ.
 2. **La evidencia alcanza:** el intervalo de 90 % de la ganancia neta medida en campo queda por encima de cero (al menos 16 pares de microcuencas, dos o tres temporadas).
 3. **El agua llega y las obras duran:** trazadores que confirmen que el agua infiltrada llega al acuífero Campo Buenos Aires y limpieza periódica del sedimento.
 4. **No se justifica como agua barata:** igualar el costo por L/s de El Cuchillo II exigiría una ganancia neta de 0.66 a 1.32 m³ por m³ retenido; el máximo plausible es 0.53. El escalamiento se justifica por el suelo, los embalses, las avenidas y la biodiversidad.
@@ -298,7 +298,7 @@ Si se confirma, la ganancia neta con 30,000 ha en la cuenca del río Santa Catar
 
 ### Limitación principal
 
-No se sabe **a dónde va el agua infiltrada**. Con los supuestos base, la evapotranspiración del agua infiltrada explica ~47 % de la incertidumbre de la ganancia neta en la cuenca del río Santa Catarina, el escurrimiento que ya llegaba al acuífero ~38 % y la ruta subterránea al acuífero ~14 %. Si el karst desvía agua por fallas, la ruta subterránea pasa a dominar (~38 %) y puede volver negativa la ganancia; además es la más difícil de medir (trazadores). El azolve de las barreras le sigue, pero se resuelve con limpieza periódica. Lo demás son limitaciones de resolución y calibración.
+No se sabe **a dónde va el agua infiltrada**. Con los supuestos base, la evapotranspiración del agua infiltrada explica ~47 % de la incertidumbre de la ganancia neta en la cuenca del río Santa Catarina, el escurrimiento que ya llegaba al acuífero ~38 % y la ruta subterránea al acuífero ~14 %. Si el karst desvía agua por fallas, la ruta subterránea pasa a dominar (~38 %) y puede volver negativa la ganancia. Si la evapotranspiración es tan baja como estima el balance del suelo, su peso disminuye y la ruta subterránea y el escurrimiento que ya llegaba pasan a ser lo principal; además es la más difícil de medir (trazadores). El azolve de las barreras le sigue, pero se resuelve con limpieza periódica. Lo demás son limitaciones de resolución y calibración.
 
 ### Karst y azolve de las barreras (sensibilidad)
 
@@ -340,7 +340,7 @@ Los 8 sitios sugeridos **no se eligen a mano**. Salen de la **optimización por 
 **Cómo leer la tabla:**
 
 - **Todos los sitios están en la cuenca del río Santa Catarina.** Ahí el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra es recarga nueva para el acuífero de los pozos de SADM. En las cuencas de las presas, retener escurrimiento en la ladera probablemente reduce el agua que llega al embalse (sección 9).
-- **Bruta frente a neta.** Cada hectárea retiene del orden de 400 a 500 m³/año (agua bruta), pero la ganancia neta esperada para el abasto es de ~30 m³/ha/año, con probabilidad de ser positiva de ~67 %.
+- **Bruta frente a neta.** Cada hectárea retiene del orden de 400 a 500 m³/año (agua bruta), pero la ganancia neta esperada para el abasto es de ~30 m³/ha/año con supuestos conservadores (probabilidad de ser positiva ~67 %), o de ~165 m³/ha/año con la evapotranspiración del balance del suelo.
 - **7 de los 8 sitios están en el Parque Nacional Cumbres de Monterrey.** La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
 - **El índice de prioridad mide otra cosa.** Algunos sitios óptimos tienen prioridad media o robustez baja: el índice pesa también degradación, incendios y suelo. **Las dos vistas se complementan.**
 
@@ -386,7 +386,7 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 2. **La conexión con el abasto pesa según la ganancia neta.** La cuenca del río Santa Catarina, donde la recarga es agua nueva para los pozos de SADM, puntúa 1.0; las cuencas de las presas, 0.5. ~**66,100 ha (83 %)** de la prioridad alta están en las cuencas de La Boca, Cerro Prieto o el río Santa Catarina.
 3. **La prioridad es robusta.** ~**56,500 ha (71 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
 4. **Los incendios abren una ventana de acción.** ~**14,800 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
-5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero Campo Buenos Aires**; en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
+5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero Campo Buenos Aires** (~26 L/s con 30,000 ha y supuestos conservadores; ~156 L/s si se confirma en campo la baja evapotranspiración del agua concentrada detrás de las barreras); en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
     - Para maximizar agua: **la cuenca del río Santa Catarina**, que además es donde la ganancia neta es más probable.
     - Para cubrir todas las fuentes: repartir cuesta ~10 % del agua bruta, pero en ganancia neta el reparto es negativo (−8 L/s con 3,000 ha), porque asigna superficie a las cuencas de las presas.

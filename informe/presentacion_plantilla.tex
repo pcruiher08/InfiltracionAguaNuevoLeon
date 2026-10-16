@@ -160,7 +160,7 @@ El Cuchillo & «g_ec» & «pg_ec» \\
 \end{column}
 \begin{column}{0.47\textwidth}
 \centering\includegraphics[width=\linewidth]{figuras/g15_neto.png}
-\nota{30,000 ha seleccionadas por ganancia neta: unos «n30n_mean» L/s netos en promedio, con probabilidad «n30n_pp» de ser positivos.}
+\nota{30,000 ha seleccionadas por ganancia neta: unos «n30n_mean» L/s netos con supuestos conservadores (probabilidad «n30n_pp» de ser positivos); unos «et_w1» L/s con la evapotranspiración del balance del suelo (probabilidad «et_p1»).}
 \end{column}
 \end{columns}
 \end{frame}
@@ -297,13 +297,13 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \end{frame}
 
 \begin{frame}{Qué tan sólidos son los resultados}
-\small
+\footnotesize
 \begin{itemize}
   \item \textbf{Calibración:} contra el escurrimiento natural oficial de Cerro Prieto (CONAGUA), el modelo sobrestima el escurrimiento; calibrado, el agua bruta y la neta bajan alrededor de «cal_drop», sin cambiar la probabilidad de ganancia positiva.
   \item \textbf{Acuífero:} la ganancia neta en la cuenca del río Santa Catarina es «aq_net_pct» de la recarga natural del acuífero Campo Buenos Aires: físicamente plausible.
   \item \textbf{Sequía:} con la lluvia de 2021 a 2022 se conserva «dr_pct» del agua bruta y «dr_overlap» de los sitios.
   \item \textbf{Clima 2041 a 2070:} la frecuencia de un año tan seco como 2021 a 2022 sería de «clima_f245» (SSP2-4.5) y «clima_f585» (SSP5-8.5), con mucha dispersión entre modelos.
-  \item \textbf{Karst:} si parte del agua infiltrada sale por fallas a otras cuencas, la probabilidad de ganancia neta baja de «ks_base_p» a «ks_mod_p» (pérdida moderada).
+  \item \textbf{Karst:} si parte del agua infiltrada sale por fallas a otras cuencas, la probabilidad de ganancia neta baja de «ks_base_p» a «ks_mod_p» con pérdida moderada («et_pk» con la evapotranspiración del balance del suelo).
   \item \textbf{Azolve de las barreras:} sin limpieza, el sedimento llena su almacenamiento en meses o pocos años y la ganancia neta bajaría de «vu_net0» a «vu_net1» L/s.
   \item \textbf{Limitación principal: a dónde va el agua infiltrada.} La evapotranspiración explica «lim_e_b» de la incertidumbre de la ganancia neta y el escurrimiento que ya llegaba «lim_t_b»; si el karst desvía agua, la ruta subterránea pasa a «lim_p_k» y es la más difícil de medir (trazadores). Los trazos de barreras son conceptuales (DEM de 30 m).
 \end{itemize}
@@ -312,9 +312,9 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \begin{frame}{Condiciones para escalar}
 \begin{columns}[T]
 \begin{column}{0.55\textwidth}
-\small
+\footnotesize
 \begin{enumerate}
-  \item \textbf{Que el acuífero gane agua:} $G=(1-e)\phi-\tau>0$, es decir, evapotranspiración $e<1-\tau/\phi$ (umbral de 0.20 a 0.89 según $\phi$ y $\tau$).
+  \item \textbf{Que el acuífero gane agua:} $G=(1-e)\phi-\tau>0$, es decir, evapotranspiración $e<1-\tau/\phi$ (umbral de 0.20 a 0.89 según $\phi$ y $\tau$; el balance del suelo estima $e\approx$ «bk_e»).
   \item \textbf{Que la evidencia alcance:} intervalo de 90\% de $G$ medido en campo por encima de cero, con al menos 16 pares de microcuencas.
   \item \textbf{No como agua barata:} competir con El Cuchillo II exigiría $G\ge$ «esc_g25» a «esc_g50»; el máximo plausible es «esc_gmax».
   \item \textbf{Presas:} escalar sólo por el suelo y el azolve.
