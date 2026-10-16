@@ -357,6 +357,17 @@ V.update({"cc_bar": n(ret("barreras")), "cc_dam": n(ret("presas")), "cc_mcmf": n
           "sed30_50_10": n(SE["selections"]["sedimento_30000"]["m3_50yr"][1] * 0.1 / 1e6, 1),
           "sed3_50_10": n(SE["selections"]["sedimento_3000"]["m3_50yr"][1] * 0.1 / 1e6, 1)})
 
+# ---------------------------------------------------------------- reviewer round 2: thresholds, simulation duration, ranges
+_hc = S["ha_by_catchment"]; _a = sum(v["alta"] for v in _hc.values()); _m = sum(v["media"] for v in _hc.values()); _b = sum(v["baja"] for v in _hc.values())
+_t = _a + _m + _b
+import importlib.util as _iu, sys as _sys
+_sys.path.insert(0, str(ROOT.parent))
+from pipeline import simulate as _SIM  # noqa: E402
+V.update({"alta_pct": pct(100 * _a / _t), "tau1_pct": f"{100 * _b / _t:.0f}", "tau2_pct": f"{100 * (_b + _m) / _t:.0f}",
+          "cc_ndams": n(CC["n_dams"]), "sim_steps": n(_SIM.STEPS), "sim_h": n(_SIM.STEPS * 2.4 / 60), "sim_rain": n(_SIM.RAIN_STEPS),
+          "sim_rain_min": n(_SIM.RAIN_STEPS * 2.4), "if_w_3": n(SEL["neta_3000"]["net_mean"] * EN["interflow_g_mean"] / f_sc["mean"], 1),
+          "if_e_pct": pct(100 * EN["interflow_e"]), "if_cost": n(37_500 * 30_000 / EN["interflow_net_ls_30000"] / 1e6, 1)})
+
 BODY = (ROOT / "cuerpo.tex").read_text()
 for k, v in V.items():
     BODY = BODY.replace(f"«{k}»", v)

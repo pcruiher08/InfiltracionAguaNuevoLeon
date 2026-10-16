@@ -171,7 +171,7 @@ El Cuchillo & «g_ec» & «pg_ec» \\
 \end{column}
 \begin{column}{0.47\textwidth}
 \centering\includegraphics[width=\linewidth]{figuras/g15_neto.png}
-\nota{30,000 ha seleccionadas por ganancia neta: unos «n30n_mean» L/s netos con supuestos conservadores (probabilidad «n30n_pp» de ser positivos); unos «et_w1» L/s con la evapotranspiración del balance del suelo (probabilidad «et_p1»).}
+\nota{30,000 ha seleccionadas por ganancia neta: unos «n30n_mean» L/s netos con supuestos conservadores (probabilidad «n30n_pp» de ser positivos); de «if_w» a «et_w1» L/s con la evapotranspiración del balance del suelo, según el flujo subsuperficial (probabilidad «if_p» a «et_p1»).}
 \end{column}
 \end{columns}
 \end{frame}
@@ -326,7 +326,7 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \begin{column}{0.55\textwidth}
 \footnotesize
 \begin{enumerate}
-  \item \textbf{Que el acuífero gane agua:} $G=(1-e)\phi-\tau>0$, es decir, evapotranspiración $e<1-\tau/\phi$ (umbral de 0.20 a 0.89 según $\phi$ y $\tau$; el balance del suelo estima $e\approx$ «bk_e»).
+  \item \textbf{Que el acuífero gane agua:} $G=(1-e)\phi-\tau>0$, es decir, evapotranspiración $e<1-\tau/\phi$ (umbral de 0.20 a 0.89 según $\phi$ y $\tau$; el balance del suelo estima $e$ de «bk_e» a «if_e_pct»).
   \item \textbf{Que la evidencia alcance:} intervalo de 90\% de $G$ medido en campo por encima de cero, con al menos 16 pares de microcuencas.
   \item \textbf{No como agua barata:} competir con El Cuchillo II exigiría $G\ge$ «esc_g25» a «esc_g50»; el máximo plausible es «esc_gmax».
   \item \textbf{Presas:} escalar sólo por el suelo y el azolve.

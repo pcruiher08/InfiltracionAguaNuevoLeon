@@ -29,6 +29,7 @@ if [[ "${1:-}" != "--pdf" ]]; then
 fi
 $PY informe/figuras.py
 $PY informe/mapas.py
+$PY informe/aplanar.py                  # flatten PNGs (no alpha) for PDF viewers
 $PY informe/generar.py
 (cd informe && tectonic informe.tex && tectonic presentacion.tex)
 cp informe/informe.pdf docs/infiltracion-zmm.pdf

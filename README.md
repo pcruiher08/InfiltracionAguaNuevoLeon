@@ -94,7 +94,7 @@ Las tres cifras de resultados describen **lo mismo**: cuánto ganaría un terren
 
 | Clase | Regla | Superficie | Qué significa |
 |---|---|---|---|
-| **Prioridad alta** | Índice > 0.55 (~20 % superior de las laderas) | ~141,200 ha | Las mejores candidatas a restaurar |
+| **Prioridad alta** | Índice > 0.55 (~30 % superior de las laderas de 8° o más) | ~141,200 ha | Las mejores candidatas a restaurar |
 | **Prioridad media** | Índice entre 0.45 y 0.55 | ~175,500 ha | Vale la pena restaurarlas, pero van en segundo lugar |
 | **Alta y robusta** | Alta en ≥ 50 % de 40 ponderaciones aleatorias | ~90,600 ha (64 % de la alta) | Prioritarias **sin importar cómo se ponderen los criterios** |
 
@@ -201,7 +201,7 @@ Anima cómo baja el agua por la ladera durante una tormenta, sobre el mismo terr
 
     Además hay un hidrograma del agua que sale de la ventana (sin y con barreras) y un balance en m³. En la app local, el botón **▶ Ver flujo de agua (demo)** lo muestra en un clic.
 
-En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~9 %** el escurrimiento que sale de la ventana y **~9 %** el pico (cifra sólo indicativa: la simulación usa una velocidad uniforme), y suman de 3,700 a 4,200 m³ infiltrados por tormenta. El almacenamiento por metro de barrera es el mismo que en el modelo de flujo (0.9 m³/m); la diferencia con la retención de MCMF para barreras solas se debe sobre todo a las presas en cárcava, que MCMF no incluye.
+En los 8 sitios sugeridos, con una tormenta de 40 mm, las barreras y presas en cárcava reducen en promedio **~9 %** el escurrimiento que sale de la ventana y **~9 %** el pico (cifra sólo indicativa: la simulación usa una velocidad uniforme), y suman de 3,700 a 4,200 m³ infiltrados por tormenta. El almacenamiento por metro de barrera es el mismo que en el modelo de flujo (0.9 m³/m); la diferencia con la retención de MCMF para barreras solas se debe sobre todo a las ~40 presas en cárcava que la simulación coloca por regla en los cruces con flujo concentrado, fuera del presupuesto de 1,500 m y fuera de MCMF. La simulación dura 150 pasos (~6 h) y la lluvia cae en los primeros 8 (~19 min).
 
 
 ![Simulación de una tormenta de 40 mm](informe/figuras/m4_simulacion.png)
@@ -225,7 +225,7 @@ Las barreras no desvían el agua: la retienen unas horas para que se infiltre, y
 | Cerro Prieto | −0.35 | 4 % | 51 % |
 | El Cuchillo | −0.20 | 4 % | 58 % |
 
-En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en la cuenca del río Santa Catarina) dan en promedio **~26 L/s netos** (intervalo de 90 %: −61 a 126) con supuestos conservadores. Con la evapotranspiración que estima un balance diario del suelo detrás de las barreras (~7 %, sección «Evapotranspiración del agua infiltrada»), serían **~156 L/s**, positivos con probabilidad cercana a 100 %.
+En la cuenca del río Santa Catarina el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo es recarga nueva. En las presas, lo retenido ya llegaba al embalse: ahí el valor de las obras está en menos azolve y avenidas más bajas, no en más volumen. Seleccionando por ganancia neta esperada, 30,000 ha (todas en la cuenca del río Santa Catarina) dan en promedio **~26 L/s netos** (intervalo de 90 %: −61 a 126) con supuestos conservadores. Con la evapotranspiración que estima un balance diario del suelo detrás de las barreras (sección «Evapotranspiración del agua infiltrada»), serían **de ~72 a ~156 L/s**, según cuánta agua drenada se mueva ladera abajo como flujo subsuperficial, positivos con probabilidad de 92 a ~100 %.
 
 ![Ganancia neta por m³ retenido](informe/figuras/g14_destino.png)
 
@@ -279,7 +279,7 @@ Con los costos de este problema (−1 en los arcos de las barreras, 0 en los dem
 
 Empezar con un **piloto en los 8 sitios de la cuenca del río Santa Catarina** y escalar sólo si:
 
-1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ). El balance del suelo estima *e* ≈ 7 %, por debajo de todos los umbrales: si se confirma, la decisión depende sobre todo de φ y τ.
+1. **El acuífero gana agua:** la evapotranspiración medida del agua infiltrada, *e*, es menor que el umbral *e\* = 1 − τ/φ* (entre 0.20 y 0.89 según la fracción que llega al acuífero, φ, y la que ya llegaba sin obras, τ). El balance del suelo estima *e* de ~7 % a ~38 % (según el flujo subsuperficial), por debajo de casi todos los umbrales: si se confirma, la decisión depende sobre todo de φ y τ.
 2. **La evidencia alcanza:** el intervalo de 90 % de la ganancia neta medida en campo queda por encima de cero (al menos 16 pares de microcuencas, dos o tres temporadas).
 3. **El agua llega y las obras duran:** trazadores que confirmen que el agua infiltrada llega al acuífero Campo Buenos Aires y limpieza periódica del sedimento.
 4. **No se justifica como agua barata:** igualar el costo por L/s de El Cuchillo II exigiría una ganancia neta de 0.66 a 1.32 m³ por m³ retenido; el máximo plausible es 0.53. El escalamiento se justifica por el suelo, los embalses, las avenidas y la biodiversidad.
@@ -341,7 +341,7 @@ Los 8 sitios sugeridos **no se eligen a mano**. Salen de la **optimización por 
 **Cómo leer la tabla:**
 
 - **Todos los sitios están en la cuenca del río Santa Catarina.** Ahí el escurrimiento de tormenta cruza la ciudad y se pierde, así que infiltrarlo en la sierra es recarga nueva para el acuífero de los pozos de SADM. En las cuencas de las presas, retener escurrimiento en la ladera probablemente reduce el agua que llega al embalse (sección 9).
-- **Bruta frente a neta.** Cada hectárea retiene del orden de 400 a 500 m³/año (agua bruta), pero la ganancia neta esperada para el abasto es de ~30 m³/ha/año con supuestos conservadores (probabilidad de ser positiva ~67 %), o de ~165 m³/ha/año con la evapotranspiración del balance del suelo.
+- **Bruta frente a neta.** Cada hectárea retiene del orden de 400 a 500 m³/año (agua bruta), pero la ganancia neta esperada para el abasto es de ~30 m³/ha/año con supuestos conservadores (probabilidad de ser positiva ~67 %), o de ~75 a ~165 m³/ha/año con la evapotranspiración del balance del suelo.
 - **7 de los 8 sitios están en el Parque Nacional Cumbres de Monterrey.** La restauración es compatible con un parque nacional, pero requiere autorización de la CONANP.
 - **El índice de prioridad mide otra cosa.** Algunos sitios óptimos tienen prioridad media o robustez baja: el índice pesa también degradación, incendios y suelo. **Las dos vistas se complementan.**
 
@@ -387,7 +387,7 @@ Cifras con la cobertura completa de las cuencas de abasto (`scores_v2`), en lade
 2. **La mayor parte de la prioridad alta drena directo a una fuente de abasto:** ~99,600 ha (71 %) en las cuencas de La Boca, Cerro Prieto o el río Santa Catarina. El índice usa la conectividad hidrológica, no la ganancia neta, para no anticipar el resultado del modelo del destino del agua.
 3. **La prioridad es robusta.** ~**90,600 ha (64 % de la prioridad alta)** se mantienen como prioridad alta en al menos la mitad de 40 ponderaciones aleatorias.
 4. **Los incendios abren una ventana de acción.** ~**17,100 ha** de prioridad alta tuvieron incendios entre 2019 y 2026; ahí urge actuar y el material quemado sirve para barreras.
-5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero Campo Buenos Aires** (~26 L/s con 30,000 ha y supuestos conservadores; ~156 L/s si se confirma en campo la baja evapotranspiración del agua concentrada detrás de las barreras); en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
+5. **Con 3,000 ha bien elegidas se retienen del orden de 1.4 millones de m³/año (~45 L/s; media de Monte Carlo 44.7 L/s, intervalo de 90 % de 26 a 68 L/s).** Es agua retenida bruta. Frente al déficit de ~3,000 a 3,500 L/s en lo más crítico de 2022, aun 30,000 ha (≈361 L/s brutos en un año como el previo a la crisis) cubrirían ~12 %. Al descontar la evapotranspiración y el escurrimiento que ya llegaba a las presas, la ganancia neta sólo es probablemente positiva en el **acuífero Campo Buenos Aires** (~26 L/s con 30,000 ha y supuestos conservadores; de ~72 a ~156 L/s si se confirma en campo la baja evapotranspiración del agua concentrada detrás de las barreras); en las presas el beneficio está en menos azolve y avenidas más bajas, no en más volumen. **La restauración no sustituye otras fuentes.**
 6. **Dónde restaurar depende del objetivo:**
     - Para maximizar agua: **la cuenca del río Santa Catarina**, que además es donde la ganancia neta es más probable.
     - Para cubrir todas las fuentes: repartir cuesta ~10 % del agua bruta, pero en ganancia neta el reparto es negativo (−8 L/s con 3,000 ha), porque asigna superficie a las cuencas de las presas.
