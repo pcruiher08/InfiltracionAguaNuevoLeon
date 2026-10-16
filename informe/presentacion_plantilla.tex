@@ -176,7 +176,7 @@ El Cuchillo & «g_ec» & «pg_ec» \\
 \end{columns}
 \end{frame}
 
-\begin{frame}{Frente a 2022, la restauración suma poco}
+\begin{frame}{Frente a 2022, la restauración es complementaria}
 \begin{columns}[T]
 \begin{column}{0.58\textwidth}
 \centering\includegraphics[width=\linewidth]{figuras/g13_abasto.png}
@@ -288,21 +288,23 @@ Oyamel y ayarín & Requiere inventario de campo (posible NOM-059) & Sólo conser
 \begin{column}{0.52\textwidth}
 \small
 \begin{itemize}
-  \item \textbf{Satélites} (MODIS, PML, TerraClimate, FLDAS): «et_sc_min» a «et_sc_max» de la lluvia ordinaria se evapotranspira en la cuenca del río Santa Catarina. Es una cota superior.
-  \item \textbf{Balance diario del suelo:} con el tratamiento completo cada metro recibe el escurrimiento de ~«vu_area» m²; «bk_e» del agua retenida se evapotranspira.
-  \item Si se confirma, la ganancia neta con 30,000 ha pasa de «et_w0» a «et_w1» L/s (probabilidad positiva «et_p1»; con karst moderado, «et_pk»). El costo por L/s neto, «et_cost» M\$, sigue arriba de El Cuchillo II.
-  \item Si parte del agua drenada se mueve ladera abajo dentro de la zona de raíces (flujo subsuperficial, raíces en el epikarst), $e\approx$ «if_e» y la ganancia baja a ~«if_w» L/s; si las raíces toman más de «if_g0», la ganancia esperada es negativa y sólo quedan suelo, embalses y avenidas. Medirlo (trazadores, isótopos) es la prueba decisiva.
+  \item \textbf{Satélites} (MODIS, PML, TerraClimate, FLDAS): «et_sc_min» a «et_sc_max» de la lluvia ordinaria se evapotranspira. Es una cota superior.
+  \item \textbf{Balance diario del suelo:} cada metro de barrera recibe el escurrimiento de ~«vu_area» m²; se evapotranspira «bk_e».
+  \item Con esa $e$, la ganancia neta con 30,000 ha pasa de «et_w0» a «et_w1» L/s (positiva con probabilidad «et_p1»). Costo: «et_cost» M\$ por L/s neto, arriba de El Cuchillo II.
 \end{itemize}
 \end{column}
 \begin{column}{0.45\textwidth}
 \footnotesize
-\textbf{Cómo medirla en campo}
+\textbf{Flujo subsuperficial, la prueba decisiva}
 \begin{itemize}
-  \item Lisímetros de drenaje detrás de las barreras.
-  \item Sensores de humedad a 30, 60 y 100 cm.
-  \item Flujo de savia en árboles cercanos.
-  \item Isótopos estables ($\delta^{18}$O, $\delta^2$H) y balance de cloruro.
-  \item Covarianza de remolinos (\emph{eddy covariance}) para calibrar los satélites.
+  \item Si las raíces ladera abajo toman más de «if_g0» del agua drenada, la ganancia esperada es negativa y sólo quedan suelo, embalses y avenidas.
+  \item En la caliza, parte de ese flujo se infiltra en las fracturas y es recarga.
+\end{itemize}
+\textbf{Cómo medirlo en campo}
+\begin{itemize}
+  \item Trincheras con trazador (bromuro) e isótopos en el xilema.
+  \item Lisímetros y humedad a 30, 60 y 100 cm.
+  \item Flujo de savia; isótopos y cloruro en el agua del suelo.
 \end{itemize}
 \end{column}
 \end{columns}

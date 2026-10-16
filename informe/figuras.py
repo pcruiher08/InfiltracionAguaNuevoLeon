@@ -257,21 +257,23 @@ def supply_fig():
     if not p.exists():
         return
     A = json.loads(p.read_text()); R = A["scenarios"]
-    fig, ax = plt.subplots(figsize=(7, 3.4))
+    fig, ax = plt.subplots(figsize=(6.4, 4.8))
     y = np.arange(len(R))[::-1]; h = 0.36
     for off, key, mc, col, lab in ((h / 2, "ls", "mc_ls", "#2a78d6", "Lluvia media"),
                                    (-h / 2, "ls_drought", "mc_ls_drought", "#eb6834", "Lluvia de jul 2021 a jun 2022")):
         v = np.array([r[mc][1] for r in R]); lo = np.array([r[mc][0] for r in R]); hi = np.array([r[mc][2] for r in R])  # mean, p5, p95
         ax.barh(y + off, v, height=h, color=col, label=lab)
         ax.errorbar(v, y + off, xerr=[v - lo, hi - v], fmt="none", ecolor="#4a4740", elinewidth=0.8, capsize=2)
+    xmax = 1.15 * max(r["mc_ls"][2] for r in R)
     for yi, r in zip(y, R):
-        ax.text(r["mc_ls"][2] + 40, yi + h / 2, f"{r['mc_ls'][1]:,.0f}", va="center", fontsize=7.5, color="#4a4740")
-        ax.text(r["mc_ls_drought"][2] + 40, yi - h / 2, f"{r['mc_ls_drought'][1]:,.0f} L/s · {100 * r['mc_ls_drought'][1] / A['deficit_ls']:.0f} % del déficit",
+        ax.text(r["mc_ls"][2] + 0.01 * xmax, yi + h / 2, f"{r['mc_ls'][1]:,.0f}", va="center", fontsize=7.5, color="#4a4740")
+        ax.text(r["mc_ls_drought"][2] + 0.01 * xmax, yi - h / 2, f"{r['mc_ls_drought'][1]:,.0f} L/s · {100 * r['mc_ls_drought'][1] / A['deficit_ls']:.0f} % del déficit",
                 va="center", fontsize=7.5, color="#4a4740", bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none"), zorder=3)
     ax.axvline(A["deficit_ls"], color="#1d1b18", ls=(0, (3, 3)), lw=1)
-    ax.text(A["deficit_ls"] - 40, y[0] + 0.55, "déficit de 2022: 3,000 L/s", ha="right", fontsize=7.5, color="#1d1b18")
+    ax.text(A["deficit_ls"] + 0.01 * xmax, y[0] + 0.55, "déficit de 2022: 3,000 L/s", ha="left", fontsize=7.5, color="#1d1b18")
     labels = [fmt(r["ha"]) + (" ha (todas las elegibles)" if r is R[-1] else " ha") for r in R]
-    ax.set_yticks(y, labels); ax.set_xlim(0, 3600); ax.grid(axis="y", visible=False)
+    xmax = 1.15 * max(r["mc_ls"][2] for r in R)
+    ax.set_yticks(y, labels); ax.set_xlim(0, xmax); ax.grid(axis="y", visible=False)
     ax.set_xlabel("L/s de agua bruta retenida (cota superior del aporte al abasto)"); ax.xaxis.set_major_formatter(lambda v, _: fmt(v))
     top_legend(ax)
     save(fig, "g13_abasto")
