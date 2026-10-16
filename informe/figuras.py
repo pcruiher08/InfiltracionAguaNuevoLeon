@@ -352,7 +352,7 @@ def iota_fig():
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(7, 2.8))
     for ax in (a1, a2):
         ax.axvspan(20, 60, color="#efece6", zorder=0)
-        ax.set_xlabel(r"$\iota$: agua drenada que se evapotranspira (%)"); ax.set_xlim(0, 100)
+        ax.set_xlabel(r"$\iota$: agua drenada que toman las raíces ladera abajo (%)"); ax.set_xlim(0, 100)
     a1.plot(io, [r["net_ls_30000"] for r in R], color="#eb6834", lw=2)
     a1.axhline(0, color="#1d1b18", lw=1); a1.set_ylabel("ganancia neta media (L/s)")
     a1.axvline(100 * F["iota_g0"], color="#6b675f", lw=1, ls=":")

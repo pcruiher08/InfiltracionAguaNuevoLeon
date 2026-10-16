@@ -360,6 +360,8 @@ rng = lambda vals, d=0, f=1: f"{min(vals) * f:.{d}f} a {max(vals) * f:.{d}f}"
 by_rain = sorted(CFS, key=lambda v: v["rain_mm_yr"])
 V.update({"cf_mha": rng([v["m_per_ha"] for v in CFS]), "cf_dams": rng([v["n_dams"] for v in CFS]),
           "cf_phi5": rng([v["phi"]["5"] for v in CFS], 0, 100) + "\\%", "cf_phi40": rng([v["phi"]["40"] for v in CFS], 0, 100) + "\\%",
+          "cf_m3m40": rng([v["phi"]["40"] * v["runoff_40_m3"] / v["barrier_m"] for v in CFS], 2),
+          "cf_m3m80": rng([v["phi"]["80"] * v["runoff_40_m3"] * 2 / v["barrier_m"] for v in CFS], 2),
           "cf_rho": rng([v["rho"] for v in CFS], 0, 100) + "\\%", "cf_rho1500": rng([v["rho_1500"] for v in CFS], 1, 100) + "\\%",
           "cf_rho_list": ", ".join(f"{v['rho']:.2f}" for v in by_rain[:-1]) + f" y {by_rain[-1]['rho']:.2f}",
           "cf_rain_list": ", ".join(n(v["rain_mm_yr"]) for v in by_rain[:-1]) + f" y {n(by_rain[-1]['rain_mm_yr'])}"})
