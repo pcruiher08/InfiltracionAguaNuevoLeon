@@ -255,7 +255,7 @@ Con la ecuación universal de pérdida de suelo revisada (`informe/sedimento.py`
 
 ### 13. Costo
 
-Con 25,000 a 50,000 pesos por hectárea (tope de CONAFOR para restauración forestal, Reglas de Operación 2026), cada **L/s neto cuesta ~43 millones de pesos**, más de diez veces el costo de capital por L/s del acueducto El Cuchillo II (~2.9 millones). Como fuente de agua la restauración es cara; su valor está en el suelo, la vida útil de los embalses, las avenidas y la biodiversidad.
+Con un costo **supuesto** de 25,000 a 50,000 pesos por hectárea (la cota inferior es un supuesto propio; la superior, el tope del subsidio de CONAFOR para restauración forestal, Reglas de Operación 2026; ninguna es un costo medido de obra), cada **L/s neto cuesta ~43 millones de pesos**, más de diez veces el costo de capital por L/s del acueducto El Cuchillo II (~2.9 millones). Como fuente de agua la restauración es cara; su valor está en el suelo, la vida útil de los embalses, las avenidas y la biodiversidad.
 
 ### 14. Áreas protegidas y clima futuro
 

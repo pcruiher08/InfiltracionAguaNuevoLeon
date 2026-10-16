@@ -216,7 +216,7 @@ En el momento más crítico de la crisis hídrica de 2022, las presas Cerro Prie
   \item \textbf{Calibración.} Contra el escurrimiento natural oficial de Cerro Prieto, el modelo sobrestima el escurrimiento; calibrado, el agua bruta y la neta bajan alrededor de 18\%, sin cambiar la probabilidad de ganancia neta positiva.
   \item \textbf{Frente a 2022.} En lo más crítico de la crisis faltaron de 3,000 a 3,500 L/s. La restauración no habría evitado la crisis: aun en términos brutos, 30,000 ha cubrirían 12\% del déficit.
   \item \textbf{En las presas.} Retener escurrimiento en las laderas de La Boca y Cerro Prieto probablemente reduce el agua que les llega. Las obras evitan azolve (24.0 hm³ en 50 años con 30,000 ha), pero menos de lo que restan en agua (4.0 hm³ por año).
-  \item \textbf{Costo.} Cada L/s neto cuesta unos 43 millones de pesos, más de diez veces el costo de capital por L/s de El Cuchillo II. Como fuente de agua la restauración es cara; su valor está en el suelo, la vida útil de los embalses, las avenidas y la biodiversidad.
+  \item \textbf{Costo.} Con costos supuestos de 25,000 a 50,000 pesos por hectárea (el tope del subsidio de CONAFOR, no un costo medido), cada L/s neto cuesta unos 43 millones de pesos, más de diez veces el costo de capital por L/s de El Cuchillo II. Como fuente de agua la restauración es cara; su valor está en el suelo, la vida útil de los embalses, las avenidas y la biodiversidad.
   \item \textbf{Cómo construir.} En tormentas grandes manda la capacidad de las obras, no su posición; MCMF mejora el trazo en tormentas pequeñas. Cada obra se acompaña sólo con especies nativas de su tipo de vegetación según el INEGI, de procedencia local y a densidad moderada.
   \item \textbf{Permisos.} Casi toda la superficie seleccionada en el Santa Catarina (2,933 de 3,000 ha) está dentro del Parque Nacional Cumbres de Monterrey: las obras requieren autorización de la CONANP.
   \item \textbf{Sitios y cálculo.} Los ocho sitios sugeridos se eligieron por ganancia neta: todos están en el Santa Catarina y siete dentro del Parque Nacional. El agua retenida se calcula con un flujo máximo (algoritmo de Dinic), equivalente al flujo de costo mínimo y unas 12.9 veces más rápido.
@@ -231,7 +231,7 @@ Indicador & 3,000 ha & 30,000 ha \\
 Agua bruta retenida (L/s) & 45 & 401 \\
 Ganancia neta esperada, selección en el Santa Catarina (L/s) & 3.0 & 26 \\
 Azolve evitado en presas, selección por suelo (hm³ en 50 años) & 3.7 & 24.0 \\
-Costo (millones de pesos) & 75 a 150 & 750 a 1,500 \\
+Costo supuesto (millones de pesos) & 75 a 150 & 750 a 1,500 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -575,7 +575,7 @@ con $\bar A_{s,i}$ la pérdida media de suelo sin obras en el área elegible de 
 
 \subsection{Costo por litro por segundo}\label{sec:costo}
 
-El costo de restaurar una hectárea se trata como $c_{\text{ha}}\sim\mathcal U(25{,}000,\,50{,}000)$ pesos; la cota superior es el apoyo máximo de CONAFOR para restauración forestal, de 50,000 pesos por hectárea en cinco años \citap{conafor2026}. Para un presupuesto de $H$ hectáreas, el costo por L/s neto se estima como el cociente de esperanzas $\mathbb E[c_{\text{ha}}H]/\mathbb E[W_{\text{neta}}]$, y se compara con el costo de capital del acueducto El Cuchillo II, 14,680 millones de pesos por 5,000 L/s, es decir, unos 2.9 millones de pesos por L/s \citap{eluniversal2023}. También se estima la probabilidad de que la restauración sea más barata por L/s, $\Pr[W_{\text{neta}}>c_{\text{ha}}H/2.9\times10^6]$. La comparación es sólo de costo de capital: no incluye la energía de bombeo ni la operación del acueducto, ni los beneficios de la restauración distintos del agua.
+El costo de restaurar una hectárea se trata como $c_{\text{ha}}\sim\mathcal U(25{,}000,\,50{,}000)$ pesos. Ninguna de las dos cotas es un costo medido de obra: la superior, 50,000 pesos por hectárea en cinco años, es el \emph{tope del subsidio} de CONAFOR para restauración forestal \citap{conafor2026}, y la inferior, 25,000 pesos, es un \emph{supuesto} de este trabajo, sin fuente. Deben sustituirse por los costos reales por hectárea y por tipo de obra de Pronatura Noreste. Para un presupuesto de $H$ hectáreas, el costo por L/s neto se estima como el cociente de esperanzas $\mathbb E[c_{\text{ha}}H]/\mathbb E[W_{\text{neta}}]$, y se compara con el costo de capital del acueducto El Cuchillo II, 14,680 millones de pesos por 5,000 L/s, es decir, unos 2.9 millones de pesos por L/s \citap{eluniversal2023}. También se estima la probabilidad de que la restauración sea más barata por L/s, $\Pr[W_{\text{neta}}>c_{\text{ha}}H/2.9\times10^6]$. La comparación es sólo de costo de capital: no incluye la energía de bombeo ni la operación del acueducto, ni los beneficios de la restauración distintos del agua.
 
 \subsection{Calibración con el balance hídrico oficial}\label{sec:calibracion}
 
@@ -778,7 +778,7 @@ Máximo suelo retenido en presas, 30,000 ha & 30,000 & 481 (187 a 901) & 24.0 & 
 
 \begin{table}[H]\centering\small
 \caption{Costo de la restauración por L/s}\label{tab:costo}
-{\color{gris}Millones de pesos. Costo de 25,000 a 50,000 pesos por hectárea. El Cuchillo II: unos 2.9 millones de pesos por L/s de capital. No definido: la ganancia neta esperada es negativa.\par}\smallskip
+{\color{gris}Millones de pesos. Costo de 25,000 (supuesto) a 50,000 (tope del subsidio de CONAFOR) pesos por hectárea; no son costos medidos de obra. El Cuchillo II: unos 2.9 millones de pesos por L/s de capital. No definido: la ganancia neta esperada es negativa.\par}\smallskip
 \begin{tabularx}{\linewidth}{Xrrrr}
 \toprule
 Selección & Costo total & Por L/s bruto & Por L/s neto & $\Pr[\text{más barata}]$ \\

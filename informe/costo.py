@@ -2,8 +2,9 @@
 
     .venv/bin/python informe/costo.py
 Reads informe/destino.json (net-water samples) and writes informe/costo.json.
-Restoration cost per hectare ~ U(25,000, 50,000) MXN: the upper bound is the maximum CONAFOR support
-for forest restoration (RF.1, 50,000 MXN/ha over 5 years, Reglas de Operación 2026).
+Restoration cost per hectare ~ U(25,000, 50,000) MXN. Neither bound is a measured works cost: the upper bound is
+the CONAFOR subsidy cap for forest restoration (RF.1, 50,000 MXN/ha over 5 years, Reglas de Operación 2026) and
+the lower bound is our own assumption. Replace with Pronatura's actual costs per hectare and type of works.
 """
 import json
 from pathlib import Path
