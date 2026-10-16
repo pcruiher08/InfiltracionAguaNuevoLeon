@@ -147,6 +147,36 @@ def regional_maps():
     fig.savefig(OUT / "m2_optimizacion.png"); plt.close(fig); print("wrote m2_optimizacion")
 
 
+def biophysical_map():
+    """High priority with the published index and with the biophysical index (no connection criterion)."""
+    layers.init()
+    B_ = json.loads((ROOT / "biofisico.json").read_text())
+    t_lo, t_hi = B_["thresholds_matched"]
+    gj = json.loads((DOCS / "catchments.geojson").read_text())
+    lonlat = np.array([c for f in gj["features"] if f["geometry"]["type"] != "Point"
+                       for poly in ([f["geometry"]["coordinates"]] if f["geometry"]["type"] == "Polygon" else f["geometry"]["coordinates"])
+                       for c in poly[0]])
+    pad = 0.04
+    ext = [lonlat[:, 0].min() - pad, lonlat[:, 0].max() + pad, lonlat[:, 1].min() - pad, lonlat[:, 1].max() + pad]
+    region = ee.Geometry.Rectangle([ext[0], ext[2], ext[1], ext[3]])
+    dem = ee.Image(B.DEM_ID).select("elevation")
+    hs = thumb(ee.Terrain.hillshade(dem).visualize(min=120, max=255, palette=["8a857c", "fcfcfb"]), region)
+    up = layers.raw().select("slope_deg").gte(8)
+    hi = layers.priority_index().updateMask(up).gt(0.55)
+    hb = layers.priority_index({"connectivity": 0}).updateMask(up).gt(t_hi)
+    cat = hi.multiply(2).add(hb)            # 3 both, 2 only published, 1 only biophysical
+    img = thumb(cat.updateMask(cat.gt(0)).visualize(min=1, max=3, palette=["eda100", "eb6834", "0d366b"]), region)
+    fig, ax = plt.subplots(figsize=(7, 7.2))
+    ax.imshow(hs, extent=ext, zorder=1); ax.imshow(img, extent=ext, alpha=.9, zorder=2)
+    draw_catchments(ax, gj); base_axes(ax, ext)
+    ax.legend(handles=[Patch(color="#0d366b", label="Alta con ambos índices"),
+                       Patch(color="#eb6834", label="Alta sólo con el índice publicado"),
+                       Patch(color="#eda100", label="Alta sólo con el índice biofísico"),
+                       Line2D([], [], color="#3d3a35", lw=1.1, label="Cuencas de abasto")],
+              loc="lower left", fontsize=8, frameon=True, framealpha=.9)
+    fig.savefig(OUT / "m5_biofisico.png"); plt.close(fig); print("wrote m5_biofisico")
+
+
 def site_frame(ax, g, lon, lat, gj, inset=False):
     """Geographic ticks, 300 m scale bar, north arrow and (optionally) a locator inset."""
     r0, r1, c0, c1 = g["win"]; to_ll = g["to_ll"]
@@ -239,3 +269,4 @@ if __name__ == "__main__":
     what = sys.argv[1:] or ["regional", "site"]
     if "regional" in what: regional_maps()
     if "site" in what: site_maps()
+    if "regional" in what or "bio" in what: biophysical_map()
