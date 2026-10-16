@@ -354,6 +354,8 @@ V.update({"et_rows": "\n".join(et_rows), "et_net_rows": "\n".join(et_net_rows), 
 
 # ---------------------------------------------------------------- simulation vs MCMF (conciliacion.py) and RUSLE range
 IF = SB["interflow"]
+V.update({"be_cons": n(round(CO["cuchillo_mxn_per_ls"] * DE["selections"]["neta_30000"]["net_mean"] / 30_000, -2)),
+          "be_bk": n(round(CO["cuchillo_mxn_per_ls"] * EN["net_ls_30000"] / 30_000, -2))})
 V.update({"if_g0": pct(100 * IF["iota_g0"]), "et_comp50": pct(EN["p_competitive"]["50000"], 1)})
 CF = json.loads((ROOT / "campo.json").read_text()); CFS = list(CF["sites"].values())
 rng = lambda vals, d=0, f=1: f"{min(vals) * f:.{d}f} a {max(vals) * f:.{d}f}"
